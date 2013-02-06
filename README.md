@@ -4,9 +4,9 @@ Popo JS is a stand-alone cross-browser JavaScript library that makes it easy to 
 
 A more extensive documentation and API will be coming up soon...
 
-##Setting up
+##Get started
 
-Just include Popo JS library in your HTML Document and you're good to go.
+Just download Popo JS library and include it in your HTML Document and you're good to go.
 
 ```html
 <script src="popo.min.js"></script>
@@ -41,7 +41,7 @@ __EX-1:__ Use "set" method to position target on top of base.
 ```javascript
 window.popo.set( target, {
   position: "n",
-  base: base,
+  base: base
 });
 ```
 
@@ -50,7 +50,7 @@ __EX-2:__ Use "get" method to retrieve target's position without actually positi
 ```javascript
 var position = window.popo.get( target, {
   position: "n",
-  base: base,
+  base: base
 });
 
 // The get method returns and object containing the final left and top values
@@ -148,3 +148,7 @@ window.popo.set( target, {
   }
 });
 ```
+
+## License
+
+Copyright (c) 2013 Niklas Rämö Licensed under the MIT license.
