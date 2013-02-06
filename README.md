@@ -1,12 +1,10 @@
-Popo JS
-=======
+##Popo JS
 
 Popo JS is a stand-alone cross-browser JavaScript library that makes it easy to position elements relative to other elements in various ways. Popo JS is heavily influenced by the awesome jQuery UI Position plugin.
 
 A more extensive documentation and API will be coming up soon...
 
-Setting up
-==========
+##Setting up
 
 Just include Popo JS library in your HTML Document and you're good to go.
 
@@ -14,9 +12,9 @@ Just include Popo JS library in your HTML Document and you're good to go.
 <script src="popo.min.js"></script>
 ```
 
-Usage
-=====
+##Usage
 
+###The syntax and methods
 Popo has two methods: "get" and "set". The "set" method sets the target element's left and top values while the "get" method only calculates and returns the values. Both methods require the target element as the first argument that will be positioned or used as reference for positioning. Additionally you can provide an object containing the options as the second argument (highly recommended unless you want to use the default options).
 
 ```javascript
@@ -24,12 +22,11 @@ Popo has two methods: "get" and "set". The "set" method sets the target element'
 window.popo[methodName]( targetElement, optionsObject );
 ```
 
-Popo has some prequisites too:
+###Prequisites
 * Target element's CSS position property must be "relative", "absolute" or "fixed"
 * The CSS display property of target, base and container can not be "none".
 
-Examples
-========
+##Examples
 
 To make the examples a bit easier on the eyes, let's assume that you have stored target element, base element and container element in variables. Note that Popo has no built-in selector engine, which is fully intentional.
 
