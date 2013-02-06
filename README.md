@@ -37,6 +37,26 @@ window.popo.set( document.getElementById("target"), {
 });
 ```
 
+## Methods
+
+Name | Description
+--- | ---
+**set** | <p>Positions the target element by setting the target element's left and top CSS properties according to the position calculations.</p>
+**get** | <p>Returns an object containing the calculated position of the target element. The returned object has two properties: <code>left</code> and <code>top</code>.</p>
+
+## Options
+
+Property | Default | Type | Description
+--- | --- | --- | ---
+**position** | "n" | *String* | <p>Defines the target element's position relative to the base element. The format is "targetX targetY baseX baseY". A horizontal position can be `left`, `right` or `center` while a vertical position can be `top`, `bottom` or `center`.</p><p>Alternatively, you can use a single shortcut value: `nw`, `n`, `ne`, `e`, `se`, `s`, `sw`, `w`, `center`.</p>
+**offset** | "0" | *String* | <p>Defines a horizontal and a vertical offset (in pixels). For basic usage provide the option with a string containing two numbers (e.g. "-12 90"). The format is "offsetX offsetY". One number will be used for both offsets (e.g. "10").</p><p>For a bit more advanced usage you can define an angular offset by providing the option with an angle in degrees and a distance in pixels (e.g. "120deg 300"). Note that the first value must have the trailing "deg" string for Popo to identify the offset as an angular offset. Also note that zero degrees points to east.</p><p>For even more advanced usage you can provide the option with multiple offsets by separating the different offsets with a comma (e.g. "12, 30deg -600, -56 98, 1000deg 9").</p>
+**base** | window | *Element* | <p>Defines which element the target element is positioned against.</p>
+**container** | null | *Element* | <p>Defines an optional container element that is used for collision detection.</p>
+**onCollision** | "push" | *String, Function* | <p>Defines what to do when the target element overflows the container element. The container element must be defined for this option to have any effect. You can either define a built-in collision method for each side with the format "left top right bottom" (e.g. "push none none push") or pass in a function and use this option as a callback function. The format for using built-in collision methods is "left top right bottom".</p><p>Popo has two built-in collision methods, <code>push</code> and <code>push!</code>, <code>none</code> will skip collision handling.</p><p><code>push</code> method tries to keep the targeted sides of the target element within the container element's boundaries. If you assign <code>push</code> method to the opposite sides the force of push will be equal on both sides. If you want to force one of the sides to be always pushed fully inside the container element's area, you can assign a forced push to that side with <code>push!</code> method.</p>
+**setClass** | true | *Boolean* | <p>If true, a class name (constructed out of the library name and the position option string) will be automatically added to the target element. The format is "libName-positionOptionValue", all empty spaces are replaced with dashes. For example, if the position option value is "left top right center" the constructed class name would be "popo-left-top-right-center".</p>
+**onBeforeExec** | null | *Function* | <p>Defines a callback function for get and set methods that is executed just before the the positioning.</p>
+**onAfterExec** | null | *Function* | <p>Defines a callback function for set method that is executed right after the positioning.</p>
+
 ##Examples
 
 To make the examples a bit easier on the eyes, let's assume that you have at least three elements in your HTML document with ids *target*, *base* and *container*.
@@ -158,27 +178,6 @@ window.popo.set( target, {
   }
 });
 ```
-
-## Methods
-
-Name | Description
---- | ---
-**set** | <p>Positions the target element by setting the target element's left and top CSS properties according to the position calculations.</p>
-**get** | <p>Returns an object containing the calculated position of the target element. The returned object has two properties: <code>left</code> and <code>top</code>.</p>
-
-## Options
-
-Property | Default | Type | Description
---- | --- | --- | ---
-**position** | "n" | *String* | <p>Defines the target element's position relative to the base element. The format is "targetX targetY baseX baseY". A horizontal position can be `left`, `right` or `center` while a vertical position can be `top`, `bottom` or `center`.</p><p>Alternatively, you can use a single shortcut value: `nw`, `n`, `ne`, `e`, `se`, `s`, `sw`, `w`, `center`.</p>
-**offset** | "0" | *String* | <p>Defines a horizontal and a vertical offset (in pixels). For basic usage provide the option with a string containing two numbers (e.g. "-12 90"). The format is "offsetX offsetY". One number will be used for both offsets (e.g. "10").</p><p>For a bit more advanced usage you can define an angular offset by providing the option with an angle in degrees and a distance in pixels (e.g. "120deg 300"). Note that the first value must have the trailing "deg" string for Popo to identify the offset as an angular offset. Also note that zero degrees points to east.</p><p>For even more advanced usage you can provide the option with multiple offsets by separating the different offsets with a comma (e.g. "12, 30deg -600, -56 98, 1000deg 9").</p>
-**base** | window | *Element* | <p>Defines which element the target element is positioned against.</p>
-**container** | null | *Element* | <p>Defines an optional container element that is used for collision detection.</p>
-**onCollision** | "push" | *String, Function* | <p>Defines what to do when the target element overflows the container element. The container element must be defined for this option to have any effect. You can either define a built-in collision method for each side with the format "left top right bottom" (e.g. "push none none push") or pass in a function and use this option as a callback function. The format for using built-in collision methods is "left top right bottom".</p><p>Popo has two built-in collision methods, <code>push</code> and <code>push!</code>, <code>none</code> will skip collision handling.</p><p><code>push</code> method tries to keep the targeted sides of the target element within the container element's boundaries. If you assign <code>push</code> method to the opposite sides the force of push will be equal on both sides. If you want to force one of the sides to be always pushed fully inside the container element's area, you can assign a forced push to that side with <code>push!</code> method.</p>
-**setClass** | true | *Boolean* | <p>If true, a class name (constructed out of the library name and the position option string) will be automatically added to the target element. The format is "libName-positionOptionValue", all empty spaces are replaced with dashes. For example, if the position option value is "left top right center" the constructed class name would be "popo-left-top-right-center".</p>
-**onBeforeExec** | null | *Function* | <p>Defines a callback function for get and set methods that is executed just before the the positioning.</p>
-**onAfterExec** | null | *Function* | <p>Defines a callback function for set method that is executed right after the positioning.</p>
-
 
 ## License
 
