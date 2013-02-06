@@ -1,5 +1,4 @@
-Popo JS
-=======
+#Popo JS
 
 *A JavaScript library for positioning elements*
 
