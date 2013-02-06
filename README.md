@@ -102,7 +102,6 @@ window.popo.set( targetElem, {
     // As an example let's adjust the final left and top values
     target.position.top += 10;
     target.position.left -= 800;
-    
 
   },
 
