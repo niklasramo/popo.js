@@ -8,32 +8,47 @@ A more extensive documentation and API will be coming up soon...
 Examples
 ========
 
+To make the examples a bit easier on the eyes, let's assume that you have stored target element, base element and container element in variables. Note that Popo has no built-in selector engine, which is fully intentional.
+
 ```javascript
 
-// First thigs first, let's get target, base and container
-var targetElem = document.getElementById("target"),
-    baseElem = document.getElementById("base"),
-    containerElem = document.getElementById("container");
+var target = document.getElementById("target"),
+    base = document.getElementById("base"),
+    container = document.getElementById("container");
 
-// EX-1: Position target on top of base with "set" method
-window.popo.set( targetElem, {
+```
+
+EX-1: Use "set" method to position target on top of base.
+
+```javascript
+
+window.popo.set( target, {
   position: "n",
-  base: baseElem
+  base: base,
 });
 
-// EX-2: Get target's positioned position with "get" method
-var position = window.popo.get( targetElem, {
+```
+
+EX-2: Use "get" method to retrieve target's position without actually positioning the target.
+
+```javascript
+
+var position = window.popo.get( target, {
   position: "n",
-  base: baseElem
+  base: base,
 });
 
-// The get method returns and object with left and top properties
-// position.left => final left position
-// positoin.top => final top position
+// The get method returns and object containing the final left and top values
+var left = position.left,
+    top = position.top;
 
-// EX-3: A stupidly complex example showing off all the options
-// and explaining how the callbacks work
-window.popo.set( targetElem, {
+```
+
+EX-3: A stupidly complex example showing off all the options and explaining how the callbacks work
+
+```javascript
+
+window.popo.set( target, {
 
   // The syntax here is similar to jQuery UI Position plugin
   // => "targetX targetY baseX baseY"
@@ -41,11 +56,11 @@ window.popo.set( targetElem, {
   
   // A compulsory base elment that defines which element
   // the target element is positioned against. Defaults to window.
-  base: baseElem,
+  base: base,
   
   // An optional container element that is used for
   // collision detection. Defaults to null.
-  container: containerElem,
+  container: container,
   
   // Define a single offset or multiple offsets
   // separated with comma.
@@ -99,14 +114,14 @@ window.popo.set( targetElem, {
     // container.overflow.top
     // container.overflow.bottom
     
-    // As an example let's adjust the final left and top values
+    // For demonstration let's adjust the final left and top values
     target.position.top += 10;
     target.position.left -= 800;
 
   },
 
   // This callback function is called right after the final position
-  // is set (set method) or returned (get method)
+  // is set (with set method) or returned (with get method)
   onAfterExec: function (target, base, container) {
 
     // Note that you have to define a container element in options
