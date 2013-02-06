@@ -24,12 +24,12 @@ window.popo[methodName]( targetElement, options );
 
 ###Prequisites
 
-* Target element's CSS position property must be "relative", "absolute" or "fixed".
-* The CSS display property of target, base and container can not be "none".
+* Target's CSS position property must be *relative*, *absolute* or *fixed*.
+* The CSS display property of target, base and container must not be *none*.
 
 ##Examples
 
-To make the examples a bit easier on the eyes, let's assume that you have at least three elements in your HTML document with ids "target", "base" and "container".
+To make the examples a bit easier on the eyes, let's assume that you have at least three elements in your HTML document with ids *target*, *base* and *container*.
 
 ```javascript
 var target = document.getElementById("target"),
