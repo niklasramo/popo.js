@@ -160,6 +160,9 @@ Property | Default | Type | Description
 `base` | window | Element | <p>Defines which element the target element is positioned against.</p>
 `container` | null | Element | <p>Defines an optional container element that is used for collision detection.</p>
 `onCollision` | "push" | String, Function | <p>Defines what to do when the target element overflows the container element. The container element must be defined for this option to have any effect. You can either define a built-in collision method for each side with the format "left top right bottom" (e.g. "push none none push") or pass in a function and use this option as a callback function. The format for using built-in collision methods is "left top right bottom".</p><p>Popo has two built-in collision methods, <code>push</code> and <code>push!</code>, <code>none</code> will skip collision handling.</p><p><code>push</code> method tries to keep the targeted sides of the target element within the container element's boundaries. If you assign <code>push</code> method to the opposite sides the force of push will be equal on both sides. If you want to force one of the sides to be always pushed fully inside the container element's area, you can assign a forced push to that side with <code>push!</code> method.</p>
+`setClass` | true | Boolean | <p>If true, a class name (constructed out of the library name and the position option string) will be automatically added to the target element. The syntax is "libName-positionOptionValue", all empty spaces are replaced with dashes. For example, if the position option value is "left top right center" the constructed class name would be "popo-left-top-right-center".</p>
+`onBeforeExec` | null | Function | <p>Defines a callback function for get and set methods that is executed just before the the positioning.</p>
+`onAfterExec` | null | Function | <p>Defines a callback function for set method that is executed right after the positioning.</p>
 
 ## License
 
