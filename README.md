@@ -5,34 +5,38 @@ Popo JS is a stand-alone cross-browser JavaScript library that makes it easy to 
 
 A more extensive documentation and API will be coming up soon...
 
+Setting up
+==========
+
+Just include Popo JS library in your HTML Document and you're good to go.
+
+```html
+<script src="popo.min.js"></script>
+```
+
 Examples
 ========
 
 To make the examples a bit easier on the eyes, let's assume that you have stored target element, base element and container element in variables. Note that Popo has no built-in selector engine, which is fully intentional.
 
 ```javascript
-
 var target = document.getElementById("target"),
     base = document.getElementById("base"),
     container = document.getElementById("container");
-
 ```
 
 EX-1: Use "set" method to position target on top of base.
 
 ```javascript
-
 window.popo.set( target, {
   position: "n",
   base: base,
 });
-
 ```
 
 EX-2: Use "get" method to retrieve target's position without actually positioning the target.
 
 ```javascript
-
 var position = window.popo.get( target, {
   position: "n",
   base: base,
@@ -41,13 +45,11 @@ var position = window.popo.get( target, {
 // The get method returns and object containing the final left and top values
 var left = position.left,
     top = position.top;
-
 ```
 
 EX-3: A stupidly complex example showing off all the options and explaining how the callbacks work
 
 ```javascript
-
 window.popo.set( target, {
 
   // The syntax here is similar to jQuery UI Position plugin
@@ -134,5 +136,4 @@ window.popo.set( target, {
     
   }
 });
-
 ```
