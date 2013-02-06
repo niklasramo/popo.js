@@ -156,7 +156,7 @@ window.popo.set( target, {
 Property | Default | Type | Description
 --- | --- | --- | ---
 `position` | "n" | *String* | <p>Defines the target element's position relative to the base element. The format is "targetX targetY baseX baseY". A horizontal position can be `left`, `right` or `center` while a vertical position can be `top`, `bottom` or `center`.</p><p>Alternatively, you can use a single shortcut value: `nw`, `n`, `ne`, `e`, `se`, `s`, `sw`, `w`, `center`.</p>
-
+`offset` | "0", | String | <p>Defines a horizontal and a vertical offset (in pixels). For basic usage provide the option with a string containing two numbers (e.g. "-12 90"). The format is "*offsetX offsetY*". One number will be used for both offsets (e.g. "10").</p><p>For a bit more advanced usage you can define an angular offset by providing the option with an angle in degrees and a distance in pixels (e.g. "120deg 300"). Note that the first value must have the trailing "deg" string for Popo to identify the offset as an angular offset. Also note that zero degrees points to east.</p><p>For even more advanced usage you can provide the option with multiple offsets by separating the different offsets with a comma (e.g. "12, 30deg -600, -56 98, 1000deg 9").</p>
 
 ## License
 
