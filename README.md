@@ -8,26 +8,34 @@ The goal of Popo JS is making dynamic positioning of html elements as simple and
 
 ##Get started
 
+###Download
+
 Just download Popo JS library and include it in your HTML Document and you're good to go.
 
 ```html
 <script src="popo.min.js"></script>
 ```
 
-##Usage
-
-Popo has two methods: <code>get</code> and <code>set</code>. The set method sets the target element's left and top values while the get method only calculates and returns the values. Both methods require the target element as the first argument. Additionally you can provide an options object as the second argument.
-
-###Format
-
-```javascript
-window.popo[methodName]( targetElement, options );
-```
-
-###Prequisites
+###Know the prequisites
 
 * Target's CSS position property must be *relative*, *absolute* or *fixed*.
 * The CSS display property of target, base and container must not be *none*.
+
+###Start using
+
+Popo has two methods: <code>get</code> and <code>set</code>. The set method sets the target element's left and top values while the get method only calculates and returns the values. Both methods require the target element as the first argument. Additionally you can provide an options object as the second argument.
+
+```javascript
+// The format
+window.popo[methodName]( targetElement, options );
+
+// A real world example
+// -> place target in the center of base 
+window.popo.set( document.getElementById("target"), {
+  position: "center",
+  base: document.getElementById("base")
+});
+```
 
 ##Examples
 
