@@ -10,7 +10,7 @@
   "use strict";
 
   /*=================
-    Local variables
+    Defaults
   =================*/
 
   var libName = 'popo',
@@ -18,32 +18,66 @@
       docElem = doc.documentElement,
       docBody = doc.body,
       m = window.Math,
-      basePos = {},
+      getBasePos = {},
+
+      // Define shortcut strings
+      l = 'left',
+      r = 'right',
+      t = 'top',
+      b = 'bottom',
+      c = 'center',
+
+      // Define shortcut positions
       shortcuts = {
-        nw: ['right', 'bottom', 'left', 'top'],
-        n: ['center', 'bottom', 'center', 'top'],
-        ne: ['left', 'bottom', 'right', 'top'],
-        e: ['left', 'center', 'right', 'center'],
-        se: ['left', 'top', 'right', 'bottom'],
-        s: ['center', 'top', 'center', 'bottom'],
-        sw: ['right', 'top', 'left', 'bottom'],
-        w: ['right', 'center', 'left', 'center'],
-        center: ['center', 'center', 'center', 'center']
+        nw: [r, b, l, t],
+        n: [c, b, c, t],
+        ne: [l, b, r, t],
+        e: [l, c, r, c],
+        se: [l, t, r, b],
+        s: [c, t, c, b],
+        sw: [r, t, l, b],
+        w: [r, c, l, c],
+        center: [c, c, c, c]
       };
 
+  /*============================
+    Base position calculations
+  ============================*/
+
   // Define the base position calculation functions
-  basePos.leftleft = basePos.toptop = function (defVal, baseVal, targetVal) { return defVal; };
-  basePos.leftcenter = basePos.topcenter = function (defVal, baseVal, targetVal) { return defVal + (baseVal / 2); };
-  basePos.leftright = basePos.topbottom = function (defVal, baseVal, targetVal) { return defVal + baseVal; };
-  basePos.centerleft = basePos.centertop = function (defVal, baseVal, targetVal) { return defVal - (targetVal / 2); };
-  basePos.centercenter = function (defVal, baseVal, targetVal) { return defVal + (baseVal / 2) - (targetVal / 2); };
-  basePos.centerright = basePos.centerbottom = function (defVal, baseVal, targetVal) { return defVal + baseVal - (targetVal / 2); };
-  basePos.rightleft = basePos.bottomtop = function (defVal, baseVal, targetVal) { return defVal - targetVal; };
-  basePos.rightcenter = basePos.bottomcenter = function (defVal, baseVal, targetVal) { return defVal - targetVal + (baseVal / 2); };
-  basePos.rightright = basePos.bottombottom = function (defVal, baseVal, targetVal) { return defVal - targetVal + baseVal; };
+  // dVal => defaultValue
+  // bVal => baseValue
+  // tVal => targetValue
+  getBasePos[l+l] = getBasePos[t+t] = function (dVal) {
+    return dVal;
+  };
+  getBasePos[l+c] = getBasePos[t+c] = function (dVal, bVal) {
+    return dVal + (bVal / 2);
+  };
+  getBasePos[l+r] = getBasePos[t+b] = function (dVal, bVal) {
+    return dVal + bVal;
+  };
+  getBasePos[c+l] = getBasePos[c+t] = function (dVal, bVal, tVal) {
+    return dVal - (tVal / 2);
+  };
+  getBasePos[c+c] = function (dVal, bVal, tVal) {
+    return dVal + (bVal / 2) - (tVal / 2);
+  };
+  getBasePos[c+r] = getBasePos[c+b] = function (dVal, bVal, tVal) {
+    return dVal + bVal - (tVal / 2);
+  };
+  getBasePos[r+l] = getBasePos[b+t] = function (dVal, bVal, tVal) {
+    return dVal - tVal;
+  };
+  getBasePos[r+c] = getBasePos[b+c] = function (dVal, bVal, tVal) {
+    return dVal - tVal + (bVal / 2);
+  };
+  getBasePos[r+r] = getBasePos[b+b] = function (dVal, bVal, tVal) {
+    return dVal - tVal + bVal;
+  };
 
   /*=================
-    Local functions
+    Functions
   =================*/
 
   function isWin(el) {
@@ -286,7 +320,7 @@
   function getSanitizedOffset(opt) {
 
     var offset = {x: 0, y: 0},
-        dec = 1000000,
+        decimal = 1000000,
         items = opt.split(','),
         itemsLen = items.length,
         item, itemLen, ang, dist, i;
@@ -307,8 +341,8 @@
 
         // Apply offsets only if the values are even remotely significant
         if (typeof ang === 'number' && typeof dist === 'number' && dist !== 0) {
-          offset.x += m.round((m.cos(ang * (m.PI/180)) * dist) * dec) / dec;
-          offset.y += m.round((m.sin(ang * (m.PI/180)) * dist) * dec) / dec;
+          offset.x += m.round((m.cos(ang * (m.PI/180)) * dist) * decimal) / decimal;
+          offset.y += m.round((m.sin(ang * (m.PI/180)) * dist) * decimal) / decimal;
         }
 
       // If is normal offset
@@ -320,7 +354,7 @@
     }
 
     // Null vars and return offset
-    dec = items = itemsLen = item = itemLen = ang = dist = i = null;
+    decimal = items = itemsLen = item = itemLen = ang = dist = i = null;
     return offset;
 
   } // END getSanitizedOffset
@@ -425,7 +459,7 @@
     // Null vars
     sides = side1 = side2 = i = null;
 
-  } // END push
+  } // END pushOnCollision
 
   function position(method, el, options) {
 
@@ -453,8 +487,8 @@
 
     // Get target position
     target.position = {
-      left: basePos[opts.position[0] + opts.position[2]](base.offset.left + opts.offset.x - target.zeroPointOffset.left, base.width, target.width),
-      top: basePos[opts.position[1] + opts.position[3]](base.offset.top + opts.offset.y - target.zeroPointOffset.top, base.height, target.height)
+      left: getBasePos[opts.position[0] + opts.position[2]](base.offset.left + opts.offset.x - target.zeroPointOffset.left, base.width, target.width),
+      top: getBasePos[opts.position[1] + opts.position[3]](base.offset.top + opts.offset.y - target.zeroPointOffset.top, base.height, target.height)
     };
 
     // If container is defined
@@ -514,31 +548,29 @@
   } // END position
 
   /*==================================
-    Public methods / default options
+    Publish
   ==================================*/
 
-  if (typeof window[libName] === 'undefined') {
-
-    window[libName] = {
-      set: function (el, opts) {
-        position('set', el, opts);
-        return this;
-      },
-      get: function (el, opts) {
-        return position('get', el, opts);
-      },
-      defaults: {
-        position: 'center',
-        offset: '0',
-        base: window,
-        container: null,
-        onCollision: 'push',
-        setClass: false,
-        onBeforeExec: null,
-        onAfterExec: null
-      }
-    };
-
-  }
+  // Create methods and default settings
+  // and make the library public
+  window[libName] = {
+    set: function (el, opts) {
+      position('set', el, opts);
+      return this;
+    },
+    get: function (el, opts) {
+      return position('get', el, opts);
+    },
+    defaults: {
+      position: 'center',
+      offset: '0',
+      base: window,
+      container: null,
+      onCollision: 'push',
+      setClass: false,
+      onBeforeExec: null,
+      onAfterExec: null
+    }
+  };
 
 })(window);
