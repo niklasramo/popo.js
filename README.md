@@ -182,4 +182,4 @@ Property | Default | Type | Description
 
 ## License
 
-Copyright (c) 2013 Niklas Rämö Licensed under the MIT license.
+Copyright (c) 2013 Niklas Rämö. Licensed under **[the MIT license](https://github.com/niklasramo/popo/blob/master/LICENSE.md)**.
