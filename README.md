@@ -6,6 +6,8 @@ Popo JS is a stand-alone cross-browser JavaScript library that makes it easy to 
 
 The goal of Popo JS is making dynamic positioning of html elements as simple and flexible as possible in all modern (and not so modern) browsers. The library has a set of unit tests, which seem to pass fully all the way back to IE7.
 
+**NOTE: Keep in mind that there might be some API changes before v1.0 release.**
+
 ##Get started
 
 ###Download
