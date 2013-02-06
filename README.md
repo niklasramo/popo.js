@@ -151,6 +151,13 @@ window.popo.set( target, {
 });
 ```
 
+## Options
+
+Property | Default | Type | Description
+--- | --- | --- | ---
+`position` | "n" | *String* | <p>Defines the target element's position relative to the base element. The format is "targetX targetY baseX baseY". A horizontal position can be `left`, `right` or `center` while a vertical position can be `top`, `bottom` or `center`.</p><p>Alternatively, you can use a single shortcut value: `nw`, `n`, `ne`, `e`, `se`, `s`, `sw`, `w`, `center`.</p>
+
+
 ## License
 
 Copyright (c) 2013 Niklas Rämö Licensed under the MIT license.
