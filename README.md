@@ -155,7 +155,7 @@ window.popo.set( target, {
 
 Name | Description
 --- | ---
-**set** | <p>Positions the target element by setting the element's left and top properties according to the position calculations.</p>
+**set** | <p>Positions the target element by setting the target element's left and top CSS properties according to the position calculations.</p>
 **get** | <p>Returns an object containing the calculated position of the target element. The returned object has two properties: <code>left</code> and <code>top</code>.</p>
 
 ## Options
