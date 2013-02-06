@@ -2,7 +2,9 @@
 
 *A JavaScript library for positioning elements*
 
-Popo JS is a stand-alone cross-browser JavaScript library that makes it easy to position elements relative to other elements in various ways. Popo JS is heavily influenced by the awesome jQuery UI Position plugin.
+Popo JS is a stand-alone cross-browser JavaScript library that makes it easy to position elements relative to other elements in various ways. Popo JS is heavily influenced by **[jQuery UI Position plugin](http://jqueryui.com/position/)**.
+
+The goal of Popo JS is making dynamic positioning of html elements as simple and flexible as possible in all modern (and not so modern) browsers. The library has a set of unit tests, which seem to pass fully all the way back to IE7.
 
 ##Get started
 
