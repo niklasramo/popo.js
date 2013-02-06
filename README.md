@@ -10,10 +10,10 @@ The goal of Popo JS is making dynamic positioning of html elements as simple and
 
 ###Download
 
-Download Popo JS library and include it in your HTML Document and you're good to go.
-
 * **[v0.7.3 - Production](https://raw.github.com/niklasramo/popo/master/popo.min.js)** (7.1kb minified)
-* **[v0.7.3 - Development](https://raw.github.com/niklasramo/popo/master/popo.js)** (16.6kb, uncompressed)
+* **[v0.7.3 - Development](https://raw.github.com/niklasramo/popo/master/popo.js)** (16.6kb uncompressed)
+
+Download Popo JS library and include it in your HTML Document, preferrably inside the head tag.
 
 ```html
 <script src="popo.min.js"></script>
