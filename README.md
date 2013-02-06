@@ -14,15 +14,18 @@ Just download Popo JS library and include it in your HTML Document and you're go
 
 ##Usage
 
-###The syntax and methods
+###Overview
+
 Popo has two methods: "get" and "set". The "set" method sets the target element's left and top values while the "get" method only calculates and returns the values. Both methods require the target element as the first argument that will be positioned or used as reference for positioning. Additionally you can provide an object containing the options as the second argument (highly recommended unless you want to use the default options).
 
+###Syntax
+
 ```javascript
-// The syntax goes something like this
 window.popo[methodName]( targetElement, optionsObject );
 ```
 
 ###Prequisites
+
 * Target element's CSS position property must be "relative", "absolute" or "fixed"
 * The CSS display property of target, base and container can not be "none".
 
