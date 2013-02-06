@@ -1,5 +1,5 @@
 /*!
- * Popo JS - v0.7.3 - 5/2/2013
+ * Popo JS - v0.7.4 - 7/2/2013
  *
  * Copyright (c) 2013 Niklas Rämö
  * Released under the MIT license
@@ -48,6 +48,7 @@
   // dVal => defaultValue
   // bVal => baseValue
   // tVal => targetValue
+
   getBasePos[l+l] = getBasePos[t+t] = function (dVal) {
     return dVal;
   };
@@ -226,7 +227,7 @@
   function getZeroPointOffset(el) {
 
     var posProp = getPositionProperty(el),
-        offset;
+        offset, style, left, right, top, bottom;
 
     if (posProp === 'fixed') {
       offset = {left: 0, top: 0};
@@ -238,11 +239,11 @@
 
       // TODO: Make this part more elegant and fast!
 
-      var style = el.style,
-          left = style.left,
-          right = style.right,
-          top = style.top,
-          bottom = style.bottom;
+      style = el.style;
+      left = style.left;
+      right = style.right;
+      top = style.top;
+      bottom = style.bottom;
 
       // Make sure the element is not affected by left/right/top/bottom properties
       style.left = style.right = style.top = style.bottom = 'auto';
@@ -256,12 +257,9 @@
       style.top = top;
       style.bottom = bottom;
 
-      // Null vars
-      style = left = right = top = bottom = null;
-
     }
 
-    posProp = null;
+    posProp = style = left = right = top = bottom = null;
     return offset;
 
   } // END getZeroPointOffset
