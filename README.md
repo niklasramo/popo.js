@@ -65,7 +65,7 @@ window.popo.set( targetElem, {
     // The arguments passed into this function contain all the data
     // that is used for the position calculations. You can manipulate
     // the final positioning inside this function if you want, just
-    // get target.position.left and target.position.right and modify
+    // get target.position.left and target.position.top and modify
     // their values as you wish.
     
     // The arguments data API
