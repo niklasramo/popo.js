@@ -22,10 +22,14 @@ window.popo.set( targetElem, {
 });
 
 // EX-2: Get target's positioned position with "get" method
-window.popo.get( targetElem, {
+var position = window.popo.get( targetElem, {
   position: "n",
   base: baseElem
 });
+
+// The get method returns and object with left and top properties
+// position.left => final left position
+// positoin.top => final top position
 
 // EX-3: A stupidly complex example showing off all the options
 // and explaining how the callbacks work
