@@ -14,14 +14,12 @@ Just download Popo JS library and include it in your HTML Document and you're go
 
 ##Usage
 
-###Overview
+Popo has two methods: "get" and "set". The "set" method sets the target element's left and top values while the "get" method only calculates and returns the values. Both methods require the target element as the first argument that will be positioned or used as reference for positioning. Additionally you can provide a second argument: an object containing the custom settings as key/value pairs.
 
-Popo has two methods: "get" and "set". The "set" method sets the target element's left and top values while the "get" method only calculates and returns the values. Both methods require the target element as the first argument that will be positioned or used as reference for positioning. Additionally you can provide an object containing the options as the second argument (highly recommended unless you want to use the default options).
-
-###Syntax
+###Format
 
 ```javascript
-window.popo[methodName]( targetElement, optionsObject );
+window.popo[methodName]( targetElement, options );
 ```
 
 ###Prequisites
