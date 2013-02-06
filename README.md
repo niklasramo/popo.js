@@ -14,6 +14,20 @@ Just include Popo JS library in your HTML Document and you're good to go.
 <script src="popo.min.js"></script>
 ```
 
+Usage
+=====
+
+Popo has two methods: "get" and "set". The "set" method sets the target element's left and top values while the "get" method only calculates and returns the values. Both methods require the target element as the first argument that will be positioned or used as reference for positioning. Additionally you can provide an object containing the options as the second argument (highly recommended unless you want to use the default options).
+
+```javascript
+// The syntax goes something like this
+window.popo[methodName]( targetElement, optionsObject );
+```
+
+Popo has some prequisites too:
+* Target element's CSS position property must be "relative", "absolute" or "fixed"
+* The CSS display property of target, base and container can not be "none".
+
 Examples
 ========
 
@@ -25,7 +39,7 @@ var target = document.getElementById("target"),
     container = document.getElementById("container");
 ```
 
-EX-1: Use "set" method to position target on top of base.
+__EX-1:__ Use "set" method to position target on top of base.
 
 ```javascript
 window.popo.set( target, {
@@ -34,7 +48,7 @@ window.popo.set( target, {
 });
 ```
 
-EX-2: Use "get" method to retrieve target's position without actually positioning the target.
+__EX-2:__ Use "get" method to retrieve target's position without actually positioning the target.
 
 ```javascript
 var position = window.popo.get( target, {
@@ -47,7 +61,7 @@ var left = position.left,
     top = position.top;
 ```
 
-EX-3: A stupidly complex example showing off all the options and explaining how the callbacks work
+__EX-3:__ A stupidly complex example showing off all the options and explaining how the callbacks work
 
 ```javascript
 window.popo.set( target, {
