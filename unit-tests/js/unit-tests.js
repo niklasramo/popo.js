@@ -14,134 +14,134 @@ var result, expected, prop, i,
     container = $container[0],
     positions = {
 
-  /* Shorthands */
+      /* Shorthands */
 
-  n: {name: 'n', left: 10, top: 0},
-  e: {name: 'e', left: 20, top: 10},
-  s: {name: 's', left: 10, top: 20},
-  w: {name: 'w', left: 0, top: 10},
-  nw: {name: 'nw', left: 0, top: 0},
-  ne: {name: 'ne', left: 20, top: 0},
-  sw: {name: 'sw', left: 0, top: 20},
-  se: {name: 'se', left: 20, top: 20},
-  center: {name: 'center', left: 10, top: 10},
+      n: {name: 'n', left: 10, top: 0},
+      e: {name: 'e', left: 20, top: 10},
+      s: {name: 's', left: 10, top: 20},
+      w: {name: 'w', left: 0, top: 10},
+      nw: {name: 'nw', left: 0, top: 0},
+      ne: {name: 'ne', left: 20, top: 0},
+      sw: {name: 'sw', left: 0, top: 20},
+      se: {name: 'se', left: 20, top: 20},
+      center: {name: 'center', left: 10, top: 10},
 
-  /* Stack 1 */
+      /* Stack 1 */
 
-  left_top_left_top: {name: 'left top left top', left: 10, top: 10},
-  center_top_left_top: {name: 'center top left top', left: 5, top: 10},
-  right_top_left_top: {name: 'right top left top', left: 0, top: 10},
+      left_top_left_top: {name: 'left top left top', left: 10, top: 10},
+      center_top_left_top: {name: 'center top left top', left: 5, top: 10},
+      right_top_left_top: {name: 'right top left top', left: 0, top: 10},
 
-  left_center_left_top: {name: 'left center left top', left: 10, top: 5},
-  center_center_left_top: {name: 'center center left top', left: 5, top: 5},
-  right_center_left_top: {name: 'right center left top', left: 0, top: 5},
+      left_center_left_top: {name: 'left center left top', left: 10, top: 5},
+      center_center_left_top: {name: 'center center left top', left: 5, top: 5},
+      right_center_left_top: {name: 'right center left top', left: 0, top: 5},
 
-  left_bottom_left_top: {name: 'left bottom left top', left: 10, top: 0},
-  center_bottom_left_top: {name: 'center bottom left top', left: 5, top: 0},
-  right_bottom_left_top: {name: 'right bottom left top', left: 0, top: 0},
+      left_bottom_left_top: {name: 'left bottom left top', left: 10, top: 0},
+      center_bottom_left_top: {name: 'center bottom left top', left: 5, top: 0},
+      right_bottom_left_top: {name: 'right bottom left top', left: 0, top: 0},
 
-  left_top_center_top: {name: 'left top center top', left: 15, top: 10},
-  center_top_center_top: {name: 'center top center top', left: 10, top: 10},
-  right_top_center_top: {name: 'right top center top', left: 5, top: 10},
+      left_top_center_top: {name: 'left top center top', left: 15, top: 10},
+      center_top_center_top: {name: 'center top center top', left: 10, top: 10},
+      right_top_center_top: {name: 'right top center top', left: 5, top: 10},
 
-  left_center_center_top: {name: 'left center center top', left: 15, top: 5},
-  center_center_center_top: {name: 'center center center top', left: 10, top: 5},
-  right_center_center_top: {name: 'right center center top', left: 5, top: 5},
+      left_center_center_top: {name: 'left center center top', left: 15, top: 5},
+      center_center_center_top: {name: 'center center center top', left: 10, top: 5},
+      right_center_center_top: {name: 'right center center top', left: 5, top: 5},
 
-  left_bottom_center_top: {name: 'left bottom center top', left: 15, top: 0},
-  center_bottom_center_top: {name: 'center bottom center top', left: 10, top: 0},
-  right_bottom_center_top: {name: 'right bottom center top', left: 5, top: 0},
+      left_bottom_center_top: {name: 'left bottom center top', left: 15, top: 0},
+      center_bottom_center_top: {name: 'center bottom center top', left: 10, top: 0},
+      right_bottom_center_top: {name: 'right bottom center top', left: 5, top: 0},
 
-  left_top_right_top: {name: 'left top right top', left: 20, top: 10},
-  center_top_right_top: {name: 'center top right top', left: 15, top: 10},
-  right_top_right_top: {name: 'right top right top', left: 10, top: 10},
+      left_top_right_top: {name: 'left top right top', left: 20, top: 10},
+      center_top_right_top: {name: 'center top right top', left: 15, top: 10},
+      right_top_right_top: {name: 'right top right top', left: 10, top: 10},
 
-  left_center_right_top: {name: 'left center right top', left: 20, top: 5},
-  center_center_right_top: {name: 'center center right top', left: 15, top: 5},
-  right_center_right_top: {name: 'right center right top', left: 10, top: 5},
+      left_center_right_top: {name: 'left center right top', left: 20, top: 5},
+      center_center_right_top: {name: 'center center right top', left: 15, top: 5},
+      right_center_right_top: {name: 'right center right top', left: 10, top: 5},
 
-  left_bottom_right_top: {name: 'left bottom right top', left: 20, top: 0},
-  center_bottom_right_top: {name: 'center bottom right top', left: 15, top: 0},
-  right_bottom_right_top: {name: 'right bottom right top', left: 10, top: 0},
+      left_bottom_right_top: {name: 'left bottom right top', left: 20, top: 0},
+      center_bottom_right_top: {name: 'center bottom right top', left: 15, top: 0},
+      right_bottom_right_top: {name: 'right bottom right top', left: 10, top: 0},
 
-  /* Stack 2 */
+      /* Stack 2 */
 
-  left_top_left_center: {name: 'left top left center', left: 10, top: 15},
-  center_top_left_center: {name: 'center top left center', left: 5, top: 15},
-  right_top_left_center: {name: 'right top left center', left: 0, top: 15},
+      left_top_left_center: {name: 'left top left center', left: 10, top: 15},
+      center_top_left_center: {name: 'center top left center', left: 5, top: 15},
+      right_top_left_center: {name: 'right top left center', left: 0, top: 15},
 
-  left_center_left_center: {name: 'left center left center', left: 10, top: 10},
-  center_center_left_center: {name: 'center center left center', left: 5, top: 10},
-  right_center_left_center: {name: 'right center left center', left: 0, top: 10},
+      left_center_left_center: {name: 'left center left center', left: 10, top: 10},
+      center_center_left_center: {name: 'center center left center', left: 5, top: 10},
+      right_center_left_center: {name: 'right center left center', left: 0, top: 10},
 
-  left_bottom_left_center: {name: 'left bottom left center', left: 10, top: 5},
-  center_bottom_left_center: {name: 'center bottom left center', left: 5, top: 5},
-  right_bottom_left_center: {name: 'right bottom left center', left: 0, top: 5},
+      left_bottom_left_center: {name: 'left bottom left center', left: 10, top: 5},
+      center_bottom_left_center: {name: 'center bottom left center', left: 5, top: 5},
+      right_bottom_left_center: {name: 'right bottom left center', left: 0, top: 5},
 
-  left_top_center_center: {name: 'left top center center', left: 15, top: 15},
-  center_top_center_center: {name: 'center top center center', left: 10, top: 15},
-  right_top_center_center: {name: 'right top center center', left: 5, top: 15},
+      left_top_center_center: {name: 'left top center center', left: 15, top: 15},
+      center_top_center_center: {name: 'center top center center', left: 10, top: 15},
+      right_top_center_center: {name: 'right top center center', left: 5, top: 15},
 
-  left_center_center_center: {name: 'left center center center', left: 15, top: 10},
-  center_center_center_center: {name: 'center center center center', left: 10, top: 10},
-  right_center_center_center: {name: 'right center center center', left: 5, top: 10},
+      left_center_center_center: {name: 'left center center center', left: 15, top: 10},
+      center_center_center_center: {name: 'center center center center', left: 10, top: 10},
+      right_center_center_center: {name: 'right center center center', left: 5, top: 10},
 
-  left_bottom_center_center: {name: 'left bottom center center', left: 15, top: 5},
-  center_bottom_center_center: {name: 'center bottom center center', left: 10, top: 5},
-  right_bottom_center_center: {name: 'right bottom center center', left: 5, top: 5},
+      left_bottom_center_center: {name: 'left bottom center center', left: 15, top: 5},
+      center_bottom_center_center: {name: 'center bottom center center', left: 10, top: 5},
+      right_bottom_center_center: {name: 'right bottom center center', left: 5, top: 5},
 
-  left_top_right_center: {name: 'left top right center', left: 20, top: 15},
-  center_top_right_center: {name: 'center top right center', left: 15, top: 15},
-  right_top_right_center: {name: 'right top right center', left: 10, top: 15},
+      left_top_right_center: {name: 'left top right center', left: 20, top: 15},
+      center_top_right_center: {name: 'center top right center', left: 15, top: 15},
+      right_top_right_center: {name: 'right top right center', left: 10, top: 15},
 
-  left_center_right_center: {name: 'left center right center', left: 20, top: 10},
-  center_center_right_center: {name: 'center center right center', left: 15, top: 10},
-  right_center_right_center: {name: 'right center right center', left: 10, top: 10},
+      left_center_right_center: {name: 'left center right center', left: 20, top: 10},
+      center_center_right_center: {name: 'center center right center', left: 15, top: 10},
+      right_center_right_center: {name: 'right center right center', left: 10, top: 10},
 
-  left_bottom_right_center: {name: 'left bottom right center', left: 20, top: 5},
-  center_bottom_right_center: {name: 'center bottom right center', left: 15, top: 5},
-  right_bottom_right_center: {name: 'right bottom right center', left: 10, top: 5},
+      left_bottom_right_center: {name: 'left bottom right center', left: 20, top: 5},
+      center_bottom_right_center: {name: 'center bottom right center', left: 15, top: 5},
+      right_bottom_right_center: {name: 'right bottom right center', left: 10, top: 5},
 
-  /* Stack 3 */
+      /* Stack 3 */
 
-  left_top_left_bottom: {name: 'left top left bottom', left: 10, top: 20},
-  center_top_left_bottom: {name: 'center top left bottom', left: 5, top: 20},
-  right_top_left_bottom: {name: 'right top left bottom', left: 0, top: 20},
+      left_top_left_bottom: {name: 'left top left bottom', left: 10, top: 20},
+      center_top_left_bottom: {name: 'center top left bottom', left: 5, top: 20},
+      right_top_left_bottom: {name: 'right top left bottom', left: 0, top: 20},
 
-  left_center_left_bottom: {name: 'left center left bottom', left: 10, top: 15},
-  center_center_left_bottom: {name: 'center center left bottom', left: 5, top: 15},
-  right_center_left_bottom: {name: 'right center left bottom', left: 0, top: 15},
+      left_center_left_bottom: {name: 'left center left bottom', left: 10, top: 15},
+      center_center_left_bottom: {name: 'center center left bottom', left: 5, top: 15},
+      right_center_left_bottom: {name: 'right center left bottom', left: 0, top: 15},
 
-  left_bottom_left_bottom: {name: 'left bottom left bottom', left: 10, top: 10},
-  center_bottom_left_bottom: {name: 'center bottom left bottom', left: 5, top: 10},
-  right_bottom_left_bottom: {name: 'right bottom left bottom', left: 0, top: 10},
+      left_bottom_left_bottom: {name: 'left bottom left bottom', left: 10, top: 10},
+      center_bottom_left_bottom: {name: 'center bottom left bottom', left: 5, top: 10},
+      right_bottom_left_bottom: {name: 'right bottom left bottom', left: 0, top: 10},
 
-  left_top_center_bottom: {name: 'left top center bottom', left: 15, top: 20},
-  center_top_center_bottom: {name: 'center top center bottom', left: 10, top: 20},
-  right_top_center_bottom: {name: 'right top center bottom', left: 5, top: 20},
+      left_top_center_bottom: {name: 'left top center bottom', left: 15, top: 20},
+      center_top_center_bottom: {name: 'center top center bottom', left: 10, top: 20},
+      right_top_center_bottom: {name: 'right top center bottom', left: 5, top: 20},
 
-  left_center_center_bottom: {name: 'left center center bottom', left: 15, top: 15},
-  center_center_center_bottom: {name: 'center center center bottom', left: 10, top: 15},
-  right_center_center_bottom: {name: 'right center center bottom', left: 5, top: 15},
+      left_center_center_bottom: {name: 'left center center bottom', left: 15, top: 15},
+      center_center_center_bottom: {name: 'center center center bottom', left: 10, top: 15},
+      right_center_center_bottom: {name: 'right center center bottom', left: 5, top: 15},
 
-  left_bottom_center_bottom: {name: 'left bottom center bottom', left: 15, top: 10},
-  center_bottom_center_bottom: {name: 'center bottom center bottom', left: 10, top: 10},
-  right_bottom_center_bottom: {name: 'right bottom center bottom', left: 5, top: 10},
+      left_bottom_center_bottom: {name: 'left bottom center bottom', left: 15, top: 10},
+      center_bottom_center_bottom: {name: 'center bottom center bottom', left: 10, top: 10},
+      right_bottom_center_bottom: {name: 'right bottom center bottom', left: 5, top: 10},
 
-  left_top_right_bottom: {name: 'left top right bottom', left: 20, top: 20},
-  center_top_right_bottom: {name: 'center top right bottom', left: 15, top: 20},
-  right_top_right_bottom: {name: 'right top right bottom', left: 10, top: 20},
+      left_top_right_bottom: {name: 'left top right bottom', left: 20, top: 20},
+      center_top_right_bottom: {name: 'center top right bottom', left: 15, top: 20},
+      right_top_right_bottom: {name: 'right top right bottom', left: 10, top: 20},
 
-  left_center_right_bottom: {name: 'left center right bottom', left: 20, top: 15},
-  center_center_right_bottom: {name: 'center center right bottom', left: 15, top: 15},
-  right_center_right_bottom: {name: 'right center right bottom', left: 10, top: 15},
+      left_center_right_bottom: {name: 'left center right bottom', left: 20, top: 15},
+      center_center_right_bottom: {name: 'center center right bottom', left: 15, top: 15},
+      right_center_right_bottom: {name: 'right center right bottom', left: 10, top: 15},
 
-  left_bottom_right_bottom: {name: 'left bottom right bottom', left: 20, top: 10},
-  center_bottom_right_bottom: {name: 'center bottom right bottom', left: 15, top: 10},
-  right_bottom_right_bottom: {name: 'right bottom right bottom', left: 10, top: 10}
+      left_bottom_right_bottom: {name: 'left bottom right bottom', left: 20, top: 10},
+      center_bottom_right_bottom: {name: 'center bottom right bottom', left: 15, top: 10},
+      right_bottom_right_bottom: {name: 'right bottom right bottom', left: 10, top: 10}
 
-};
-var positionsLength = getObjectLength(positions);
+    },
+    positionsLength = getObjectLength(positions);
 
 //
 // FUNCTIONS
@@ -376,7 +376,7 @@ test('Test offsets', 7, function() {
 
 });
 
-test('Test callbacks', 3, function() {
+test('Test callbacks', 2, function() {
 
   resetInlineStyles();
 
@@ -398,12 +398,12 @@ test('Test callbacks', 3, function() {
 
   deepEqual(result, expected, 'onCollision triggered correctly');
 
-  // onBeforeExec
+  // onExecution
 
   window.popo.set(target, {
     position: positions.center.name,
     base: base,
-    onBeforeExec: function (target, base, container) {
+    onExecution: function (target, base, container) {
       result = target.position;
     }
   });
@@ -413,24 +413,7 @@ test('Test callbacks', 3, function() {
     top: positions.center.top
   };
 
-  deepEqual(result, expected, 'onBeforeExec triggered correctly');
-
-  // onAfterExec
-
-  window.popo.set(target, {
-    position: positions.center.name,
-    base: base,
-    onAfterExec: function (target, base, container) {
-      result = target.position;
-    }
-  });
-
-  expected = {
-    left: positions.center.left,
-    top: positions.center.top
-  };
-
-  deepEqual(result, expected, 'onAfterExec triggered correctly');
+  deepEqual(result, expected, 'onExecution triggered correctly');
 
 });
 
