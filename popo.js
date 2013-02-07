@@ -6,7 +6,6 @@
  */
 
 (function (window, undefined) {
-
   "use strict";
 
   /*=================
@@ -85,31 +84,31 @@
 
     return Object.prototype.toString.call(el) === '[object global]';
 
-  } // END isWin
+  } // isWin
 
   function isDoc(el) {
 
     return Object.prototype.toString.call(el) === '[object HTMLDocument]';
 
-  } // END isDoc
+  } // isDoc
 
   function isDocElem(el) {
 
     return Object.prototype.toString.call(el) === '[object HTMLHtmlElement]';
 
-  } // END isDocElem
+  } // isDocElem
 
   function isDocBody(el) {
 
     return Object.prototype.toString.call(el) === '[object HTMLBodyElement]';
 
-  } // END isDocBody
+  } // isDocBody
 
   function trim(str) {
 
     return typeof String.prototype.trim === 'function' ? str.trim() : str.replace(/^\s+|\s+$/g, '');
 
-  } // END trim
+  } // trim
 
   function merge(arr) {
 
@@ -122,10 +121,9 @@
       }
     }
     
-    i = prop = null;
     return obj;
 
-  } // END merge
+  } // merge
 
   function getWidth(el) {
 
@@ -137,7 +135,7 @@
       return el.getBoundingClientRect().width || el.offsetWidth;
     }
 
-  } // END getWidth
+  } // getWidth
 
   function getHeight(el) {
 
@@ -149,19 +147,19 @@
       return el.getBoundingClientRect().height || el.offsetHeight;
     }
 
-  } // END getHeight
+  } // getHeight
 
   function getViewportScrollLeft() {
 
     return typeof window.pageXOffset === 'number' ? window.pageXOffset : docElem.scrollLeft || docBody.scrollLeft;
 
-  } // END getViewportScrollLeft
+  } // getViewportScrollLeft
 
   function getViewportScrollTop() {
 
     return typeof window.pageYOffset === 'number' ? window.pageYOffset : docElem.scrollTop || docBody.scrollTop;
 
-  } // END getViewportScrollTop
+  } // getViewportScrollTop
 
   function getOffset(el, includeBorders) {
 
@@ -184,10 +182,9 @@
       }
     }
 
-    rect = null;
     return {left: offsetLeft, top: offsetTop};
 
-  } // END getOffset
+  } // getOffset
 
   function getPositionProperty(el) {
 
@@ -201,7 +198,7 @@
       return 'static';
     }
 
-  } // END getPositionProperty
+  } // getPositionProperty
 
   function getOffsetParent(el) {
 
@@ -222,7 +219,7 @@
     }
     return offsetParent;
 
-  } // END getOffsetParent
+  } // getOffsetParent
 
   function getZeroPointOffset(el) {
 
@@ -234,7 +231,7 @@
     } else if (posProp === 'absolute') {
       offset = getOffset(getOffsetParent(el), true);
     } else if (posProp !== 'relative') {
-      offset = getOffset(el);
+      offset = getOffset(el, false);
     } else {
 
       // TODO: Make this part more elegant and fast!
@@ -249,9 +246,9 @@
       style.left = style.right = style.top = style.bottom = 'auto';
 
       // Get the element's offset
-      offset = getOffset(el);
+      offset = getOffset(el, false);
 
-      // Restore element's original left/right/top/bottom properties
+      // Restore element's original props
       style.left = left;
       style.right = right;
       style.top = top;
@@ -259,36 +256,32 @@
 
     }
 
-    posProp = style = left = right = top = bottom = null;
     return offset;
 
-  } // END getZeroPointOffset
+  } // getZeroPointOffset
 
-  function replaceClassName(el, targetStr, newClassName) {
+  function replaceClassName(el, str, newStr) {
 
-    var classNames = el.className.split(' '),
+    var cls = el.className.split(' '),
         len = classNames.length,
         i;
 
-    // Search and remove old PoPo class name from the element
+    // Remove old classname
     for (i = 0; i < len; i++) {
-      if (classNames[i].substring(0, targetStr.length) === targetStr) {
-        classNames.splice(i, 1);
+      if (cls[i].substring(0, str.length) === str) {
+        cls.splice(i, 1);
       }
     }
 
-    // Push newClassName to the classNames array
-    if (newClassName !== '') {
-      classNames.push(newClassName);
+    // Add new classname
+    if (newStr !== '') {
+      classNames.push(newStr);
     }
 
-    // Update the element's className
+    // Update classname
     el.className = classNames.join(' ');
 
-    // Null vars
-    classNames = len = i = null;
-
-  } // END replaceClassName
+  } // replaceClassName
 
   function getSanitizedOnCollision(opt) {
 
@@ -306,14 +299,10 @@
       };
 
     } else {
-
-      // Null vars and return null
-      arr = len = null;
       return null;
-
     }
 
-  } // END getSanitizedOnCollision
+  } // getSanitizedOnCollision
 
   function getSanitizedOffset(opt) {
 
@@ -351,11 +340,9 @@
 
     }
 
-    // Null vars and return offset
-    decimal = items = itemsLen = item = itemLen = ang = dist = i = null;
     return offset;
 
-  } // END getSanitizedOffset
+  } // getSanitizedOffset
 
   function getSanitizedOptions(options) {
 
@@ -386,11 +373,9 @@
       opts.onCollision = getSanitizedOnCollision(opts.onCollision);
     }
 
-    // Null vars and return sanitized options
-    prop = null;
     return opts;
 
-  } // END getSanitizedOptions
+  } // getSanitizedOptions
 
   function getOverflow(target, container) {
 
@@ -401,7 +386,7 @@
       bottom: (container.offset.top + container.height) - (target.position.top + target.zeroPointOffset.top + target.height)
     };
 
-  } // END getOverflow
+  } // getOverflow
 
   function pushOnCollision(opts, target, container) {
 
@@ -454,10 +439,7 @@
 
     }
 
-    // Null vars
-    sides = side1 = side2 = i = null;
-
-  } // END pushOnCollision
+  } // pushOnCollision
 
   function position(method, el, options) {
 
@@ -481,7 +463,7 @@
     base.element = opts.base;
     base.width = getWidth(opts.base);
     base.height = getHeight(opts.base);
-    base.offset = getOffset(opts.base);
+    base.offset = getOffset(opts.base, false);
 
     // Get target position
     target.position = {
@@ -498,7 +480,7 @@
       container.element = opts.container;
       container.width = getWidth(opts.container);
       container.height = getHeight(opts.container);
-      container.offset = getOffset(opts.container);
+      container.offset = getOffset(opts.container, false);
       container.overflow = getOverflow(target, container);
 
       // Collision handling (skip if onCollision is null)
@@ -532,18 +514,11 @@
         opts.onAfterExec(target, base, container);
       }
 
-      // Null vars
-      opts = target = base = container = null;
-
     } else {
-
-      // Null vars and return target position
-      opts = base = container = null;
       return target.position;
-
     }
 
-  } // END position
+  } // position
 
   /*==================================
     Publish
@@ -563,9 +538,9 @@
       position: 'center',
       offset: '0',
       base: window,
+      setClass: false,
       container: null,
       onCollision: 'push',
-      setClass: false,
       onBeforeExec: null,
       onAfterExec: null
     }
