@@ -1,5 +1,5 @@
 /*!
- * Popo JS - v0.7.5 - 8/2/2013
+ * Popo JS - v0.7.6 - 8/2/2013
  *
  * Copyright (c) 2013 Niklas Rämö
  * Released under the MIT license
@@ -389,30 +389,31 @@
     var push = 'push',
         forcedPush = 'push!',
         sides = [[strLeft, strRight], [strTop, strBottom]],
-        leftOrRight, topOrBottom, i;
+        leftOrTop, rightOrBottom, i;
 
     for (i = 0; i < 2; i++) {
 
-      leftOrRight = sides[i][0];
-      topOrBottom = sides[i][1];
+      leftOrTop = sides[i][0];
+      rightOrBottom = sides[i][1];
 
-      if ( (onCollision[leftOrRight] === push || onCollision[leftOrRight] === forcedPush) &&
-           (onCollision[topOrBottom] === push || onCollision[topOrBottom] === forcedPush) &&
-           (containerOverflow[leftOrRight] < 0 || containerOverflow[topOrBottom] < 0)
+      // If pushing is needed from both sides
+      if ( (onCollision[leftOrTop] === push || onCollision[leftOrTop] === forcedPush) &&
+           (onCollision[rightOrBottom] === push || onCollision[rightOrBottom] === forcedPush) &&
+           (containerOverflow[leftOrTop] < 0 || containerOverflow[rightOrBottom] < 0)
          ) {
 
         // Push from opposite sides equally
-        if (containerOverflow[leftOrRight] > containerOverflow[topOrBottom]) {
-          if (mathAbs(containerOverflow[topOrBottom]) <= mathAbs(containerOverflow[leftOrRight])) {
-            targetPosition[leftOrRight] -= mathAbs(containerOverflow[topOrBottom]);
+        if (containerOverflow[leftOrTop] > containerOverflow[rightOrBottom]) {
+          if (mathAbs(containerOverflow[rightOrBottom]) <= mathAbs(containerOverflow[leftOrTop])) {
+            targetPosition[leftOrTop] -= mathAbs(containerOverflow[rightOrBottom]);
           } else {
-            targetPosition[leftOrRight] -= ((mathAbs(containerOverflow[leftOrRight]) + mathAbs(containerOverflow[topOrBottom])) / 2);
+            targetPosition[leftOrTop] -= ((mathAbs(containerOverflow[leftOrTop]) + mathAbs(containerOverflow[rightOrBottom])) / 2);
           }
-        } else if (containerOverflow[leftOrRight] < containerOverflow[topOrBottom]) {
-          if (mathAbs(containerOverflow[leftOrRight]) <= mathAbs(containerOverflow[topOrBottom])) {
-            target.position[leftOrRight] += mathAbs(containerOverflow[leftOrRight]);
+        } else if (containerOverflow[leftOrTop] < containerOverflow[rightOrBottom]) {
+          if (mathAbs(containerOverflow[leftOrTop]) <= mathAbs(containerOverflow[rightOrBottom])) {
+            target.position[leftOrTop] += mathAbs(containerOverflow[leftOrTop]);
           } else {
-            targetPosition[leftOrRight] += ((mathAbs(containerOverflow[leftOrRight]) + mathAbs(containerOverflow[topOrBottom])) / 2);
+            targetPosition[leftOrTop] += ((mathAbs(containerOverflow[leftOrTop]) + mathAbs(containerOverflow[rightOrBottom])) / 2);
           }
         }
 
@@ -420,22 +421,19 @@
         containerOverflow = getOverflow(targetWidth, targetHeight, targetPosition, targetZeroPointOffset, containerWidth, containerHeight, containerOffset);
 
         // Force push one of the sides if needed
-        if (onCollision[leftOrRight] === forcedPush && containerOverflow[leftOrRight] < 0) {
-          targetPosition[leftOrRight] += mathAbs(containerOverflow[leftOrRight]);
-        } else if (onCollision[topOrBottom] === forcedPush && containerOverflow[topOrBottom] < 0) {
-          targetPosition[leftOrRight] -= mathAbs(containerOverflow[topOrBottom]);
+        if (onCollision[leftOrTop] === forcedPush && containerOverflow[leftOrTop] < 0) {
+          targetPosition[leftOrTop] += mathAbs(containerOverflow[leftOrTop]);
+        } else if (onCollision[rightOrBottom] === forcedPush && containerOverflow[rightOrBottom] < 0) {
+          targetPosition[leftOrTop] -= mathAbs(containerOverflow[rightOrBottom]);
         }
 
-      } else if ((onCollision[leftOrRight] === forcedPush || onCollision[leftOrRight] === push) && containerOverflow[leftOrRight] < 0) {
+      // If pushing is needed from left or top side only, push it!
+      } else if ((onCollision[leftOrTop] === forcedPush || onCollision[leftOrTop] === push) && containerOverflow[leftOrTop] < 0) {
+        targetPosition[leftOrTop] += mathAbs(containerOverflow[leftOrTop]);
 
-        // Push only from left/right if necessary
-        targetPosition[leftOrRight] += mathAbs(containerOverflow[leftOrRight]);
-
-      } else if ((onCollision[topOrBottom] === forcedPush || onCollision[topOrBottom] === push) && containerOverflow[topOrBottom] < 0) {
-
-        // Push only from top/bottom if necessary
-        targetPosition[leftOrRight] -= mathAbs(containerOverflow[topOrBottom]);
-
+      // If pushing is needed from right or bottom side only, push it!
+      } else if ((onCollision[rightOrBottom] === forcedPush || onCollision[rightOrBottom] === push) && containerOverflow[rightOrBottom] < 0) {
+        targetPosition[leftOrTop] -= mathAbs(containerOverflow[rightOrBottom]);
       }
 
     }
@@ -446,40 +444,40 @@
 
     var opts = getSanitizedOptions(instanceOptions),
 
-        // Get target element's data
+        // Check if base element is a coordinate
+        isBaseACoordinate = stringifyObject.call(opts.base) === '[object Array]',
+
+        // Pre-define target element's data vars
         targetWidth = getWidth(targetElement),
         targetHeight = getHeight(targetElement),
         targetZeroPointOffset = getZeroPointOffset(targetElement),
         targetPosition,
 
-        // Get base element's data
+        // Pre-define base element's data vars
         baseElement = opts.base,
-        baseWidth = getWidth(baseElement),
-        baseHeight = getHeight(baseElement),
-        baseOffset = getOffset(baseElement),
+        baseWidth,
+        baseHeight,
+        baseOffset,
 
-        // Pre-define container element's data variables
+        // Pre-define container element's data vars
         containerElement,
         containerWidth,
         containerHeight,
         containerOffset,
-        containerOverflow,
+        containerOverflow;
 
-        // Create data containers and inject initial data
-        targetData = {
-          element: targetElement,
-          width: targetWidth,
-          height: targetHeight,
-          zeroPointOffset: targetZeroPointOffset
-        },
-        baseData = {
-          element: baseElement,
-          width: baseWidth,
-          height: baseHeight,
-          offset: baseOffset 
-        },
-        containerData;
-
+    // Calculate base element's dimensions and offset,
+    // and populate the base data object
+    if (isBaseACoordinate) {
+      baseWidth = baseHeight = 0;
+      baseOffset = getOffset(baseElement[2] || window);
+      baseOffset.left += baseElement[0];
+      baseOffset.top += baseElement[1];
+    } else {
+      baseWidth = getWidth(baseElement);
+      baseHeight = getHeight(baseElement);
+      baseOffset = getOffset(baseElement);
+    }
 
     // Update target element's classname if necessary
     if (opts.setClass && (' ' + targetElement.className + ' ').indexOf(' ' + opts.cls + ' ') === -1) {
@@ -487,7 +485,7 @@
     }
 
     // Get target position
-    targetPosition = targetData.position = {
+    targetPosition = {
       left: getBasePos[opts.position[0] + opts.position[2]](baseOffset.left + opts.offset.x - targetZeroPointOffset.left, baseWidth, targetWidth),
       top: getBasePos[opts.position[1] + opts.position[3]](baseOffset.top + opts.offset.y - targetZeroPointOffset.top, baseHeight, targetHeight)
     };
@@ -504,27 +502,13 @@
       containerOffset = getOffset(containerElement);
       containerOverflow = getOverflow(targetWidth, targetHeight, targetPosition, targetZeroPointOffset, containerWidth, containerHeight, containerOffset);
 
-      // Populate container data object
-      containerData = {
-        element: containerElement,
-        width: containerWidth,
-        height: containerHeight,
-        offset: containerOffset,
-        overflow: containerOverflow
-      };
-
       // Collision handling (skip if onCollision is null)
       if (typeof opts.onCollision === strFunction) {
-        opts.onCollision(targetData, baseData, containerData);
+        opts.onCollision(targetPosition, targetElement, baseElement, containerElement);
       } else if (opts.onCollision !== null) {
         pushOnCollision(targetWidth, targetHeight, targetPosition, targetZeroPointOffset, containerWidth, containerHeight, containerOffset, containerOverflow, opts.onCollision);
       }
 
-    }
-
-    // onExecution callback
-    if (typeof opts.onExecution === strFunction) {
-      opts.onExecution(targetData, baseData, containerData);
     }
 
     // Set or return the final values
@@ -557,8 +541,7 @@
       base: window,
       setClass: false,
       container: null,
-      onCollision: 'push',
-      onExecution: null
+      onCollision: 'push'
     }
   };
 

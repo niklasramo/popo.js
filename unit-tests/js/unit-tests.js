@@ -173,7 +173,7 @@ function getObjectLength(obj) {
 // TESTS
 //
 
-test('Test every default position variation', positionsLength * 6, function() {
+test('Default positions', positionsLength * 6, function() {
 
   var positionStyles = ['relative', 'absolute', 'fixed']; 
 
@@ -230,7 +230,7 @@ test('Test every default position variation', positionsLength * 6, function() {
 
 });
 
-test('Test offsets', 7, function() {
+test('Offsets', 7, function() {
 
   resetInlineStyles();
 
@@ -376,48 +376,43 @@ test('Test offsets', 7, function() {
 
 });
 
-test('Test callbacks', 2, function() {
+test('onCollision callback', 2, function() {
 
   resetInlineStyles();
 
-  // onCollision
+  // onCollision arguments
 
   window.popo.set(target, {
     position: positions.center.name,
     base: base,
     container: container,
-    onCollision: function (target, base, container) {
-      result = target.position;
+    onCollision: function (targetPosition, targetElem, baseElem, containerElem) {
+      result = [targetPosition, targetElem, baseElem, containerElem];
     }
   });
 
-  expected = {
-    left: positions.center.left,
-    top: positions.center.top
-  };
+  expected = [{left: positions.center.left, top: positions.center.top}, target, base, container];
 
-  deepEqual(result, expected, 'onCollision triggered correctly');
+  deepEqual(result, expected, 'Correct arguments.');
 
-  // onExecution
+  // onCollision target position
 
-  window.popo.set(target, {
+  var temp = window.popo.get(target, {
     position: positions.center.name,
     base: base,
-    onExecution: function (target, base, container) {
-      result = target.position;
+    container: container,
+    onCollision: function (targetPosition) {
+      expected = [targetPosition.left - 1000, targetPosition.top + 1000];
     }
   });
 
-  expected = {
-    left: positions.center.left,
-    top: positions.center.top
-  };
+  result = [temp.left - 1000, temp.top + 1000];
 
-  deepEqual(result, expected, 'onExecution triggered correctly');
+  deepEqual(result, expected, "First argument affects the final positioning values, as expected.");
 
 });
 
-test('Test collisions', 6, function() {
+test('onCollision methods', 7, function() {
 
   resetInlineStyles();
 
@@ -484,6 +479,27 @@ test('Test collisions', 6, function() {
 
   deepEqual(result, expected, 'push none');
 
+  // "push none push"
+
+  window.popo.set(target, {
+    position: positions.center.name,
+    base: base,
+    container: container,
+    onCollision: 'push none push'
+  });
+
+  result = {
+    left: parseFloat(target.style.left),
+    top: parseFloat(target.style.top)
+  };
+
+  expected = {
+    left: positions.center.left + 10 - 3,
+    top: positions.center.top
+  };
+
+  deepEqual(result, expected, 'push none push');
+
   // "push push none none"
 
   window.popo.set(target, {
@@ -549,7 +565,7 @@ test('Test collisions', 6, function() {
 
 });
 
-test('Test trim & setClass', 1, function() {
+test('setClass & trim', 1, function() {
 
   resetInlineStyles();
 
@@ -564,7 +580,7 @@ test('Test trim & setClass', 1, function() {
 
 });
 
-test('Performance test', 90 * 200, function() {
+test('Performance', 90 * 200, function() {
 
   resetInlineStyles();
 
