@@ -12,8 +12,8 @@ The aim of Popo JS is to simplify the process of positioning DOM elements with J
 
 ###Download
 
-* **[v0.7.5 - Production](https://raw.github.com/niklasramo/popo/master/popo.min.js)** (5.7kb minified)
-* **[v0.7.5 - Development](https://raw.github.com/niklasramo/popo/master/popo.js)** (18kb uncompressed)
+* **[v0.7.6 - Production](https://raw.github.com/niklasramo/popo/master/popo.min.js)** (5.6kb minified)
+* **[v0.7.6 - Development](https://raw.github.com/niklasramo/popo/master/popo.js)** (17.7kb uncompressed)
 
 Download Popo JS library and include it in your HTML Document, preferrably inside the head tag.
 
