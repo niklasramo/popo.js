@@ -77,9 +77,9 @@
     return startingPointVal - targetElemVal + baseElemVal;
   };
 
-  /*=================
+  /*===========
     Functions
-  =================*/
+  ===========*/
 
   function isWin(el) {
 
@@ -537,9 +537,9 @@
 
   } // position
 
-  /*==================================
+  /*=========
     Publish
-  ==================================*/
+  =========*/
 
   // Create methods and default settings
   // and make the library public
