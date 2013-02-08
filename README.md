@@ -4,7 +4,7 @@
 
 Popo JS is a stand-alone cross-browser JavaScript library that makes it easy to position elements relative to other elements in various ways. Popo JS is heavily influenced by **[jQuery UI Position plugin](http://jqueryui.com/position/)**.
 
-The goal of Popo JS is making dynamic positioning of html elements as simple and flexible as possible in all modern (and not so modern) browsers. The library has a set of unit tests, which seem to pass fully all the way back to IE7.
+The goal of Popo JS is making dynamic positioning of html elements as simple and flexible as possible in all modern (and not so modern) browsers. The library is designed to work in all modern browsers (Chrome, Opera, Firefox, Safari, IE6+). However, it's a given there are still some currently unknown bugs between the lines so further testing is still needed to eradicate them.
 
 ##Get started
 
@@ -21,12 +21,12 @@ Download Popo JS library and include it in your HTML Document, preferrably insid
 
 ###Know the prequisites
 
-* Target's CSS position property must be *relative*, *absolute* or *fixed*.
-* The CSS display property of target, base and container must not be *none*.
+* Target element's CSS position property must be *relative*, *absolute* or *fixed*.
+* The CSS display property of target element, base element and container element must not be *none*.
 
 ###Start using
 
-Popo has two methods: <code>get</code> and <code>set</code>. The set method sets the target element's left and top values while the get method only calculates and returns the values. Both methods require the target element as the first argument. Additionally you can provide an options object as the second argument.
+Popo has two methods: <code>get</code> and <code>set</code>. The <code>set</code> method positions the target element to the specified position by adjusting the element's left and top CSS properties. The <code>get</code> method calculates the specified position and returns the left and top CSS properties. Both methods require the target element as the first argument and additionally an options object as the second argument.
 
 ```javascript
 // The format
@@ -51,14 +51,13 @@ Name | Description
 
 Property | Default | Type | Description
 --- | --- | --- | ---
-**position** | "n" | *String* | <p>Defines the target element's position relative to the base element. The format is "targetX targetY baseX baseY". A horizontal position can be `left`, `right` or `center` while a vertical position can be `top`, `bottom` or `center`.</p><p>Alternatively, you can use a single shortcut value: `nw`, `n`, `ne`, `e`, `se`, `s`, `sw`, `w`, `center`.</p>
+**position** | "center" | *String* | <p>Defines the target element's position relative to the base element. The format is "targetX targetY baseX baseY". A horizontal position can be `left`, `right` or `center` while a vertical position can be `top`, `bottom` or `center`.</p><p>Alternatively, you can use a single shortcut value: `nw`, `n`, `ne`, `e`, `se`, `s`, `sw`, `w`, `center`.</p>
 **offset** | "0" | *String* | <p>Defines a horizontal and a vertical offset (in pixels). For basic usage provide the option with a string containing two numbers (e.g. "-12 90"). The format is "offsetX offsetY". One number will be used for both offsets (e.g. "10").</p><p>For a bit more advanced usage you can define an angular offset by providing the option with an angle in degrees and a distance in pixels (e.g. "120deg 300"). Note that the first value must have the trailing "deg" string for Popo to identify the offset as an angular offset. Also note that zero degrees points to east.</p><p>For even more advanced usage you can provide the option with multiple offsets by separating the different offsets with a comma (e.g. "12, 30deg -600, -56 98, 1000deg 9").</p>
 **base** | window | *Element* | <p>Defines which element the target element is positioned against.</p>
 **container** | null | *Element* | <p>Defines an optional container element that is used for collision detection.</p>
 **onCollision** | "push" | *String, Function* | <p>Defines what to do when the target element overflows the container element. The container element must be defined for this option to have any effect. You can either define a built-in collision method for each side with the format "left top right bottom" (e.g. "push none none push") or pass in a function and use this option as a callback function. The format for using built-in collision methods is "left top right bottom".</p><p>Popo has two built-in collision methods, <code>push</code> and <code>push!</code>, <code>none</code> will skip collision handling.</p><p><code>push</code> method tries to keep the targeted sides of the target element within the container element's boundaries. If you assign <code>push</code> method to the opposite sides the force of push will be equal on both sides. If you want to force one of the sides to be always pushed fully inside the container element's area, you can assign a forced push to that side with <code>push!</code> method.</p>
-**setClass** | true | *Boolean* | <p>If true, a class name (constructed out of the library name and the position option string) will be automatically added to the target element. The format is "libName-positionOptionValue", all empty spaces are replaced with dashes. For example, if the position option value is "left top right center" the constructed class name would be "popo-left-top-right-center".</p>
-**onBeforeExec** | null | *Function* | <p>Defines a callback function for get and set methods that is executed just before the the positioning.</p>
-**onAfterExec** | null | *Function* | <p>Defines a callback function for set method that is executed right after the positioning.</p>
+**setClass** | false | *Boolean* | <p>If true, a class name (constructed out of the library name and the position option) will be automatically added to the target element. The format is "libName-positionOption", all empty spaces are replaced with dashes. For example, if the position option value is "left top right center" the constructed class name would be "popo-left-top-right-center".</p>
+**onExecution** | null | *Function* | <p>Defines a callback function that is executed just before the actual positioning.</p>
 
 ##Examples
 
@@ -123,7 +122,7 @@ window.popo.set( target, {
 
   // A callback function which is called just before the final position
   // is set (with set method) or returned (with get method)
-  onBeforeExec: function (target, base, container) {
+  onExecution: function (target, base, container) {
 
     // The three arguments available in this function contain all the data
     // that is used for the position calculations. You can manipulate
@@ -165,19 +164,6 @@ window.popo.set( target, {
     target.position.top += 10;
     target.position.left -= 800;
 
-  },
-
-  // A callback function which is called just before the final position
-  // is set (with set method)
-  onAfterExec: function (target, base, container) {
-
-    // Only available when using set method. Has absolutely no effect if you
-    // are using get method. Note also that you have to define a container 
-    // element in options in order for the container argument to exist in 
-    // this function.
-    
-    // Contains same arguments as onBeforeExec callback.
-    
   }
 });
 ```
