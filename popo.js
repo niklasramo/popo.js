@@ -1,115 +1,59 @@
 /*!
- * Popo JS - v0.7.6 - 8/2/2013
+ * Popo JS - v0.7.7 - 8/2/2013
  *
  * Copyright (c) 2013 Niklas Rämö
  * Released under the MIT license
  */
 
 (function (window, undefined) {
+
   "use strict";
 
-  /*==========
-    Defaults
-  ==========*/
-
   var libName = 'popo',
+
+      // Cache some elements
       doc = window.document,
       docElem = doc.documentElement,
-      docBody = doc.body,
+      body = doc.body,
+
+      // Cache some math functions
       math = window.Math,
       mathAbs = math.abs,
-      getBasePos = {},
+
+      // Cache often used strings
+      str_left = 'left',
+      str_right = 'right',
+      str_top = 'top',
+      str_bottom = 'bottom',
+      str_center = 'center',
+      str_function = 'function',
+      str_number = 'number',
 
       // A shortcut for stringifying an object
-      stringifyObject = Object.prototype.toString,
-
-      // Define shortcut strings
-      strLeft = 'left',
-      strRight = 'right',
-      strTop = 'top',
-      strBottom = 'bottom',
-      strCenter = 'center',
-      strFunction = 'function',
-      strNumber = 'number',
+      stringify = Object.prototype.toString,
 
       // Define shortcut positions
       shortcuts = {
-        nw: [strRight, strBottom, strLeft, strTop],
-        n: [strCenter, strBottom, strCenter, strTop],
-        ne: [strLeft, strBottom, strRight, strTop],
-        e: [strLeft, strCenter, strRight, strCenter],
-        se: [strLeft, strTop, strRight, strBottom],
-        s: [strCenter, strTop, strCenter, strBottom],
-        sw: [strRight, strTop, strLeft, strBottom],
-        w: [strRight, strCenter, strLeft, strCenter],
-        center: [strCenter, strCenter, strCenter, strCenter]
+        nw: [str_right, str_bottom, str_left, str_top],
+        n: [str_center, str_bottom, str_center, str_top],
+        ne: [str_left, str_bottom, str_right, str_top],
+        e: [str_left, str_center, str_right, str_center],
+        se: [str_left, str_top, str_right, str_bottom],
+        s: [str_center, str_top, str_center, str_bottom],
+        sw: [str_right, str_top, str_left, str_bottom],
+        w: [str_right, str_center, str_left, str_center],
+        center: [str_center, str_center, str_center, str_center]
       };
-
-  /*============================
-    Base position calculations
-  ============================*/
-
-  getBasePos[strLeft + strLeft] = getBasePos[strTop + strTop] = function (startingPointVal, baseElemVal, targetElemVal) {
-    return startingPointVal;
-  };
-  getBasePos[strLeft + strCenter] = getBasePos[strTop + strCenter] = function (startingPointVal, baseElemVal, targetElemVal) {
-    return startingPointVal + (baseElemVal / 2);
-  };
-  getBasePos[strLeft + strRight] = getBasePos[strTop + strBottom] = function (startingPointVal, baseElemVal, targetElemVal) {
-    return startingPointVal + baseElemVal;
-  };
-  getBasePos[strCenter + strLeft] = getBasePos[strCenter + strTop] = function (startingPointVal, baseElemVal, targetElemVal) {
-    return startingPointVal - (targetElemVal / 2);
-  };
-  getBasePos[strCenter + strCenter] = function (startingPointVal, baseElemVal, targetElemVal) {
-    return startingPointVal + (baseElemVal / 2) - (targetElemVal / 2);
-  };
-  getBasePos[strCenter + strRight] = getBasePos[strCenter + strBottom] = function (startingPointVal, baseElemVal, targetElemVal) {
-    return startingPointVal + baseElemVal - (targetElemVal / 2);
-  };
-  getBasePos[strRight + strLeft] = getBasePos[strBottom + strTop] = function (startingPointVal, baseElemVal, targetElemVal) {
-    return startingPointVal - targetElemVal;
-  };
-  getBasePos[strRight + strCenter] = getBasePos[strBottom + strCenter] = function (startingPointVal, baseElemVal, targetElemVal) {
-    return startingPointVal - targetElemVal + (baseElemVal / 2);
-  };
-  getBasePos[strRight + strRight] = getBasePos[strBottom + strBottom] = function (startingPointVal, baseElemVal, targetElemVal) {
-    return startingPointVal - targetElemVal + baseElemVal;
-  };
 
   /*===========
     Functions
   ===========*/
 
-  function isWin(el) {
-
-    return stringifyObject.call(el) === '[object global]';
-
-  } // isWin
-
-  function isDoc(el) {
-
-    return stringifyObject.call(el) === '[object HTMLDocument]';
-
-  } // isDoc
-
-  function isDocElem(el) {
-
-    return stringifyObject.call(el) === '[object HTMLHtmlElement]';
-
-  } // isDocElem
-
-  function isDocBody(el) {
-
-    return stringifyObject.call(el) === '[object HTMLBodyElement]';
-
-  } // isDocBody
-
   function trim(str) {
 
-    return typeof String.prototype.trim === strFunction ? str.trim() : str.replace(/^\s+|\s+$/g, '');
+    return typeof String.prototype.trim === str_function ? str.trim() : str.replace(/^\s+|\s+$/g, '');
 
-  } // trim
+  }
 
   function merge(arr) {
 
@@ -124,43 +68,43 @@
     
     return obj;
 
-  } // merge
+  }
 
   function getWidth(el) {
 
-    if (isWin(el)) {
-      return docElem.clientWidth || docBody.clientWidth;
-    } else if (isDoc(el)) {
-      return math.max(docElem.clientWidth, docElem.offsetWidth, docElem.scrollWidth, docBody.scrollWidth, docBody.offsetWidth);
+    if (el === window) {
+      return docElem.clientWidth || body.clientWidth;
+    } else if (el === doc) {
+      return math.max(docElem.clientWidth, docElem.offsetWidth, docElem.scrollWidth, body.scrollWidth, body.offsetWidth);
     } else {
       return el.getBoundingClientRect().width || el.offsetWidth;
     }
 
-  } // getWidth
+  }
 
   function getHeight(el) {
 
-    if (isWin(el)) {
-      return docElem.clientHeight || docBody.clientHeight;
-    } else if (isDoc(el)) {
-      return math.max(docElem.clientHeight, docElem.offsetHeight, docElem.scrollHeight, docBody.scrollHeight, docBody.offsetHeight);
+    if (el === window) {
+      return docElem.clientHeight || body.clientHeight;
+    } else if (el === doc) {
+      return math.max(docElem.clientHeight, docElem.offsetHeight, docElem.scrollHeight, body.scrollHeight, body.offsetHeight);
     } else {
       return el.getBoundingClientRect().height || el.offsetHeight;
     }
 
-  } // getHeight
+  }
 
   function getViewportScrollLeft() {
 
-    return typeof window.pageXOffset === strNumber ? window.pageXOffset : docElem.scrollLeft || docBody.scrollLeft;
+    return typeof window.pageXOffset === str_number ? window.pageXOffset : docElem.scrollLeft || body.scrollLeft;
 
-  } // getViewportScrollLeft
+  }
 
   function getViewportScrollTop() {
 
-    return typeof window.pageYOffset === strNumber ? window.pageYOffset : docElem.scrollTop || docBody.scrollTop;
+    return typeof window.pageYOffset === str_number ? window.pageYOffset : docElem.scrollTop || body.scrollTop;
 
-  } // getViewportScrollTop
+  }
 
   function getOffset(el, includeBorders) {
 
@@ -168,10 +112,10 @@
         offsetTop = 0,
         rect;
 
-    if (isWin(el)) {
+    if (el === window) {
       offsetLeft = getViewportScrollLeft();
       offsetTop = getViewportScrollTop();
-    } else if (!isDoc(el)) {
+    } else if (el !== doc) {
       rect = el.getBoundingClientRect();
       if (typeof rect !== 'undefined') {
         offsetLeft = rect.left + getViewportScrollLeft();
@@ -185,7 +129,7 @@
 
     return {left: offsetLeft, top: offsetTop};
 
-  } // getOffset
+  }
 
   function getPositionProperty(el) {
 
@@ -199,27 +143,24 @@
       return 'static';
     }
 
-  } // getPositionProperty
+  }
 
   function getOffsetParent(el) {
 
-    // This function is designed solely for getting the offset parent of an
-    // absolutely positioned element, and used only by getZeroPointOffset function.
-
     var offsetParent;
-    if (isDocElem(el)) {
+    if (el === docElem) {
       offsetParent = doc;
-    } else if (isDocBody(el)) {
+    } else if (el === body) {
       offsetParent = docElem;
     } else {
       offsetParent = el.offsetParent;
-      while (!isDocElem(offsetParent) && getPositionProperty(offsetParent) === 'static') {
-        offsetParent = isDocBody(offsetParent) ? docElem : offsetParent.offsetParent;
+      while (offsetParent !== docElem && getPositionProperty(offsetParent) === 'static') {
+        offsetParent = offsetParent === body ? docElem : offsetParent.offsetParent;
       }
     }
     return offsetParent;
 
-  } // getOffsetParent
+  }
 
   function getZeroPointOffset(el) {
 
@@ -257,7 +198,7 @@
 
     return offset;
 
-  } // getZeroPointOffset
+  }
 
   function replaceClassName(el, str, newStr) {
 
@@ -280,7 +221,7 @@
     // Update classname
     el.className = classNames.join(' ');
 
-  } // replaceClassName
+  }
 
   function getSanitizedOnCollision(option) {
 
@@ -298,7 +239,7 @@
       return null;
     }
 
-  } // getSanitizedOnCollision
+  }
 
   function getSanitizedOffset(option) {
 
@@ -323,7 +264,7 @@
         dist = parseFloat(item[1]);
 
         // Apply offsets only if the values are even remotely significant
-        if (typeof ang === strNumber && typeof dist === strNumber && dist !== 0) {
+        if (typeof ang === str_number && typeof dist === str_number && dist !== 0) {
           offset.x += math.round((math.cos(ang * (math.PI/180)) * dist) * decimal) / decimal;
           offset.y += math.round((math.sin(ang * (math.PI/180)) * dist) * decimal) / decimal;
         }
@@ -338,11 +279,11 @@
 
     return offset;
 
-  } // getSanitizedOffset
+  }
 
   function getSanitizedOptions(instanceOptions) {
 
-    var opts = stringifyObject.call(instanceOptions) === '[object Object]' ? merge([window[libName].defaults, instanceOptions]) : merge([window[libName].defaults]),
+    var opts = stringify.call(instanceOptions) === '[object Object]' ? merge([window[libName].defaults, instanceOptions]) : merge([window[libName].defaults]),
         prop;
 
     // Trim all strings
@@ -365,13 +306,29 @@
     opts.offset = getSanitizedOffset(opts.offset);
 
     // Sanitize onCollision
-    if (opts.container !== null && typeof opts.onCollision !== strFunction) {
+    if (opts.container !== null && typeof opts.onCollision !== str_function) {
       opts.onCollision = getSanitizedOnCollision(opts.onCollision);
     }
 
     return opts;
 
-  } // getSanitizedOptions
+  }
+
+  function getBasePosition(pos, startingPointVal, baseElemVal, targetElemVal) {
+
+    var positions = {};
+    positions[str_left + str_left] = positions[str_top + str_top] = startingPointVal;
+    positions[str_left + str_center] = positions[str_top + str_center] = startingPointVal + (baseElemVal / 2);
+    positions[str_left + str_right] = positions[str_top + str_bottom] = startingPointVal + baseElemVal;
+    positions[str_center + str_left] = positions[str_center + str_top] = startingPointVal - (targetElemVal / 2);
+    positions[str_center + str_center] = startingPointVal + (baseElemVal / 2) - (targetElemVal / 2);
+    positions[str_center + str_right] = positions[str_center + str_bottom] = startingPointVal + baseElemVal - (targetElemVal / 2);
+    positions[str_right + str_left] = positions[str_bottom + str_top] = startingPointVal - targetElemVal;
+    positions[str_right + str_center] = positions[str_bottom + str_center] = startingPointVal - targetElemVal + (baseElemVal / 2);
+    positions[str_right + str_right] = positions[str_bottom + str_bottom] = startingPointVal - targetElemVal + baseElemVal;
+    return positions[pos];
+
+  }
 
   function getOverflow(targetWidth, targetHeight, targetPosition, targetZeroPointOffset, containerWidth, containerHeight, containerOffset) {
 
@@ -382,13 +339,13 @@
       bottom: (containerOffset.top + containerHeight) - (targetPosition.top + targetZeroPointOffset.top + targetHeight)
     };
 
-  } // getOverflow
+  }
 
   function pushOnCollision(targetWidth, targetHeight, targetPosition, targetZeroPointOffset, containerWidth, containerHeight, containerOffset, containerOverflow, onCollision) {
 
     var push = 'push',
         forcedPush = 'push!',
-        sides = [[strLeft, strRight], [strTop, strBottom]],
+        sides = [[str_left, str_right], [str_top, str_bottom]],
         leftOrTop, rightOrBottom, i;
 
     for (i = 0; i < 2; i++) {
@@ -411,7 +368,7 @@
           }
         } else if (containerOverflow[leftOrTop] < containerOverflow[rightOrBottom]) {
           if (mathAbs(containerOverflow[leftOrTop]) <= mathAbs(containerOverflow[rightOrBottom])) {
-            target.position[leftOrTop] += mathAbs(containerOverflow[leftOrTop]);
+            targetPosition[leftOrTop] += mathAbs(containerOverflow[leftOrTop]);
           } else {
             targetPosition[leftOrTop] += ((mathAbs(containerOverflow[leftOrTop]) + mathAbs(containerOverflow[rightOrBottom])) / 2);
           }
@@ -438,14 +395,14 @@
 
     }
 
-  } // pushOnCollision
+  }
 
   function position(method, targetElement, instanceOptions) {
 
     var opts = getSanitizedOptions(instanceOptions),
 
         // Check if base element is a coordinate
-        isBaseACoordinate = stringifyObject.call(opts.base) === '[object Array]',
+        isBaseACoordinate = stringify.call(opts.base) === '[object Array]',
 
         // Pre-define target element's data vars
         targetWidth = getWidth(targetElement),
@@ -486,8 +443,8 @@
 
     // Get target position
     targetPosition = {
-      left: getBasePos[opts.position[0] + opts.position[2]](baseOffset.left + opts.offset.x - targetZeroPointOffset.left, baseWidth, targetWidth),
-      top: getBasePos[opts.position[1] + opts.position[3]](baseOffset.top + opts.offset.y - targetZeroPointOffset.top, baseHeight, targetHeight)
+      left: getBasePosition(opts.position[0] + opts.position[2], baseOffset.left + opts.offset.x - targetZeroPointOffset.left, baseWidth, targetWidth),
+      top: getBasePosition(opts.position[1] + opts.position[3], baseOffset.top + opts.offset.y - targetZeroPointOffset.top, baseHeight, targetHeight)
     };
 
     // If container is defined
@@ -503,7 +460,7 @@
       containerOverflow = getOverflow(targetWidth, targetHeight, targetPosition, targetZeroPointOffset, containerWidth, containerHeight, containerOffset);
 
       // Collision handling (skip if onCollision is null)
-      if (typeof opts.onCollision === strFunction) {
+      if (typeof opts.onCollision === str_function) {
         opts.onCollision(targetPosition, targetElement, baseElement, containerElement);
       } else if (opts.onCollision !== null) {
         pushOnCollision(targetWidth, targetHeight, targetPosition, targetZeroPointOffset, containerWidth, containerHeight, containerOffset, containerOverflow, opts.onCollision);
@@ -519,7 +476,7 @@
       return targetPosition;
     }
 
-  } // position
+  }
 
   /*=========
     Publish
@@ -536,7 +493,7 @@
       return position('get', el, opts);
     },
     defaults: {
-      position: strCenter,
+      position: str_center,
       offset: '0',
       base: window,
       setClass: false,
