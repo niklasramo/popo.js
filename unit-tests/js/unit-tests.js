@@ -3,7 +3,8 @@
 // GLOBALS
 //
 
-var result, expected, prop, i,
+var result, expected, prop, i, temp,
+    positionStyles = ['relative', 'absolute', 'fixed'],
     $wrapper = $('#test-wrapper'),
     wrapper = $wrapper[0],
     $target = $('#test-target'),
@@ -148,36 +149,23 @@ var result, expected, prop, i,
 //
 
 function resetInlineStyles() {
-
   $wrapper.attr('style', '');
   $target.attr('style', '');
   $base.attr('style', '');
   $container.attr('style', '');
-
 }
-
 function getObjectLength(obj) {
-
-  var count = 0;
-  var property;
-
-  for (property in obj) {
-    count++;
-  }
-
+  var count = 0, property;
+  for (property in obj) { count++; }
   return count;
-
 }
 
 //
 // TESTS
 //
 
-test('Default positions', positionsLength * 6, function() {
+test('Set method - default positions', positionsLength * 3, function() {
 
-  var positionStyles = ['relative', 'absolute', 'fixed']; 
-
-  // Test set method
   for (i = 0; i < positionStyles.length; i++) {
 
     target.style.position = positionStyles[i];
@@ -199,13 +187,16 @@ test('Default positions', positionsLength * 6, function() {
         top: parseFloat(target.style.top)
       };
 
-      deepEqual(result, expected, 'method = "set", CSS Position = "' + positionStyles[i] + '", position = "' + positions[prop].name + '"');
+      deepEqual(result, expected, 'Target CSS position = "' + positionStyles[i] + '", Target Popo position = "' + positions[prop].name + '"');
 
     }
 
   }
 
-  // Test get method
+});
+
+test('Get method - default positions', positionsLength * 3, function() {
+
   for (i = 0; i < positionStyles.length; i++) {
 
     target.style.position = positionStyles[i];
@@ -222,7 +213,7 @@ test('Default positions', positionsLength * 6, function() {
         base: base
       });
 
-      deepEqual(result, expected, 'method = "get", CSS Position = "' + positionStyles[i] + '", position = "' + positions[prop].name + '"');
+      deepEqual(result, expected, 'Target CSS position = "' + positionStyles[i] + '", Target Popo position = "' + positions[prop].name + '"');
 
     }
 
@@ -252,7 +243,7 @@ test('Offsets', 7, function() {
     top: positions.center.top + 5
   };
 
-  deepEqual(result, expected, '#1 "5"');
+  deepEqual(result, expected, '5');
 
   // Assertion #2
 
@@ -272,7 +263,7 @@ test('Offsets', 7, function() {
     top: positions.center.top - 5
   };
 
-  deepEqual(result, expected, '#2 "5 -5"');
+  deepEqual(result, expected, '5 -5');
 
   // Assertion #3
 
@@ -292,7 +283,7 @@ test('Offsets', 7, function() {
     top: positions.center.top - 17
   };
 
-  deepEqual(result, expected, '#3 "-19 90 2"');
+  deepEqual(result, expected, '-19, 90deg 2');
 
   // Assertion #4
 
@@ -312,7 +303,7 @@ test('Offsets', 7, function() {
     top: positions.center.top + 97
   };
 
-  deepEqual(result, expected, '#4 "-19 97 0 99"');
+  deepEqual(result, expected, '-19 97, 0deg 99');
 
   // Assertion #5
 
@@ -332,7 +323,7 @@ test('Offsets', 7, function() {
     top: positions.center.top + 196
   };
 
-  deepEqual(result, expected, '#5 "-19 97 90 99"');
+  deepEqual(result, expected, '-19 97, 90deg 99');
 
   // Assertion #6
 
@@ -352,7 +343,7 @@ test('Offsets', 7, function() {
     top: positions.center.top + 97
   };
 
-  deepEqual(result, expected, '#6 "-19 97 180 99"');
+  deepEqual(result, expected, '-19 97, 180deg 99');
 
   // Assertion #7
 
@@ -372,7 +363,7 @@ test('Offsets', 7, function() {
     top: positions.center.top - 2
   };
 
-  deepEqual(result, expected, '#7 "-19 97 270 99"');
+  deepEqual(result, expected, '-19 97, 270deg 99');
 
 });
 
@@ -393,11 +384,11 @@ test('onCollision callback', 2, function() {
 
   expected = [{left: positions.center.left, top: positions.center.top}, target, base, container];
 
-  deepEqual(result, expected, 'Correct arguments.');
+  deepEqual(result, expected, 'Callback receives correct arguments.');
 
   // onCollision target position
 
-  var temp = window.popo.get(target, {
+  temp = window.popo.get(target, {
     position: positions.center.name,
     base: base,
     container: container,
@@ -408,7 +399,7 @@ test('onCollision callback', 2, function() {
 
   result = [temp.left - 1000, temp.top + 1000];
 
-  deepEqual(result, expected, "First argument affects the final positioning values, as expected.");
+  deepEqual(result, expected, "Callback's first argument is the same object that is used to set the final position or return the final values.");
 
 });
 
@@ -580,27 +571,22 @@ test('setClass & trim', 1, function() {
 
 });
 
-test('Performance', 90 * 200, function() {
+test('Coordinates', 1, function() {
 
   resetInlineStyles();
 
-  target.style.position = 'absolute';
+  // Assertion 1
 
-  for (i = 0; i < 200; i++) {
+  result = window.popo.get(target, {
+    position: 'left top left top',
+    base: [5, -5, base]
+  });
 
-    for (prop in positions) {
+  expected = {
+    left: $base.offset().left + 5,
+    top: $base.offset().top - 5
+  };
 
-      window.popo.set(target, {
-        position: positions[prop].name,
-        base: base,
-        container: container,
-        onCollision: 'push push push! push!'
-      });
-
-      strictEqual(1, 1, "Hooray, the browser did not crash!");
-
-    }
-
-  }
+  deepEqual(result, expected, 'Coordinates work as expected when base option is given an array with coordinates and a DOM element.');
 
 });
