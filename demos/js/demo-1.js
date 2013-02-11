@@ -2,7 +2,7 @@ $(function(){
 
   var popo = window.popo,
       $targets = $('.target'),
-      containers = [window, window.document, window.document.documentElement, window.document.body],
+      containers = [$('.container-absolute')[0], $('.container-fixed')[0], $('.container-relative')[0], window, window.document, window.document.documentElement, window.document.body],
       transEnd = 'transitionend webkitTransitionEnd oTransitionEnd otransitionend';
 
   function rand(array) {

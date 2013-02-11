@@ -20,7 +20,7 @@
       math = window.Math,
       mathAbs = math.abs,
 
-      // Cache repeating strings
+      // Cache repeating strings and object keys
       str_left = 'left',
       str_right = 'right',
       str_top = 'top',
@@ -28,9 +28,12 @@
       str_center = 'center',
       str_function = 'function',
       str_number = 'number',
+      str_getBoundingClientRect = 'getBoundingClientRect',
+      str_clientWidth = 'clientWidth',
+      str_clientHeight = 'clientHeight',
 
-      // A shortcut for stringifying an object
-      stringify = Object.prototype.toString,
+      // A shortcut for getting the stringified type of an object
+      getStringifiedType = Object.prototype.toString,
 
       // Define shortcut positions
       shortcuts = {
@@ -73,11 +76,11 @@
   function getWidth(el) {
 
     return el === window ? (
-      docElem.clientWidth || body.clientWidth
+      docElem[str_clientWidth] || body[str_clientWidth]
     ) : el === doc ? (
-      math.max(docElem.clientWidth, docElem.offsetWidth, docElem.scrollWidth, body.scrollWidth, body.offsetWidth)
+      math.max(docElem[str_clientWidth], docElem.offsetWidth, docElem.scrollWidth, body.scrollWidth, body.offsetWidth)
     ) : (
-      el.getBoundingClientRect().width || el.offsetWidth
+      el[str_getBoundingClientRect]().width || el.offsetWidth
     );
 
   }
@@ -85,11 +88,11 @@
   function getHeight(el) {
 
     return el === window ? (
-      docElem.clientHeight || body.clientHeight
+      docElem[str_clientHeight] || body[str_clientHeight]
     ) : el === doc ? (
-      math.max(docElem.clientHeight, docElem.offsetHeight, docElem.scrollHeight, body.scrollHeight, body.offsetHeight)
+      math.max(docElem[str_clientHeight], docElem.offsetHeight, docElem.scrollHeight, body.scrollHeight, body.offsetHeight)
     ) : (
-      el.getBoundingClientRect().height || el.offsetHeight
+      el[str_getBoundingClientRect]().height || el.offsetHeight
     );
 
   }
@@ -119,7 +122,7 @@
 
     } else if (el !== doc) {
 
-      rect = el.getBoundingClientRect();
+      rect = el[str_getBoundingClientRect]();
       if (typeof rect !== 'undefined') {
         offsetLeft = rect.left + getViewportScrollLeft();
         offsetTop = rect.top  + getViewportScrollTop();
@@ -172,17 +175,11 @@
         offset, style, left, right, top, bottom;
 
     posProp === 'fixed' ? (
-
       offset = {left: 0, top: 0}
-
     ) : posProp === 'absolute' ? (
-
       offset = getOffset(getOffsetParent(el), true)
-
     ) : posProp !== 'relative' ? (
-
       offset = getOffset(el)
-
     ) : (
 
       // Store original styles
@@ -238,20 +235,16 @@
     var arr = typeof option === 'string' && option.length !== 0 ? option.split(' ') : '',
         len = arr.length;
 
-    return len > 0 && len < 5 ? (
-
-      {
+    if (len > 0 && len < 5) {
+      return {
         left: arr[0],
         top: len > 1 ? arr[1] : arr[0],
         right: len > 2 ? arr[2] : arr[0],
         bottom: len === 4 ? arr[3] : len === 1 ? arr[0] : arr[1]
-      }
-
-    ) : (
-
-      null
-
-    );
+      };
+    } else {
+      return null;
+    }
 
   }
 
@@ -297,7 +290,7 @@
 
   function getSanitizedOptions(instanceOptions) {
 
-    var opts = stringify.call(instanceOptions) === '[object Object]' ? merge([window[libName].defaults, instanceOptions]) : merge([window[libName].defaults]),
+    var opts = getStringifiedType.call(instanceOptions) === '[object Object]' ? merge([window[libName].defaults, instanceOptions]) : merge([window[libName].defaults]),
         prop;
 
     // Trim all strings
@@ -415,9 +408,6 @@
 
     var opts = getSanitizedOptions(instanceOptions),
 
-        // Check if base element is a coordinate
-        isBaseACoordinate = stringify.call(opts.base) === '[object Array]',
-
         // Pre-define target element's data vars
         targetWidth = getWidth(targetElement),
         targetHeight = getHeight(targetElement),
@@ -437,9 +427,9 @@
         containerOffset,
         containerOverflow;
 
-    // Calculate base element's dimensions and offset,
-    // and populate the base data object
-    isBaseACoordinate ? (
+    // Calculate base element's dimensions and offset.
+    // If base is an array we assume it's a coordinate.
+    getStringifiedType.call(opts.base) === '[object Array]' ? (
       baseWidth = baseHeight = 0,
       baseOffset = getOffset(baseElement[2] || window),
       baseOffset.left += baseElement[0],
@@ -493,11 +483,11 @@
   }
 
   /*=========
-    Publish
+    Unleash
   =========*/
 
-  // Create methods and default settings
-  // and make the library public
+  // Bind the library to window object and
+  // define public methods and default options
   window[libName] = {
     set: function (el, opts) {
       position('set', el, opts);
