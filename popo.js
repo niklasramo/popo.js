@@ -1,5 +1,5 @@
 /*!
- * Popo JS - v0.7.7 - 8/2/2013
+ * Popo JS - v0.7.7 - 11/2/2013
  *
  * Copyright (c) 2013 Niklas Rämö
  * Released under the MIT license
@@ -20,7 +20,7 @@
       math = window.Math,
       mathAbs = math.abs,
 
-      // Cache often used strings
+      // Cache repeating strings
       str_left = 'left',
       str_right = 'right',
       str_top = 'top',
@@ -65,32 +65,32 @@
         obj[prop] = arr[i][prop];
       }
     }
-    
+
     return obj;
 
   }
 
   function getWidth(el) {
 
-    if (el === window) {
-      return docElem.clientWidth || body.clientWidth;
-    } else if (el === doc) {
-      return math.max(docElem.clientWidth, docElem.offsetWidth, docElem.scrollWidth, body.scrollWidth, body.offsetWidth);
-    } else {
-      return el.getBoundingClientRect().width || el.offsetWidth;
-    }
+    return el === window ? (
+      docElem.clientWidth || body.clientWidth
+    ) : el === doc ? (
+      math.max(docElem.clientWidth, docElem.offsetWidth, docElem.scrollWidth, body.scrollWidth, body.offsetWidth)
+    ) : (
+      el.getBoundingClientRect().width || el.offsetWidth
+    );
 
   }
 
   function getHeight(el) {
 
-    if (el === window) {
-      return docElem.clientHeight || body.clientHeight;
-    } else if (el === doc) {
-      return math.max(docElem.clientHeight, docElem.offsetHeight, docElem.scrollHeight, body.scrollHeight, body.offsetHeight);
-    } else {
-      return el.getBoundingClientRect().height || el.offsetHeight;
-    }
+    return el === window ? (
+      docElem.clientHeight || body.clientHeight
+    ) : el === doc ? (
+      math.max(docElem.clientHeight, docElem.offsetHeight, docElem.scrollHeight, body.scrollHeight, body.offsetHeight)
+    ) : (
+      el.getBoundingClientRect().height || el.offsetHeight
+    );
 
   }
 
@@ -113,9 +113,12 @@
         rect;
 
     if (el === window) {
+
       offsetLeft = getViewportScrollLeft();
       offsetTop = getViewportScrollTop();
+
     } else if (el !== doc) {
+
       rect = el.getBoundingClientRect();
       if (typeof rect !== 'undefined') {
         offsetLeft = rect.left + getViewportScrollLeft();
@@ -125,6 +128,7 @@
           offsetTop += el.clientTop;
         }
       }
+
     }
 
     return {left: offsetLeft, top: offsetTop};
@@ -133,15 +137,15 @@
 
   function getPositionProperty(el) {
 
-    if (el.style.position) {
-      return el.style.position;
-    } else if (el.currentStyle) {
-      return el.currentStyle.position;
-    } else if (doc.defaultView && doc.defaultView.getComputedStyle) {
-      return doc.defaultView.getComputedStyle(el, null).getPropertyValue('position');
-    } else {
-      return 'static';
-    }
+    return el.style.position ? (
+      el.style.position
+    ) : el.currentStyle ? (
+      el.currentStyle.position
+    ) : doc.defaultView && doc.defaultView.getComputedStyle ? (
+      doc.defaultView.getComputedStyle(el, null).getPropertyValue('position')
+    ) : (
+      'static'
+    );
 
   }
 
@@ -167,34 +171,40 @@
     var posProp = getPositionProperty(el),
         offset, style, left, right, top, bottom;
 
-    if (posProp === 'fixed') {
-      offset = {left: 0, top: 0};
-    } else if (posProp === 'absolute') {
-      offset = getOffset(getOffsetParent(el), true);
-    } else if (posProp !== 'relative') {
-      offset = getOffset(el);
-    } else {
+    posProp === 'fixed' ? (
+
+      offset = {left: 0, top: 0}
+
+    ) : posProp === 'absolute' ? (
+
+      offset = getOffset(getOffsetParent(el), true)
+
+    ) : posProp !== 'relative' ? (
+
+      offset = getOffset(el)
+
+    ) : (
 
       // Store original styles
-      style = el.style;
-      left = style.left;
-      right = style.right;
-      top = style.top;
-      bottom = style.bottom;
+      style = el.style,
+      left = style.left,
+      right = style.right,
+      top = style.top,
+      bottom = style.bottom,
 
       // Reset element's left/right/top/bottom properties
-      style.left = style.right = style.top = style.bottom = 'auto';
+      style.left = style.right = style.top = style.bottom = 'auto',
 
       // Get the element's offset
-      offset = getOffset(el);
+      offset = getOffset(el),
 
       // Restore element's original props
-      style.left = left;
-      style.right = right;
-      style.top = top;
-      style.bottom = bottom;
+      style.left = left,
+      style.right = right,
+      style.top = top,
+      style.bottom = bottom
 
-    }
+    );
 
     return offset;
 
@@ -228,16 +238,20 @@
     var arr = typeof option === 'string' && option.length !== 0 ? option.split(' ') : '',
         len = arr.length;
 
-    if (len > 0 && len < 5) {
-      return {
+    return len > 0 && len < 5 ? (
+
+      {
         left: arr[0],
         top: len > 1 ? arr[1] : arr[0],
         right: len > 2 ? arr[2] : arr[0],
-        bottom: len === 4 ? arr[3] : (len === 1 ? arr[0] : arr[1])
-      };
-    } else {
-      return null;
-    }
+        bottom: len === 4 ? arr[3] : len === 1 ? arr[0] : arr[1]
+      }
+
+    ) : (
+
+      null
+
+    );
 
   }
 
@@ -425,16 +439,16 @@
 
     // Calculate base element's dimensions and offset,
     // and populate the base data object
-    if (isBaseACoordinate) {
-      baseWidth = baseHeight = 0;
-      baseOffset = getOffset(baseElement[2] || window);
-      baseOffset.left += baseElement[0];
-      baseOffset.top += baseElement[1];
-    } else {
-      baseWidth = getWidth(baseElement);
-      baseHeight = getHeight(baseElement);
-      baseOffset = getOffset(baseElement);
-    }
+    isBaseACoordinate ? (
+      baseWidth = baseHeight = 0,
+      baseOffset = getOffset(baseElement[2] || window),
+      baseOffset.left += baseElement[0],
+      baseOffset.top += baseElement[1]
+    ) : (
+      baseWidth = getWidth(baseElement),
+      baseHeight = getHeight(baseElement),
+      baseOffset = getOffset(baseElement)
+    );
 
     // Update target element's classname if necessary
     if (opts.setClass && (' ' + targetElement.className + ' ').indexOf(' ' + opts.cls + ' ') === -1) {
