@@ -6,14 +6,14 @@ Popo JS is a stand-alone cross-browser JavaScript library that makes it easy to 
 
 The aim of Popo JS is to simplify the process of positioning DOM elements with JavaScript. The library is designed to work in all modern browsers (Chrome, Opera, Firefox, Safari, IE6+). However, it's a given there are still some currently unknown bugs between the lines so further testing is still needed to eradicate them.
 
-**NOTE: Keep in mind that there might be some API changes before v1.0 release.**
+**NOTE: Keep in mind that there will be API changes before v1.0 release.**
 
 ##Get started
 
 ###Download
 
-* **[v0.7.6 - Production](https://raw.github.com/niklasramo/popo/master/popo.min.js)** (5.6kb minified)
-* **[v0.7.6 - Development](https://raw.github.com/niklasramo/popo/master/popo.js)** (17.7kb uncompressed)
+* **[v0.7.7 - Production](https://raw.github.com/niklasramo/popo/master/popo.min.js)** (4.8kb minified)
+* **[v0.7.7 - Development](https://raw.github.com/niklasramo/popo/master/popo.js)** (16.3kb uncompressed)
 
 Download Popo JS library and include it in your HTML Document, preferrably inside the head tag.
 
