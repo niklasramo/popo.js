@@ -230,24 +230,6 @@
 
   }
 
-  function getSanitizedOnCollision(option) {
-
-    var arr = typeof option === 'string' && option.length !== 0 ? option.split(' ') : '',
-        len = arr.length;
-
-    if (len > 0 && len < 5) {
-      return {
-        left: arr[0],
-        top: len > 1 ? arr[1] : arr[0],
-        right: len > 2 ? arr[2] : arr[0],
-        bottom: len === 4 ? arr[3] : len === 1 ? arr[0] : arr[1]
-      };
-    } else {
-      return null;
-    }
-
-  }
-
   function getSanitizedOffset(option) {
 
     var offset = {x: 0, y: 0},
@@ -288,7 +270,7 @@
 
   }
 
-  function getSanitizedOptions(instanceOptions) {
+  function getPreSanitizedOptions(instanceOptions) {
 
     var opts = getStringifiedType.call(instanceOptions) === '[object Object]' ? merge([window[libName].defaults, instanceOptions]) : merge([window[libName].defaults]),
         prop;
@@ -300,7 +282,7 @@
       }
     }
 
-    // Generate class name (if needed)
+    // Generate classname (if needed)
     if (opts.setClass) {
       opts.cls = libName + '-' + opts.position.replace(/\s+/g, '-');
     }
@@ -311,11 +293,6 @@
 
     // Sanitize offset
     opts.offset = getSanitizedOffset(opts.offset);
-
-    // Sanitize onCollision
-    if (opts.container !== null && typeof opts.onCollision !== str_function) {
-      opts.onCollision = getSanitizedOnCollision(opts.onCollision);
-    }
 
     return opts;
 
@@ -345,6 +322,24 @@
       top: targetPosition.top + targetZeroPointOffset.top - containerOffset.top,
       bottom: (containerOffset.top + containerHeight) - (targetPosition.top + targetZeroPointOffset.top + targetHeight)
     };
+
+  }
+
+  function getSanitizedOnCollision(option) {
+
+    var arr = typeof option === 'string' && option.length !== 0 ? option.split(' ') : '',
+        len = arr.length;
+
+    if (len > 0 && len < 5) {
+      return {
+        left: arr[0],
+        top: len > 1 ? arr[1] : arr[0],
+        right: len > 2 ? arr[2] : arr[0],
+        bottom: len === 4 ? arr[3] : len === 1 ? arr[0] : arr[1]
+      };
+    } else {
+      return null;
+    }
 
   }
 
@@ -406,7 +401,8 @@
 
   function position(method, targetElement, instanceOptions) {
 
-    var opts = getSanitizedOptions(instanceOptions),
+    var opts = getPreSanitizedOptions(instanceOptions),
+        onCollision = opts.onCollision,
 
         // Pre-define target element's data vars
         targetWidth = getWidth(targetElement),
@@ -464,10 +460,13 @@
       containerOverflow = getOverflow(targetWidth, targetHeight, targetPosition, targetZeroPointOffset, containerWidth, containerHeight, containerOffset);
 
       // Collision handling (skip if onCollision is null)
-      if (typeof opts.onCollision === str_function) {
-        opts.onCollision(targetPosition, targetElement, baseElement, containerElement);
-      } else if (opts.onCollision !== null) {
-        pushOnCollision(targetWidth, targetHeight, targetPosition, targetZeroPointOffset, containerWidth, containerHeight, containerOffset, containerOverflow, opts.onCollision);
+      if (typeof onCollision === str_function) {
+        onCollision(targetPosition, targetElement, baseElement, containerElement);
+      } else {
+        onCollision = getSanitizedOnCollision(onCollision);
+        if (onCollision !== null) {
+          pushOnCollision(targetWidth, targetHeight, targetPosition, targetZeroPointOffset, containerWidth, containerHeight, containerOffset, containerOverflow, onCollision);
+        }
       }
 
     }
