@@ -20,7 +20,7 @@
       math = window.Math,
       mathAbs = math.abs,
 
-      // Cache repeating strings and object keys
+      // Cache repeating strings and object keys (for better compression)
       str_left = 'left',
       str_right = 'right',
       str_top = 'top',
@@ -236,6 +236,7 @@
         decimal = 1000000,
         items = option.split(','),
         itemsLen = items.length,
+        toFloat = window.parseFloat,
         item, itemLen, ang, dist, i;
 
     // Loop through all offset declarations
@@ -249,8 +250,8 @@
       if (itemLen === 2 && item[0].indexOf('deg') !== -1) {
 
         // Get angle and distance
-        ang = parseFloat(item[0]);
-        dist = parseFloat(item[1]);
+        ang = toFloat(item[0]);
+        dist = toFloat(item[1]);
 
         // Apply offsets only if the values are even remotely significant
         if (typeof ang === str_number && typeof dist === str_number && dist !== 0) {
@@ -260,8 +261,8 @@
 
       // If is normal offset
       } else if (itemLen === 1 || itemLen === 2) {
-        offset.x += parseFloat(item[0]);
-        offset.y += itemLen === 1 ? parseFloat(item[0]) : parseFloat(item[1]);
+        offset.x += toFloat(item[0]);
+        offset.y += itemLen === 1 ? toFloat(item[0]) : toFloat(item[1]);
       }
 
     }
