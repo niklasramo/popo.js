@@ -12,8 +12,8 @@ The aim of Popo JS is to simplify the process of positioning DOM elements with J
 
 ###Download
 
-* **[v0.7.7 - Production](https://raw.github.com/niklasramo/popo/master/popo.min.js)** (4.8kb minified)
-* **[v0.7.7 - Development](https://raw.github.com/niklasramo/popo/master/popo.js)** (16.3kb uncompressed)
+* **[v0.7.8 - Production](https://raw.github.com/niklasramo/popo/master/popo.min.js)** (4.8kb minified)
+* **[v0.7.8 - Development](https://raw.github.com/niklasramo/popo/master/popo.js)** (16.3kb uncompressed)
 
 Download Popo JS library and include it in your HTML Document, preferrably inside the head tag.
 
@@ -53,13 +53,11 @@ Name | Description
 
 Property | Default | Type | Description
 --- | --- | --- | ---
+**base** | window | *Element, Array* | <p>Defines which element the target element is positioned against. Alternatively you can define a coordinate with an array. The format is: [x-coordinate, y-coordinate, element]. The coordinates must be numbers (integers or floats) and the element must be a DOM element, the document object or the window object. The element is used to define the scope of the coordinates.</p>
 **position** | "center" | *String* | <p>Defines the target element's position relative to the base element. The format is "targetX targetY baseX baseY". A horizontal position can be `left`, `right` or `center` while a vertical position can be `top`, `bottom` or `center`.</p><p>Alternatively, you can use a single shortcut value: `nw`, `n`, `ne`, `e`, `se`, `s`, `sw`, `w`, `center`.</p>
 **offset** | "0" | *String* | <p>Defines a horizontal and a vertical offset (in pixels). For basic usage provide the option with a string containing two numbers (e.g. "-12 90"). The format is "offsetX offsetY". One number will be used for both offsets (e.g. "10").</p><p>For a bit more advanced usage you can define an angular offset by providing the option with an angle in degrees and a distance in pixels (e.g. "120deg 300"). Note that the first value must have the trailing "deg" string for Popo to identify the offset as an angular offset. Also note that zero degrees points to east.</p><p>For even more advanced usage you can provide the option with multiple offsets by separating the different offsets with a comma (e.g. "12, 30deg -600, -56 98, 1000deg 9").</p>
-**base** | window | *Element, Array* | <p>Defines which element the target element is positioned against. Alternatively you can define a coordinate with an array. The format is: [x-coordinate, y-coordinate, element]. The coordinates must be numbers (integers or floats) and the element must be a DOM element, the document object or the window object. The element is used to define the scope of the coordinates.</p>
 **container** | null | *Element* | <p>Defines an optional container element that is used for collision detection.</p>
 **onCollision** | "push" | *String, Function* | <p>Defines what to do when the target element overflows the container element. The container element must be defined for this option to have any effect. You can either define a built-in collision method for each side with the format "left top right bottom" (e.g. "push none none push") or pass in a function and use this option as a callback function.</p><p>Popo has two built-in collision methods, <code>push</code> and <code>push!</code>, <code>none</code> will skip collision handling.</p><p><code>push</code> method tries to keep the targeted sides of the target element within the container element's boundaries. If you assign <code>push</code> method to the opposite sides the force of push will be equal on both sides. If you want to force one of the sides to be always pushed fully inside the container element's area, you can assign a forced push to that side with <code>push!</code> method.</p>
-**setClass** | false | *Boolean* | <p>If true, a class name (constructed out of the library name and the position option) will be automatically added to the target element. The format is "libName-positionOption", all empty spaces are replaced with dashes. For example, if the position option value is "left top right center" the constructed class name would be "popo-left-top-right-center".</p>
-
 ##Examples
 
 To make the examples a bit easier on the eyes, let's assume that you have at least three elements in your HTML document with ids *target*, *base* and *container*.
@@ -92,25 +90,22 @@ var left = position.left,
     top = position.top;
 ```
 
-__EX-3:__ A stupidly complex example explaining the options a bit more detailed.
+__EX-3:__ A bit more detailed example.
 
 ```javascript
 window.popo.set( target, {
+
+  // A compulsory base elment that defines which element.
+  // the target element is positioned against. Defaults to window.
+  base: base,
 
   // The syntax here is similar to jQuery UI Position plugin.
   // Format => "targetX targetY baseX baseY"
   position: "center top left bottom",
   
-  // A compulsory base elment that defines which element.
-  // the target element is positioned against. Defaults to window.
-  base: base,
-  
   // Define a single offset or multiple offsets
   // separated with comma.
   offset: "12, 30deg -600, -56 98, 1000deg 9",
-  
-  // Add an autogenerated classname to target element.
-  setClass: true,
 
   // An optional container element that is used for
   // collision detection. Defaults to null. Needs to be defined for
@@ -121,7 +116,7 @@ window.popo.set( target, {
   // Formats => "all-sides", "x-axis y-axis", "left-side top-and-bottom-side right-side", "left-side top-side right-side bottom-side"
   // Methods => "none", "push", "push!"
   // Note that alternatively you can define a function for onCollision so you can create your own collision handling method.
-  // Function version => onCollision: function (targetPosition, target, base, container) {}
+  // Function version => onCollision: function (targetPosition, positionData) {}
   onCollision: "push! none push push"
   
 });
