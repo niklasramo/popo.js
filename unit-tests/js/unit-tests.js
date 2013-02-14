@@ -377,8 +377,8 @@ test('onCollision callback', 2, function() {
     position: positions.center.name,
     base: base,
     container: container,
-    onCollision: function (targetPosition, targetElem, baseElem, containerElem) {
-      result = [targetPosition, targetElem, baseElem, containerElem];
+    onCollision: function (targetPosition, data) {
+      result = [targetPosition, data.target.element, data.base.element, data.container.element];
     }
   });
 
@@ -556,18 +556,22 @@ test('onCollision methods', 7, function() {
 
 });
 
-test('setClass & trim', 1, function() {
+test('Trimming whitespace from options', 1, function() {
 
   resetInlineStyles();
 
-  window.popo.set(target, {
+  result = window.popo.get(target, {
     position: ' ' + ' ' + ' ' + ' ' + ' ' + positions.ne.name + ' ' + ' ' + ' ' + ' ' + ' ',
-    base: base,
-    setClass: true
+    offset: '                0 0 ',
+    base: base
   });
 
-  result = $(target).hasClass('popo-ne');
-  ok(result, 'setClass works fine and so does trimming whitespace from options');
+  expected = {
+    left: positions.ne.left,
+    top: positions.ne.top
+  };
+
+  deepEqual(result, expected, 'Whitespace is trimmed correctly from options');
 
 });
 

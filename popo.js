@@ -1,5 +1,5 @@
 /*!
- * Popo JS - v0.7.7 - 12/2/2013
+ * Popo JS - v0.7.8 - 12/2/2013
  *
  * Copyright (c) 2013 Niklas Rämö
  * Released under the MIT license
@@ -169,7 +169,7 @@
 
   }
 
-  function getZeroPointOffset(el) {
+  function getParentOffset(el) {
 
     var posProp = getPositionProperty(el),
         offset, style, left, right, top, bottom;
@@ -207,34 +207,18 @@
 
   }
 
-  function replaceClassName(el, str, newStr) {
+  function getSanitizedPosition(positionOption) {
 
-    var classNames = el.className.split(' '),
-        len = classNames.length,
-        i;
-
-    // Remove old classname
-    for (i = 0; i < len; i++) {
-      if (classNames[i].substring(0, str.length) === str) {
-        classNames.splice(i, 1);
-      }
-    }
-
-    // Add new classname
-    if (newStr !== '') {
-      classNames.push(newStr);
-    }
-
-    // Update classname
-    el.className = classNames.join(' ');
+    var pos = typeof positionOption === str_function ? trim(positionOption()).split(' ') : positionOption.split(' ');
+    return pos.length === 1 ? shortcuts[pos[0]].slice(0) : pos;
 
   }
 
-  function getSanitizedOffset(option) {
+  function getSanitizedOffset(offsetOption) {
 
     var offset = {x: 0, y: 0},
-        decimal = 1000000,
-        items = option.split(','),
+        decimal = 1000000, 
+        items = typeof offsetOption === str_function ? trim(offsetOption()).split(',') : offsetOption.split(','),
         itemsLen = items.length,
         toFloat = window.parseFloat,
         item, itemLen, ang, dist, i;
@@ -271,6 +255,24 @@
 
   }
 
+  function getSanitizedOnCollision(onCollisionOption) {
+
+    var arr = typeof onCollisionOption === 'string' && onCollisionOption.length !== 0 ? onCollisionOption.split(' ') : '',
+        len = arr.length;
+
+    if (len > 0 && len < 5) {
+      return {
+        left: arr[0],
+        top: len > 1 ? arr[1] : arr[0],
+        right: len > 2 ? arr[2] : arr[0],
+        bottom: len === 4 ? arr[3] : len === 1 ? arr[0] : arr[1]
+      };
+    } else {
+      return null;
+    }
+
+  }
+
   function getPreSanitizedOptions(instanceOptions) {
 
     var opts = getStringifiedType.call(instanceOptions) === '[object Object]' ? merge([window[libName].defaults, instanceOptions]) : merge([window[libName].defaults]),
@@ -283,17 +285,21 @@
       }
     }
 
-    // Generate classname (if needed)
-    if (opts.setClass) {
-      opts.cls = libName + '-' + opts.position.replace(/\s+/g, '-');
-    }
-
     // Sanitize position
-    opts.position = opts.position.split(' ');
-    opts.position = opts.position.length === 1 ? shortcuts[opts.position[0]].slice(0) : opts.position;
+    opts.position = getSanitizedPosition(opts.position);
 
     // Sanitize offset
     opts.offset = getSanitizedOffset(opts.offset);
+
+    // Sanitize base element
+    opts.base = typeof opts.base === str_function ? opts.base() : opts.base;
+
+    // Sanitize container
+    opts.container = typeof opts.container === str_function ? opts.container() : opts.container;
+
+    // NOTE!
+    // onCollision sanitation happens in position function and only if needed,
+    // meaning only if container is defined.
 
     return opts;
 
@@ -315,36 +321,18 @@
 
   }
 
-  function getOverflow(targetWidth, targetHeight, targetPosition, targetZeroPointOffset, containerWidth, containerHeight, containerOffset) {
+  function getOverflow(targetWidth, targetHeight, targetPosition, targetParentOffset, containerWidth, containerHeight, containerOffset) {
 
     return {
-      left: targetPosition.left + targetZeroPointOffset.left - containerOffset.left,
-      right: (containerOffset.left + containerWidth) - (targetPosition.left + targetZeroPointOffset.left + targetWidth),
-      top: targetPosition.top + targetZeroPointOffset.top - containerOffset.top,
-      bottom: (containerOffset.top + containerHeight) - (targetPosition.top + targetZeroPointOffset.top + targetHeight)
+      left: targetPosition.left + targetParentOffset.left - containerOffset.left,
+      right: (containerOffset.left + containerWidth) - (targetPosition.left + targetParentOffset.left + targetWidth),
+      top: targetPosition.top + targetParentOffset.top - containerOffset.top,
+      bottom: (containerOffset.top + containerHeight) - (targetPosition.top + targetParentOffset.top + targetHeight)
     };
 
   }
 
-  function getSanitizedOnCollision(option) {
-
-    var arr = typeof option === 'string' && option.length !== 0 ? option.split(' ') : '',
-        len = arr.length;
-
-    if (len > 0 && len < 5) {
-      return {
-        left: arr[0],
-        top: len > 1 ? arr[1] : arr[0],
-        right: len > 2 ? arr[2] : arr[0],
-        bottom: len === 4 ? arr[3] : len === 1 ? arr[0] : arr[1]
-      };
-    } else {
-      return null;
-    }
-
-  }
-
-  function pushOnCollision(targetWidth, targetHeight, targetPosition, targetZeroPointOffset, containerWidth, containerHeight, containerOffset, containerOverflow, onCollision) {
+  function pushOnCollision(targetWidth, targetHeight, targetPosition, targetParentOffset, containerWidth, containerHeight, containerOffset, containerOverflow, onCollision) {
 
     var push = 'push',
         forcedPush = 'push!',
@@ -378,7 +366,7 @@
         }
 
         // Update container's overflow
-        containerOverflow = getOverflow(targetWidth, targetHeight, targetPosition, targetZeroPointOffset, containerWidth, containerHeight, containerOffset);
+        containerOverflow = getOverflow(targetWidth, targetHeight, targetPosition, targetParentOffset, containerWidth, containerHeight, containerOffset);
 
         // Force push one of the sides if needed
         if (onCollision[leftOrTop] === forcedPush && containerOverflow[leftOrTop] < 0) {
@@ -408,7 +396,7 @@
         // Pre-define target element's data vars
         targetWidth = getWidth(targetElement),
         targetHeight = getHeight(targetElement),
-        targetZeroPointOffset = getZeroPointOffset(targetElement),
+        targetParentOffset = getParentOffset(targetElement),
         targetPosition,
 
         // Pre-define base element's data vars
@@ -437,15 +425,10 @@
       baseOffset = getOffset(baseElement)
     );
 
-    // Update target element's classname if necessary
-    if (opts.setClass && (' ' + targetElement.className + ' ').indexOf(' ' + opts.cls + ' ') === -1) {
-      replaceClassName(targetElement, libName, opts.cls);
-    }
-
     // Get target position
     targetPosition = {
-      left: getBasePosition(opts.position[0] + opts.position[2], baseOffset.left + opts.offset.x - targetZeroPointOffset.left, baseWidth, targetWidth),
-      top: getBasePosition(opts.position[1] + opts.position[3], baseOffset.top + opts.offset.y - targetZeroPointOffset.top, baseHeight, targetHeight)
+      left: getBasePosition(opts.position[0] + opts.position[2], baseOffset.left + opts.offset.x - targetParentOffset.left, baseWidth, targetWidth),
+      top: getBasePosition(opts.position[1] + opts.position[3], baseOffset.top + opts.offset.y - targetParentOffset.top, baseHeight, targetHeight)
     };
 
     // If container is defined
@@ -458,15 +441,38 @@
       containerWidth = getWidth(containerElement);
       containerHeight = getHeight(containerElement);
       containerOffset = getOffset(containerElement);
-      containerOverflow = getOverflow(targetWidth, targetHeight, targetPosition, targetZeroPointOffset, containerWidth, containerHeight, containerOffset);
+      containerOverflow = getOverflow(targetWidth, targetHeight, targetPosition, targetParentOffset, containerWidth, containerHeight, containerOffset);
 
       // Collision handling (skip if onCollision is null)
       if (typeof onCollision === str_function) {
-        onCollision(targetPosition, targetElement, baseElement, containerElement);
+        onCollision(targetPosition, {
+          target: {
+            element: targetElement,
+            width: targetWidth,
+            height: targetHeight,
+            offset: {
+              x: targetParentOffset.x + targetPosition.x,
+              y: targetParentOffset.y + targetPosition.y
+            }
+          },
+          base: {
+            element: baseElement,
+            width: baseWidth,
+            height: baseHeight,
+            offset: baseOffset
+          },
+          container: {
+            element: containerElement,
+            width: containerWidth,
+            height: containerHeight,
+            offset: containerOffset,
+            overflow: containerOverflow
+          }
+        });
       } else {
         onCollision = getSanitizedOnCollision(onCollision);
         if (onCollision !== null) {
-          pushOnCollision(targetWidth, targetHeight, targetPosition, targetZeroPointOffset, containerWidth, containerHeight, containerOffset, containerOverflow, onCollision);
+          pushOnCollision(targetWidth, targetHeight, targetPosition, targetParentOffset, containerWidth, containerHeight, containerOffset, containerOverflow, onCollision);
         }
       }
 
@@ -500,7 +506,6 @@
       position: str_center,
       offset: '0',
       base: window,
-      setClass: false,
       container: null,
       onCollision: 'push'
     }
