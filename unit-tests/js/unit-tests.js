@@ -15,18 +15,6 @@ var result, expected, prop, i, temp,
     container = $container[0],
     positions = {
 
-      /* Shorthands */
-
-      n: {name: 'n', left: 10, top: 0},
-      e: {name: 'e', left: 20, top: 10},
-      s: {name: 's', left: 10, top: 20},
-      w: {name: 'w', left: 0, top: 10},
-      nw: {name: 'nw', left: 0, top: 0},
-      ne: {name: 'ne', left: 20, top: 0},
-      sw: {name: 'sw', left: 0, top: 20},
-      se: {name: 'se', left: 20, top: 20},
-      center: {name: 'center', left: 10, top: 10},
-
       /* Stack 1 */
 
       left_top_left_top: {name: 'left top left top', left: 10, top: 10},
@@ -228,7 +216,7 @@ test('Offsets', 7, function() {
   // Assertion #1
 
   window.popo.set(target, {
-    position: positions.center.name,
+    position: positions.center_center_center_center.name,
     base: base,
     offset: '5'
   });
@@ -239,8 +227,8 @@ test('Offsets', 7, function() {
   };
 
   expected = {
-    left: positions.center.left + 5,
-    top: positions.center.top + 5
+    left: positions.center_center_center_center.left + 5,
+    top: positions.center_center_center_center.top + 5
   };
 
   deepEqual(result, expected, '5');
@@ -248,7 +236,7 @@ test('Offsets', 7, function() {
   // Assertion #2
 
   window.popo.set(target, {
-    position: positions.center.name,
+    position: positions.center_center_center_center.name,
     base: base,
     offset: '5 -5'
   });
@@ -259,8 +247,8 @@ test('Offsets', 7, function() {
   };
 
   expected = {
-    left: positions.center.left + 5,
-    top: positions.center.top - 5
+    left: positions.center_center_center_center.left + 5,
+    top: positions.center_center_center_center.top - 5
   };
 
   deepEqual(result, expected, '5 -5');
@@ -268,7 +256,7 @@ test('Offsets', 7, function() {
   // Assertion #3
 
   window.popo.set(target, {
-    position: positions.center.name,
+    position: positions.center_center_center_center.name,
     base: base,
     offset: '-19, 90deg 2'
   });
@@ -279,8 +267,8 @@ test('Offsets', 7, function() {
   };
 
   expected = {
-    left: positions.center.left - 19,
-    top: positions.center.top - 17
+    left: positions.center_center_center_center.left - 19,
+    top: positions.center_center_center_center.top - 17
   };
 
   deepEqual(result, expected, '-19, 90deg 2');
@@ -288,7 +276,7 @@ test('Offsets', 7, function() {
   // Assertion #4
 
   window.popo.set(target, {
-    position: positions.center.name,
+    position: positions.center_center_center_center.name,
     base: base,
     offset: '-19 97, 0deg 99'
   });
@@ -299,8 +287,8 @@ test('Offsets', 7, function() {
   };
 
   expected = {
-    left: positions.center.left + 80,
-    top: positions.center.top + 97
+    left: positions.center_center_center_center.left + 80,
+    top: positions.center_center_center_center.top + 97
   };
 
   deepEqual(result, expected, '-19 97, 0deg 99');
@@ -308,7 +296,7 @@ test('Offsets', 7, function() {
   // Assertion #5
 
   window.popo.set(target, {
-    position: positions.center.name,
+    position: positions.center_center_center_center.name,
     base: base,
     offset: '-19 97, 90deg 99'
   });
@@ -319,8 +307,8 @@ test('Offsets', 7, function() {
   };
 
   expected = {
-    left: positions.center.left - 19,
-    top: positions.center.top + 196
+    left: positions.center_center_center_center.left - 19,
+    top: positions.center_center_center_center.top + 196
   };
 
   deepEqual(result, expected, '-19 97, 90deg 99');
@@ -328,7 +316,7 @@ test('Offsets', 7, function() {
   // Assertion #6
 
   window.popo.set(target, {
-    position: positions.center.name,
+    position: positions.center_center_center_center.name,
     base: base,
     offset: '-19 97, 180deg 99'
   });
@@ -339,8 +327,8 @@ test('Offsets', 7, function() {
   };
 
   expected = {
-    left: positions.center.left - 118,
-    top: positions.center.top + 97
+    left: positions.center_center_center_center.left - 118,
+    top: positions.center_center_center_center.top + 97
   };
 
   deepEqual(result, expected, '-19 97, 180deg 99');
@@ -348,7 +336,7 @@ test('Offsets', 7, function() {
   // Assertion #7
 
   window.popo.set(target, {
-    position: positions.center.name,
+    position: positions.center_center_center_center.name,
     base: base,
     offset: '-19 97, 270deg 99'
   });
@@ -359,8 +347,8 @@ test('Offsets', 7, function() {
   };
 
   expected = {
-    left: positions.center.left - 19,
-    top: positions.center.top - 2
+    left: positions.center_center_center_center.left - 19,
+    top: positions.center_center_center_center.top - 2
   };
 
   deepEqual(result, expected, '-19 97, 270deg 99');
@@ -374,7 +362,7 @@ test('onCollision callback', 2, function() {
   // onCollision arguments
 
   window.popo.set(target, {
-    position: positions.center.name,
+    position: positions.center_center_center_center.name,
     base: base,
     container: container,
     onCollision: function (targetPosition, data) {
@@ -382,14 +370,14 @@ test('onCollision callback', 2, function() {
     }
   });
 
-  expected = [{left: positions.center.left, top: positions.center.top}, target, base, container];
+  expected = [{left: positions.center_center_center_center.left, top: positions.center_center_center_center.top}, target, base, container];
 
   deepEqual(result, expected, 'Callback receives correct arguments.');
 
   // onCollision target position
 
   temp = window.popo.get(target, {
-    position: positions.center.name,
+    position: positions.center_center_center_center.name,
     base: base,
     container: container,
     onCollision: function (targetPosition) {
@@ -410,7 +398,7 @@ test('onCollision methods', 7, function() {
   // "none"
 
   window.popo.set(target, {
-    position: positions.center.name,
+    position: positions.center_center_center_center.name,
     base: base,
     container: container,
     onCollision: 'none'
@@ -422,8 +410,8 @@ test('onCollision methods', 7, function() {
   };
 
   expected = {
-    left: positions.center.left,
-    top: positions.center.top
+    left: positions.center_center_center_center.left,
+    top: positions.center_center_center_center.top
   };
 
   deepEqual(result, expected, 'none');
@@ -431,7 +419,7 @@ test('onCollision methods', 7, function() {
   // "push"
 
   window.popo.set(target, {
-    position: positions.center.name,
+    position: positions.center_center_center_center.name,
     base: base,
     container: container,
     onCollision: 'push'
@@ -443,8 +431,8 @@ test('onCollision methods', 7, function() {
   };
 
   expected = {
-    left: positions.center.left + 10 - 3,
-    top: positions.center.top + 10 - 3
+    left: positions.center_center_center_center.left + 10 - 3,
+    top: positions.center_center_center_center.top + 10 - 3
   };
 
   deepEqual(result, expected, 'push');
@@ -452,7 +440,7 @@ test('onCollision methods', 7, function() {
   // "push none"
 
   window.popo.set(target, {
-    position: positions.center.name,
+    position: positions.center_center_center_center.name,
     base: base,
     container: container,
     onCollision: 'push none'
@@ -464,8 +452,8 @@ test('onCollision methods', 7, function() {
   };
 
   expected = {
-    left: positions.center.left + 10 - 3,
-    top: positions.center.top
+    left: positions.center_center_center_center.left + 10 - 3,
+    top: positions.center_center_center_center.top
   };
 
   deepEqual(result, expected, 'push none');
@@ -473,7 +461,7 @@ test('onCollision methods', 7, function() {
   // "push none push"
 
   window.popo.set(target, {
-    position: positions.center.name,
+    position: positions.center_center_center_center.name,
     base: base,
     container: container,
     onCollision: 'push none push'
@@ -485,8 +473,8 @@ test('onCollision methods', 7, function() {
   };
 
   expected = {
-    left: positions.center.left + 10 - 3,
-    top: positions.center.top
+    left: positions.center_center_center_center.left + 10 - 3,
+    top: positions.center_center_center_center.top
   };
 
   deepEqual(result, expected, 'push none push');
@@ -494,7 +482,7 @@ test('onCollision methods', 7, function() {
   // "push push none none"
 
   window.popo.set(target, {
-    position: positions.center.name,
+    position: positions.center_center_center_center.name,
     base: base,
     container: container,
     onCollision: 'push push none none'
@@ -506,8 +494,8 @@ test('onCollision methods', 7, function() {
   };
 
   expected = {
-    left: positions.center.left + 10,
-    top: positions.center.top + 10
+    left: positions.center_center_center_center.left + 10,
+    top: positions.center_center_center_center.top + 10
   };
 
   deepEqual(result, expected, 'push push none none');
@@ -515,7 +503,7 @@ test('onCollision methods', 7, function() {
   // "push push push! push!"
 
   window.popo.set(target, {
-    position: positions.center.name,
+    position: positions.center_center_center_center.name,
     base: base,
     container: container,
     onCollision: 'push push push! push!'
@@ -527,8 +515,8 @@ test('onCollision methods', 7, function() {
   };
 
   expected = {
-    left: positions.center.left + 4,
-    top: positions.center.top + 4
+    left: positions.center_center_center_center.left + 4,
+    top: positions.center_center_center_center.top + 4
   };
 
   deepEqual(result, expected, 'push push push! push!');
@@ -536,7 +524,7 @@ test('onCollision methods', 7, function() {
   // "push! push! push! push!"
 
   window.popo.set(target, {
-    position: positions.center.name,
+    position: positions.center_center_center_center.name,
     base: base,
     container: container,
     onCollision: 'push! push! push! push!'
@@ -548,8 +536,8 @@ test('onCollision methods', 7, function() {
   };
 
   expected = {
-    left: positions.center.left + 10,
-    top: positions.center.top + 10
+    left: positions.center_center_center_center.left + 10,
+    top: positions.center_center_center_center.top + 10
   };
 
   deepEqual(result, expected, 'push! push! push! push!');
@@ -561,14 +549,14 @@ test('Trimming whitespace from options', 1, function() {
   resetInlineStyles();
 
   result = window.popo.get(target, {
-    position: ' ' + ' ' + ' ' + ' ' + ' ' + positions.ne.name + ' ' + ' ' + ' ' + ' ' + ' ',
+    position: ' ' + ' ' + ' ' + ' ' + ' ' + positions.center_center_center_center.name + ' ' + ' ' + ' ' + ' ' + ' ',
     offset: '                0 0 ',
     base: base
   });
 
   expected = {
-    left: positions.ne.left,
-    top: positions.ne.top
+    left: positions.center_center_center_center.left,
+    top: positions.center_center_center_center.top
   };
 
   deepEqual(result, expected, 'Whitespace is trimmed correctly from options');

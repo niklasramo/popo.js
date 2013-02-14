@@ -12,8 +12,8 @@ The aim of Popo JS is to simplify the process of positioning DOM elements with J
 
 ###Download
 
-* **[v0.7.7 - Production](https://raw.github.com/niklasramo/popo/master/popo.min.js)** (4.8kb minified)
-* **[v0.7.7 - Development](https://raw.github.com/niklasramo/popo/master/popo.js)** (16.3kb uncompressed)
+* **[v0.7.9 - Production](https://raw.github.com/niklasramo/popo/master/popo.min.js)** (4.6kb minified)
+* **[v0.7.9 - Development](https://raw.github.com/niklasramo/popo/master/popo.js)** (16kb uncompressed)
 
 Download Popo JS library and include it in your HTML Document, preferrably inside the head tag.
 
@@ -53,7 +53,7 @@ Name | Description
 
 Property | Default | Type | Description
 --- | --- | --- | ---
-**position** | "center" | *String* | <p>Defines the target element's position relative to the base element. The format is "targetX targetY baseX baseY". A horizontal position can be `left`, `right` or `center` while a vertical position can be `top`, `bottom` or `center`.</p><p>Alternatively, you can use a single shortcut value: `nw`, `n`, `ne`, `e`, `se`, `s`, `sw`, `w`, `center`.</p>
+**position** | "center center center center" | *String* | <p>Defines the target element's position relative to the base element. The format is "targetX targetY baseX baseY". A horizontal position can be `left`, `right` or `center` while a vertical position can be `top`, `bottom` or `center`.</p>
 **offset** | "0" | *String* | <p>Defines a horizontal and a vertical offset (in pixels). For basic usage provide the option with a string containing two numbers (e.g. "-12 90"). The format is "offsetX offsetY". One number will be used for both offsets (e.g. "10").</p><p>For a bit more advanced usage you can define an angular offset by providing the option with an angle in degrees and a distance in pixels (e.g. "120deg 300"). Note that the first value must have the trailing "deg" string for Popo to identify the offset as an angular offset. Also note that zero degrees points to east.</p><p>For even more advanced usage you can provide the option with multiple offsets by separating the different offsets with a comma (e.g. "12, 30deg -600, -56 98, 1000deg 9").</p>
 **base** | window | *Element, Array* | <p>Defines which element the target element is positioned against. Alternatively you can define a coordinate with an array. The format is: [x-coordinate, y-coordinate, element]. The coordinates must be numbers (integers or floats) and the element must be a DOM element, the document object or the window object. The element is used to define the scope of the coordinates.</p>
 **container** | null | *Element* | <p>Defines an optional container element that is used for collision detection.</p>
@@ -74,7 +74,7 @@ __EX-1:__ Use <code>set</code> method to position target on top of base.
 
 ```javascript
 window.popo.set( target, {
-  position: "n",
+  position: "center bottom center top",
   base: base
 });
 ```
@@ -83,7 +83,7 @@ __EX-2:__ Use <code>get</code> method to retrieve target's position without actu
 
 ```javascript
 var position = window.popo.get( target, {
-  position: "n",
+  position: "left top right center",
   base: base
 });
 

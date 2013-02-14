@@ -1,5 +1,5 @@
 /*!
- * Popo JS - v0.7.8 - 14/2/2013
+ * Popo JS - v0.7.9 - 14/2/2013
  *
  * Copyright (c) 2013 Niklas Rämö
  * Released under the MIT license
@@ -33,20 +33,7 @@
       str_clientHeight = 'clientHeight',
 
       // A shortcut for getting the stringified type of an object
-      getStringifiedType = Object.prototype.toString,
-
-      // Define shortcut positions
-      shortcuts = {
-        nw: [str_right, str_bottom, str_left, str_top],
-        n: [str_center, str_bottom, str_center, str_top],
-        ne: [str_left, str_bottom, str_right, str_top],
-        e: [str_left, str_center, str_right, str_center],
-        se: [str_left, str_top, str_right, str_bottom],
-        s: [str_center, str_top, str_center, str_bottom],
-        sw: [str_right, str_top, str_left, str_bottom],
-        w: [str_right, str_center, str_left, str_center],
-        center: [str_center, str_center, str_center, str_center]
-      };
+      getStringifiedType = Object.prototype.toString;
 
   /*===========
     Functions
@@ -207,13 +194,6 @@
 
   }
 
-  function getSanitizedPosition(positionOption) {
-
-    var pos = typeof positionOption === str_function ? trim(positionOption()).split(' ') : positionOption.split(' ');
-    return pos.length === 1 ? shortcuts[pos[0]].slice(0) : pos;
-
-  }
-
   function getSanitizedOffset(offsetOption) {
 
     var offset = {x: 0, y: 0},
@@ -286,16 +266,16 @@
     }
 
     // Sanitize position
-    opts.position = getSanitizedPosition(opts.position);
-
-    // Sanitize offset
-    opts.offset = getSanitizedOffset(opts.offset);
+    opts.position = typeof opts.position === str_function ? opts.position().split(' ') : opts.position.split(' ');
 
     // Sanitize base element
     opts.base = typeof opts.base === str_function ? opts.base() : opts.base;
 
     // Sanitize container
     opts.container = typeof opts.container === str_function ? opts.container() : opts.container;
+
+    // Sanitize offset
+    opts.offset = getSanitizedOffset(opts.offset);
 
     // NOTE!
     // onCollision sanitation happens in position function and only if needed,
@@ -503,9 +483,9 @@
       return position('get', el, opts);
     },
     defaults: {
-      position: str_center,
-      offset: '0',
       base: window,
+      position: 'center center center center',
+      offset: '0',
       container: null,
       onCollision: 'push'
     }
