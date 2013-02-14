@@ -112,11 +112,19 @@ window.popo.set( target, {
   // onCollision option to have any effect.
   container: container,
 
-  // Define a collision method using one of the formats below with available methods.
-  // Formats => "all-sides", "x-axis y-axis", "left-side top-and-bottom-side right-side", "left-side top-side right-side bottom-side"
-  // Methods => "none", "push", "push!"
-  // Note that alternatively you can define a function for onCollision so you can create your own collision handling method.
-  // Function version => onCollision: function (targetPosition, positionData) {}
+  // Define a collision method using one of the formats below.
+
+  // Formats: 
+  // "all-sides"
+  // "x-axis y-axis"
+  // "left-side top-and-bottom-side right-side"
+  // "left-side top-side right-side bottom-side"
+
+  // Methods: "none", "push", "push!"
+  
+  // Note that alternatively you can define a function for onCollision
+  // so you can create your own collision handling method.
+  // => onCollision: function (targetPosition, positionData) {}
   onCollision: "push! none push push"
   
 });
