@@ -1,5 +1,5 @@
 /*!
- * Popo JS - v0.7.8 - 12/2/2013
+ * Popo JS - v0.7.8 - 14/2/2013
  *
  * Copyright (c) 2013 Niklas Rämö
  * Released under the MIT license
