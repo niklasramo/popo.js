@@ -3,7 +3,8 @@
 // GLOBALS
 //
 
-var result, expected, prop, i,
+var result, expected, prop, i, temp,
+    positionStyles = ['relative', 'absolute', 'fixed'],
     $wrapper = $('#test-wrapper'),
     wrapper = $wrapper[0],
     $target = $('#test-target'),
@@ -13,18 +14,6 @@ var result, expected, prop, i,
     $container = $('#test-container'),
     container = $container[0],
     positions = {
-
-      /* Shorthands */
-
-      n: {name: 'n', left: 10, top: 0},
-      e: {name: 'e', left: 20, top: 10},
-      s: {name: 's', left: 10, top: 20},
-      w: {name: 'w', left: 0, top: 10},
-      nw: {name: 'nw', left: 0, top: 0},
-      ne: {name: 'ne', left: 20, top: 0},
-      sw: {name: 'sw', left: 0, top: 20},
-      se: {name: 'se', left: 20, top: 20},
-      center: {name: 'center', left: 10, top: 10},
 
       /* Stack 1 */
 
@@ -148,36 +137,23 @@ var result, expected, prop, i,
 //
 
 function resetInlineStyles() {
-
   $wrapper.attr('style', '');
   $target.attr('style', '');
   $base.attr('style', '');
   $container.attr('style', '');
-
 }
-
 function getObjectLength(obj) {
-
-  var count = 0;
-  var property;
-
-  for (property in obj) {
-    count++;
-  }
-
+  var count = 0, property;
+  for (property in obj) { count++; }
   return count;
-
 }
 
 //
 // TESTS
 //
 
-test('Default positions', positionsLength * 6, function() {
+test('Set method - default positions', positionsLength * 3, function() {
 
-  var positionStyles = ['relative', 'absolute', 'fixed']; 
-
-  // Test set method
   for (i = 0; i < positionStyles.length; i++) {
 
     target.style.position = positionStyles[i];
@@ -199,13 +175,16 @@ test('Default positions', positionsLength * 6, function() {
         top: parseFloat(target.style.top)
       };
 
-      deepEqual(result, expected, 'method = "set", CSS Position = "' + positionStyles[i] + '", position = "' + positions[prop].name + '"');
+      deepEqual(result, expected, 'Target CSS position = "' + positionStyles[i] + '", Target Popo position = "' + positions[prop].name + '"');
 
     }
 
   }
 
-  // Test get method
+});
+
+test('Get method - default positions', positionsLength * 3, function() {
+
   for (i = 0; i < positionStyles.length; i++) {
 
     target.style.position = positionStyles[i];
@@ -222,7 +201,7 @@ test('Default positions', positionsLength * 6, function() {
         base: base
       });
 
-      deepEqual(result, expected, 'method = "get", CSS Position = "' + positionStyles[i] + '", position = "' + positions[prop].name + '"');
+      deepEqual(result, expected, 'Target CSS position = "' + positionStyles[i] + '", Target Popo position = "' + positions[prop].name + '"');
 
     }
 
@@ -237,7 +216,7 @@ test('Offsets', 7, function() {
   // Assertion #1
 
   window.popo.set(target, {
-    position: positions.center.name,
+    position: positions.center_center_center_center.name,
     base: base,
     offset: '5'
   });
@@ -248,16 +227,16 @@ test('Offsets', 7, function() {
   };
 
   expected = {
-    left: positions.center.left + 5,
-    top: positions.center.top + 5
+    left: positions.center_center_center_center.left + 5,
+    top: positions.center_center_center_center.top + 5
   };
 
-  deepEqual(result, expected, '#1 "5"');
+  deepEqual(result, expected, '5');
 
   // Assertion #2
 
   window.popo.set(target, {
-    position: positions.center.name,
+    position: positions.center_center_center_center.name,
     base: base,
     offset: '5 -5'
   });
@@ -268,16 +247,16 @@ test('Offsets', 7, function() {
   };
 
   expected = {
-    left: positions.center.left + 5,
-    top: positions.center.top - 5
+    left: positions.center_center_center_center.left + 5,
+    top: positions.center_center_center_center.top - 5
   };
 
-  deepEqual(result, expected, '#2 "5 -5"');
+  deepEqual(result, expected, '5 -5');
 
   // Assertion #3
 
   window.popo.set(target, {
-    position: positions.center.name,
+    position: positions.center_center_center_center.name,
     base: base,
     offset: '-19, 90deg 2'
   });
@@ -288,16 +267,16 @@ test('Offsets', 7, function() {
   };
 
   expected = {
-    left: positions.center.left - 19,
-    top: positions.center.top - 17
+    left: positions.center_center_center_center.left - 19,
+    top: positions.center_center_center_center.top - 17
   };
 
-  deepEqual(result, expected, '#3 "-19 90 2"');
+  deepEqual(result, expected, '-19, 90deg 2');
 
   // Assertion #4
 
   window.popo.set(target, {
-    position: positions.center.name,
+    position: positions.center_center_center_center.name,
     base: base,
     offset: '-19 97, 0deg 99'
   });
@@ -308,16 +287,16 @@ test('Offsets', 7, function() {
   };
 
   expected = {
-    left: positions.center.left + 80,
-    top: positions.center.top + 97
+    left: positions.center_center_center_center.left + 80,
+    top: positions.center_center_center_center.top + 97
   };
 
-  deepEqual(result, expected, '#4 "-19 97 0 99"');
+  deepEqual(result, expected, '-19 97, 0deg 99');
 
   // Assertion #5
 
   window.popo.set(target, {
-    position: positions.center.name,
+    position: positions.center_center_center_center.name,
     base: base,
     offset: '-19 97, 90deg 99'
   });
@@ -328,16 +307,16 @@ test('Offsets', 7, function() {
   };
 
   expected = {
-    left: positions.center.left - 19,
-    top: positions.center.top + 196
+    left: positions.center_center_center_center.left - 19,
+    top: positions.center_center_center_center.top + 196
   };
 
-  deepEqual(result, expected, '#5 "-19 97 90 99"');
+  deepEqual(result, expected, '-19 97, 90deg 99');
 
   // Assertion #6
 
   window.popo.set(target, {
-    position: positions.center.name,
+    position: positions.center_center_center_center.name,
     base: base,
     offset: '-19 97, 180deg 99'
   });
@@ -348,16 +327,16 @@ test('Offsets', 7, function() {
   };
 
   expected = {
-    left: positions.center.left - 118,
-    top: positions.center.top + 97
+    left: positions.center_center_center_center.left - 118,
+    top: positions.center_center_center_center.top + 97
   };
 
-  deepEqual(result, expected, '#6 "-19 97 180 99"');
+  deepEqual(result, expected, '-19 97, 180deg 99');
 
   // Assertion #7
 
   window.popo.set(target, {
-    position: positions.center.name,
+    position: positions.center_center_center_center.name,
     base: base,
     offset: '-19 97, 270deg 99'
   });
@@ -368,11 +347,11 @@ test('Offsets', 7, function() {
   };
 
   expected = {
-    left: positions.center.left - 19,
-    top: positions.center.top - 2
+    left: positions.center_center_center_center.left - 19,
+    top: positions.center_center_center_center.top - 2
   };
 
-  deepEqual(result, expected, '#7 "-19 97 270 99"');
+  deepEqual(result, expected, '-19 97, 270deg 99');
 
 });
 
@@ -383,22 +362,22 @@ test('onCollision callback', 2, function() {
   // onCollision arguments
 
   window.popo.set(target, {
-    position: positions.center.name,
+    position: positions.center_center_center_center.name,
     base: base,
     container: container,
-    onCollision: function (targetPosition, targetElem, baseElem, containerElem) {
-      result = [targetPosition, targetElem, baseElem, containerElem];
+    onCollision: function (targetPosition, data) {
+      result = [targetPosition, data.target.element, data.base.element, data.container.element];
     }
   });
 
-  expected = [{left: positions.center.left, top: positions.center.top}, target, base, container];
+  expected = [{left: positions.center_center_center_center.left, top: positions.center_center_center_center.top}, target, base, container];
 
-  deepEqual(result, expected, 'Correct arguments.');
+  deepEqual(result, expected, 'Callback receives correct arguments.');
 
   // onCollision target position
 
-  var temp = window.popo.get(target, {
-    position: positions.center.name,
+  temp = window.popo.get(target, {
+    position: positions.center_center_center_center.name,
     base: base,
     container: container,
     onCollision: function (targetPosition) {
@@ -408,7 +387,7 @@ test('onCollision callback', 2, function() {
 
   result = [temp.left - 1000, temp.top + 1000];
 
-  deepEqual(result, expected, "First argument affects the final positioning values, as expected.");
+  deepEqual(result, expected, "Callback's first argument is the same object that is used to set the final position or return the final values.");
 
 });
 
@@ -419,7 +398,7 @@ test('onCollision methods', 7, function() {
   // "none"
 
   window.popo.set(target, {
-    position: positions.center.name,
+    position: positions.center_center_center_center.name,
     base: base,
     container: container,
     onCollision: 'none'
@@ -431,8 +410,8 @@ test('onCollision methods', 7, function() {
   };
 
   expected = {
-    left: positions.center.left,
-    top: positions.center.top
+    left: positions.center_center_center_center.left,
+    top: positions.center_center_center_center.top
   };
 
   deepEqual(result, expected, 'none');
@@ -440,7 +419,7 @@ test('onCollision methods', 7, function() {
   // "push"
 
   window.popo.set(target, {
-    position: positions.center.name,
+    position: positions.center_center_center_center.name,
     base: base,
     container: container,
     onCollision: 'push'
@@ -452,8 +431,8 @@ test('onCollision methods', 7, function() {
   };
 
   expected = {
-    left: positions.center.left + 10 - 3,
-    top: positions.center.top + 10 - 3
+    left: positions.center_center_center_center.left + 10 - 3,
+    top: positions.center_center_center_center.top + 10 - 3
   };
 
   deepEqual(result, expected, 'push');
@@ -461,7 +440,7 @@ test('onCollision methods', 7, function() {
   // "push none"
 
   window.popo.set(target, {
-    position: positions.center.name,
+    position: positions.center_center_center_center.name,
     base: base,
     container: container,
     onCollision: 'push none'
@@ -473,8 +452,8 @@ test('onCollision methods', 7, function() {
   };
 
   expected = {
-    left: positions.center.left + 10 - 3,
-    top: positions.center.top
+    left: positions.center_center_center_center.left + 10 - 3,
+    top: positions.center_center_center_center.top
   };
 
   deepEqual(result, expected, 'push none');
@@ -482,7 +461,7 @@ test('onCollision methods', 7, function() {
   // "push none push"
 
   window.popo.set(target, {
-    position: positions.center.name,
+    position: positions.center_center_center_center.name,
     base: base,
     container: container,
     onCollision: 'push none push'
@@ -494,8 +473,8 @@ test('onCollision methods', 7, function() {
   };
 
   expected = {
-    left: positions.center.left + 10 - 3,
-    top: positions.center.top
+    left: positions.center_center_center_center.left + 10 - 3,
+    top: positions.center_center_center_center.top
   };
 
   deepEqual(result, expected, 'push none push');
@@ -503,7 +482,7 @@ test('onCollision methods', 7, function() {
   // "push push none none"
 
   window.popo.set(target, {
-    position: positions.center.name,
+    position: positions.center_center_center_center.name,
     base: base,
     container: container,
     onCollision: 'push push none none'
@@ -515,8 +494,8 @@ test('onCollision methods', 7, function() {
   };
 
   expected = {
-    left: positions.center.left + 10,
-    top: positions.center.top + 10
+    left: positions.center_center_center_center.left + 10,
+    top: positions.center_center_center_center.top + 10
   };
 
   deepEqual(result, expected, 'push push none none');
@@ -524,7 +503,7 @@ test('onCollision methods', 7, function() {
   // "push push push! push!"
 
   window.popo.set(target, {
-    position: positions.center.name,
+    position: positions.center_center_center_center.name,
     base: base,
     container: container,
     onCollision: 'push push push! push!'
@@ -536,8 +515,8 @@ test('onCollision methods', 7, function() {
   };
 
   expected = {
-    left: positions.center.left + 4,
-    top: positions.center.top + 4
+    left: positions.center_center_center_center.left + 4,
+    top: positions.center_center_center_center.top + 4
   };
 
   deepEqual(result, expected, 'push push push! push!');
@@ -545,7 +524,7 @@ test('onCollision methods', 7, function() {
   // "push! push! push! push!"
 
   window.popo.set(target, {
-    position: positions.center.name,
+    position: positions.center_center_center_center.name,
     base: base,
     container: container,
     onCollision: 'push! push! push! push!'
@@ -557,50 +536,49 @@ test('onCollision methods', 7, function() {
   };
 
   expected = {
-    left: positions.center.left + 10,
-    top: positions.center.top + 10
+    left: positions.center_center_center_center.left + 10,
+    top: positions.center_center_center_center.top + 10
   };
 
   deepEqual(result, expected, 'push! push! push! push!');
 
 });
 
-test('setClass & trim', 1, function() {
+test('Trimming whitespace from options', 1, function() {
 
   resetInlineStyles();
 
-  window.popo.set(target, {
-    position: ' ' + ' ' + ' ' + ' ' + ' ' + positions.ne.name + ' ' + ' ' + ' ' + ' ' + ' ',
-    base: base,
-    setClass: true
+  result = window.popo.get(target, {
+    position: ' ' + ' ' + ' ' + ' ' + ' ' + positions.center_center_center_center.name + ' ' + ' ' + ' ' + ' ' + ' ',
+    offset: '                0 0 ',
+    base: base
   });
 
-  result = $(target).hasClass('popo-ne');
-  ok(result, 'setClass works fine and so does trimming whitespace from options');
+  expected = {
+    left: positions.center_center_center_center.left,
+    top: positions.center_center_center_center.top
+  };
+
+  deepEqual(result, expected, 'Whitespace is trimmed correctly from options');
 
 });
 
-test('Performance', 90 * 200, function() {
+test('Coordinates', 1, function() {
 
   resetInlineStyles();
 
-  target.style.position = 'absolute';
+  // Assertion 1
 
-  for (i = 0; i < 200; i++) {
+  result = window.popo.get(target, {
+    position: 'left top left top',
+    base: [5, -5, base]
+  });
 
-    for (prop in positions) {
+  expected = {
+    left: $base.offset().left + 5,
+    top: $base.offset().top - 5
+  };
 
-      window.popo.set(target, {
-        position: positions[prop].name,
-        base: base,
-        container: container,
-        onCollision: 'push push push! push!'
-      });
-
-      strictEqual(1, 1, "Hooray, the browser did not crash!");
-
-    }
-
-  }
+  deepEqual(result, expected, 'Coordinates work as expected when base option is given an array with coordinates and a DOM element.');
 
 });
