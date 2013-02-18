@@ -111,9 +111,9 @@ window.popo.set( target, {
   // any effect.
   container: container,
 
-  // Define a collision method using one of the formats wth the given
-  // methods below. The idea is to define a collision method for each
-  // side separately.
+  // Define a collision method using one of the formats below with
+  // available methods. The idea is to define a collision method for
+  // each side separately or use one of the shorthand formats.
 
   // Methods: "none", "push", "push!"
 
