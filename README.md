@@ -53,7 +53,7 @@ Name | Description
 
 Property | Default | Type | Description
 --- | --- | --- | ---
-**base** | window | *Element, Array* | <p>Defines which element the target element is positioned against. Alternatively you can define a coordinate with an array. The format is: [x-coordinate, y-coordinate, element]. The coordinates must be numbers (integers or floats) and the element must be a DOM element, the document object or the window object. The element is used to define the scope of the coordinates.</p>
+**base** | window | *Element, Array* | <p>Defines which element the target element is positioned against.</p><p>Alternatively you can define a coordinate by providing an array containining the coordinates and an element that is used as the parent element for the coordinates. The format is: [x-coordinate, y-coordinate, element]. The coordinates must be numbers (integers or floats) and the element must be a DOM element, the document object or the window object.</p>
 **position** | "center" | *String* | <p>Defines the target element's position relative to the base element. The format is "targetX targetY baseX baseY". Use `left`, `right` and `center` to describe the horizontal position and `top`, `bottom` and `center` to describe the vertical position.</p>
 **offset** | "0" | *String* | <p>Defines a horizontal and a vertical offset (in pixels). For basic usage provide the option with a string containing two numbers (e.g. "-12 90"). The format is "offsetX offsetY". One number will be used for both offsets (e.g. "10").</p><p>For a bit more advanced usage you can define an angular offset by providing the option with an angle in degrees and a distance in pixels (e.g. "120deg 300"). Note that the first value must have the trailing "deg" string for Popo to identify the offset as an angular offset. Also note that zero degrees points to east.</p><p>For even more advanced usage you can provide the option with multiple offsets by separating the different offsets with a comma (e.g. "12, 30deg -600, -56 98, 1000deg 9").</p>
 **container** | null | *Element* | <p>Defines an optional container element that is used for collision detection.</p>
@@ -80,14 +80,14 @@ window.popo.set( target, {
 __EX-2:__ Use <code>get</code> method to retrieve target's position without actually positioning the target.
 
 ```javascript
+// The get method returns an object containing the final left and top values
 var position = window.popo.get( target, {
   position: "left top right center",
   base: base
 });
 
-// The get method returns and object containing the final left and top values
-var left = position.left,
-    top = position.top;
+// position.left => returns the final left position of target element 
+// position.top => returns the final top position of target element
 ```
 
 __EX-3:__ A bit more detailed example.
@@ -95,7 +95,7 @@ __EX-3:__ A bit more detailed example.
 ```javascript
 window.popo.set( target, {
 
-  // A compulsory base elment that defines which element.
+  // A compulsory base elment that defines which element
   // the target element is positioned against. Defaults to window.
   base: base,
 
@@ -103,27 +103,28 @@ window.popo.set( target, {
   // Format => "targetX targetY baseX baseY"
   position: "center top left bottom",
   
-  // Define a single offset or multiple offsets
-  // separated with comma.
+  // Define a single offset or multiple offsets separated with comma.
   offset: "12, 30deg -600, -56 98, 1000deg 9",
 
-  // An optional container element that is used for
-  // collision detection. Defaults to null. Needs to be defined for
-  // onCollision option to have any effect.
+  // An optional container element that is used for collision detection.
+  // Defaults to null. Must to be defined for onCollision option to have
+  // any effect.
   container: container,
 
-  // Define a collision method using one of the formats below.
-
-  // Formats: 
-  // "all-sides"
-  // "x-axis y-axis"
-  // "left-side top-and-bottom-side right-side"
-  // "left-side top-side right-side bottom-side"
+  // Define a collision method using one of the formats wth the given
+  // methods below. The idea is to define a collision method for each
+  // side separately.
 
   // Methods: "none", "push", "push!"
+
+  // Formats:
+  // "left-top-right-bottom"
+  // "left-right top-bottom"
+  // "left top-bottom right"
+  // "left top right bottom"
   
-  // Note that alternatively you can define a function for onCollision
-  // so you can create your own collision handling method.
+  // Note that alternatively you can use onCollision as a callback
+  // function so you can create your own collision method.
   // => onCollision: function (targetPosition, positionData) {}
   onCollision: "push! none push push"
   
