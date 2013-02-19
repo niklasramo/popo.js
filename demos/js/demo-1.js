@@ -74,7 +74,16 @@ $(function(){
     // Position target element with popo
     window.popo.set($(this)[0], {
       base: [touch.pageX, touch.pageY],
-      position: 'center center center center'
+      position: 'left top left top',
+      container: $(this)[0],
+      onCollision: function (targetPosition, positionData) {
+        console.log(targetPosition);
+        console.log(positionData.base.offset.left - positionData.target.offset.left);
+        /*
+        targetPosition.left += positionData.base.offset.left - positionData.target.offset.left;
+        targetPosition.top += positionData.base.offset.top - positionData.target.offset.top;
+        */
+      }
     });
 
     // Check overlap

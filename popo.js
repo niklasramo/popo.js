@@ -168,6 +168,8 @@
 
     ) : posProp === 'relative' ? (
 
+      // TODO: Make this part shorter and faster
+
       // Store original styles
       style = el.style,
       left = style[str_left],
@@ -406,17 +408,9 @@
       baseOffset = getOffset(baseElement)
     );
 
-    // Get target position
-    targetPosition = {
-      left: getBasePosition(opts.position[0] + opts.position[2], baseOffset[str_left] + opts.offset.x - targetParentOffset[str_left], baseWidth, targetWidth),
-      top: getBasePosition(opts.position[1] + opts.position[3], baseOffset[str_top] + opts.offset.y - targetParentOffset[str_top], baseHeight, targetHeight)
-    };
-
-    // If container is defined
+    // Get container dimensions and offset.
+    // If container is an array we assume it's a coordinate.
     if (opts.container) {
-
-      // Get container dimensions and offset.
-      // If container is an array we assume it's a coordinate.
       getStringifiedType.call(containerElement) === '[object Array]' ? (
         containerWidth = containerHeight = 0,
         containerOffset = getOffset(containerElement[2] || window),
@@ -427,22 +421,32 @@
         containerHeight = getHeight(containerElement),
         containerOffset = getOffset(containerElement)
       );
+    }
+
+    // Get target position
+    targetPosition = {
+      left: getBasePosition(opts.position[0] + opts.position[2], baseOffset[str_left] + opts.offset.x - targetParentOffset[str_left], baseWidth, targetWidth),
+      top: getBasePosition(opts.position[1] + opts.position[3], baseOffset[str_top] + opts.offset.y - targetParentOffset[str_top], baseHeight, targetHeight)
+    };
+
+    // If container is defined
+    if (opts.container) {
 
       // Calculate how much target element's sides overlap the corresponding sides of the container
       targetOverlap = getOverlap(targetWidth, targetHeight, targetPosition, targetParentOffset, containerWidth, containerHeight, containerOffset);
 
       // Collision handling (skip if onCollision is null)
       if (typeof onCollision === str_function) {
-        onCollision(targetPosition, {
+
+        // TODO: Add parameter that tells how much the x and y coordinates of target changed during positioning
+        // or find an alternative way to calculate that
+        // TODO: target.parentOffset -> target.offset (find a not too heavy way)
+        onCollision(targetPosition, targetOverlap {
           target: {
             element: targetElement,
             width: targetWidth,
             height: targetHeight,
-            offset: {
-              x: targetParentOffset.x + targetPosition.x,
-              y: targetParentOffset.y + targetPosition.y
-            },
-            overlap: targetOverlap
+            parentOffset: targetParentOffset
           },
           base: {
             element: baseElement,
@@ -457,11 +461,14 @@
             offset: containerOffset
           }
         });
+
       } else {
+
         onCollision = getSanitizedOnCollision(onCollision);
         if (onCollision) {
           pushOnCollision(targetWidth, targetHeight, targetPosition, targetParentOffset, containerWidth, containerHeight, containerOffset, targetOverlap, onCollision);
         }
+
       }
 
     }
