@@ -30,44 +30,70 @@ html, body {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  background: #f9f9f9;
 }
-.target {
+#target, #overlap, #title {
+  display: block;
+  position: absolute;
+  cursor: move;
+}
+#target {
   left: 50%;
   top: 50%;
-  width: 50px;
-  height: 50px;
-  -webkit-transition: all 1s ease-in-out;
-  -moz-transition: all 1s ease-in-out;
-  -ms-transition: all 1s ease-in-out;
-  -o-transition: all 1s ease-in-out;
-  transition: all 1s ease-in-out;
-}
-.target-fixed {
-  position: fixed;
+  width: 150px;
+  height: 150px;
+  line-height: 150px;
   background: #000;
 }
-.target-relative {
-  position: relative;
-  background: #000;
-}
-.target-absolute {
+#drag-handle {
+  display: none;
   position: absolute;
-  background: #000;
+  left: -200px;
+  top: -200px;
+  right: -200px;
+  bottom: -200px;
+  background: transparent;
+  cursor: move;
 }
-.container {
+#overlap {
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: #d59f0d;
+}
+#title {
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  color: #fff;
+  font-family: Helvetica, Arial, serif;
+  text-align: center;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+#container {
+  position: absolute;
   left: 50%;
   top: 50%;
-  width: 200px;
-  height: 200px;
-  margin-left: -100px;
-  margin-top: -100px;
+  width: 300px;
+  height: 300px;
+  margin-left: -150px;
+  margin-top: -150px;
+  background: #e6cccc;
 }
-.container-fixed {
-  position: fixed;
+#container.partial {
+  background: #ccdee6;
 }
-.container-relative {
-  position: relative;
+#container.full {
+  background: #cee6cc;
 }
-.container-absolute {
-  position: absolute;
+
+#target, #container {
+  -webkit-transition: background 200ms ease;
+  -moz-transition: background 200ms ease;
+  -ms-transition: background 200ms ease;
+  -o-transition: background 200ms ease;
+  transition: background 200ms ease;
 }

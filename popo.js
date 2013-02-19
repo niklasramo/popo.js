@@ -1,5 +1,5 @@
 /*!
- * Popo JS - v0.7.9 - 14/2/2013
+ * Popo JS - v0.7.9.1 - 19/2/2013
  *
  * Copyright (c) 2013 Niklas Rämö
  * Released under the MIT license
@@ -16,9 +16,8 @@
       docElem = doc.documentElement,
       body = doc.body,
 
-      // Cache some math functions
-      math = window.Math,
-      mathAbs = math.abs,
+      // Cache math functions
+      mathAbs = Math.abs,
 
       // Cache repeating strings and object keys (for better compression)
       str_left = 'left',
@@ -29,8 +28,6 @@
       str_function = 'function',
       str_number = 'number',
       str_getBoundingClientRect = 'getBoundingClientRect',
-      str_clientWidth = 'clientWidth',
-      str_clientHeight = 'clientHeight',
 
       // A shortcut for getting the stringified type of an object
       getStringifiedType = Object.prototype.toString;
@@ -63,9 +60,9 @@
   function getWidth(el) {
 
     return el === window ? (
-      docElem[str_clientWidth] || body[str_clientWidth]
+      docElem.clientWidth || body.clientWidth
     ) : el === doc ? (
-      math.max(docElem[str_clientWidth], docElem.offsetWidth, docElem.scrollWidth, body.scrollWidth, body.offsetWidth)
+      Math.max(docElem.clientWidth, docElem.offsetWidth, docElem.scrollWidth, body.scrollWidth, body.offsetWidth)
     ) : (
       el[str_getBoundingClientRect]().width || el.offsetWidth
     );
@@ -75,9 +72,9 @@
   function getHeight(el) {
 
     return el === window ? (
-      docElem[str_clientHeight] || body[str_clientHeight]
+      docElem.clientHeight || body.clientHeight
     ) : el === doc ? (
-      math.max(docElem[str_clientHeight], docElem.offsetHeight, docElem.scrollHeight, body.scrollHeight, body.offsetHeight)
+      Math.max(docElem.clientHeight, docElem.offsetHeight, docElem.scrollHeight, body.scrollHeight, body.offsetHeight)
     ) : (
       el[str_getBoundingClientRect]().height || el.offsetHeight
     );
@@ -111,9 +108,9 @@
 
       rect = el[str_getBoundingClientRect]();
       if (typeof rect !== 'undefined') {
-        offsetLeft = rect.left + getViewportScrollLeft();
-        offsetTop = rect.top  + getViewportScrollTop();
-        if (includeBorders === true) {
+        offsetLeft = rect[str_left] + getViewportScrollLeft();
+        offsetTop = rect[str_top]  + getViewportScrollTop();
+        if (includeBorders) {
           offsetLeft += el.clientLeft;
           offsetTop += el.clientTop;
         }
@@ -171,22 +168,22 @@
 
       // Store original styles
       style = el.style,
-      left = style.left,
-      right = style.right,
-      top = style.top,
-      bottom = style.bottom,
+      left = style[str_left],
+      right = style[str_right],
+      top = style[str_top],
+      bottom = style[str_bottom],
 
       // Reset element's left/right/top/bottom properties
-      style.left = style.right = style.top = style.bottom = 'auto',
+      style[str_left] = style[str_right] = style[str_top] = style[str_bottom] = 'auto',
 
       // Get the element's offset
       offset = getOffset(el),
 
       // Restore element's original props
-      style.left = left,
-      style.right = right,
-      style.top = top,
-      style.bottom = bottom
+      style[str_left] = left,
+      style[str_right] = right,
+      style[str_top] = top,
+      style[str_bottom] = bottom
 
     );
 
@@ -197,10 +194,9 @@
   function getSanitizedOffset(offsetOption) {
 
     var offset = {x: 0, y: 0},
-        decimal = 1000000, 
+        decimal = 1000000,
         items = typeof offsetOption === str_function ? trim(offsetOption()).split(',') : offsetOption.split(','),
         itemsLen = items.length,
-        toFloat = window.parseFloat,
         item, itemLen, ang, dist, i;
 
     // Loop through all offset declarations
@@ -214,19 +210,19 @@
       if (itemLen === 2 && item[0].indexOf('deg') !== -1) {
 
         // Get angle and distance
-        ang = toFloat(item[0]);
-        dist = toFloat(item[1]);
+        ang = parseFloat(item[0]);
+        dist = parseFloat(item[1]);
 
         // Apply offsets only if the values are even remotely significant
         if (typeof ang === str_number && typeof dist === str_number && dist !== 0) {
-          offset.x += math.round((math.cos(ang * (math.PI/180)) * dist) * decimal) / decimal;
-          offset.y += math.round((math.sin(ang * (math.PI/180)) * dist) * decimal) / decimal;
+          offset.x += Math.round((Math.cos(ang * (Math.PI/180)) * dist) * decimal) / decimal;
+          offset.y += Math.round((Math.sin(ang * (Math.PI/180)) * dist) * decimal) / decimal;
         }
 
       // If is normal offset
       } else if (itemLen === 1 || itemLen === 2) {
-        offset.x += toFloat(item[0]);
-        offset.y += itemLen === 1 ? toFloat(item[0]) : toFloat(item[1]);
+        offset.x += parseFloat(item[0]);
+        offset.y += itemLen === 1 ? parseFloat(item[0]) : parseFloat(item[1]);
       }
 
     }
@@ -237,7 +233,7 @@
 
   function getSanitizedOnCollision(onCollisionOption) {
 
-    var arr = typeof onCollisionOption === 'string' && onCollisionOption.length !== 0 ? onCollisionOption.split(' ') : '',
+    var arr = typeof onCollisionOption === 'string' && onCollisionOption.length > 0 ? onCollisionOption.split(' ') : '',
         len = arr.length;
 
     if (len > 0 && len < 5) {
@@ -301,18 +297,18 @@
 
   }
 
-  function getOverflow(targetWidth, targetHeight, targetPosition, targetParentOffset, containerWidth, containerHeight, containerOffset) {
+  function getOverlap(targetWidth, targetHeight, targetPosition, targetParentOffset, containerWidth, containerHeight, containerOffset) {
 
     return {
-      left: targetPosition.left + targetParentOffset.left - containerOffset.left,
-      right: (containerOffset.left + containerWidth) - (targetPosition.left + targetParentOffset.left + targetWidth),
-      top: targetPosition.top + targetParentOffset.top - containerOffset.top,
-      bottom: (containerOffset.top + containerHeight) - (targetPosition.top + targetParentOffset.top + targetHeight)
+      left: targetPosition[str_left] + targetParentOffset[str_left] - containerOffset[str_left],
+      right: (containerOffset[str_left] + containerWidth) - (targetPosition[str_left] + targetParentOffset[str_left] + targetWidth),
+      top: targetPosition[str_top] + targetParentOffset[str_top] - containerOffset[str_top],
+      bottom: (containerOffset[str_top] + containerHeight) - (targetPosition[str_top] + targetParentOffset[str_top] + targetHeight)
     };
 
   }
 
-  function pushOnCollision(targetWidth, targetHeight, targetPosition, targetParentOffset, containerWidth, containerHeight, containerOffset, containerOverflow, onCollision) {
+  function pushOnCollision(targetWidth, targetHeight, targetPosition, targetParentOffset, containerWidth, containerHeight, containerOffset, targetOverlap, onCollision) {
 
     var push = 'push',
         forcedPush = 'push!',
@@ -327,41 +323,41 @@
       // If pushing is needed from both sides
       if ( (onCollision[leftOrTop] === push || onCollision[leftOrTop] === forcedPush) &&
            (onCollision[rightOrBottom] === push || onCollision[rightOrBottom] === forcedPush) &&
-           (containerOverflow[leftOrTop] < 0 || containerOverflow[rightOrBottom] < 0)
+           (targetOverlap[leftOrTop] < 0 || targetOverlap[rightOrBottom] < 0)
          ) {
 
         // Push from opposite sides equally
-        if (containerOverflow[leftOrTop] > containerOverflow[rightOrBottom]) {
-          if (mathAbs(containerOverflow[rightOrBottom]) <= mathAbs(containerOverflow[leftOrTop])) {
-            targetPosition[leftOrTop] -= mathAbs(containerOverflow[rightOrBottom]);
+        if (targetOverlap[leftOrTop] > targetOverlap[rightOrBottom]) {
+          if (mathAbs(targetOverlap[rightOrBottom]) <= mathAbs(targetOverlap[leftOrTop])) {
+            targetPosition[leftOrTop] -= mathAbs(targetOverlap[rightOrBottom]);
           } else {
-            targetPosition[leftOrTop] -= ((mathAbs(containerOverflow[leftOrTop]) + mathAbs(containerOverflow[rightOrBottom])) / 2);
+            targetPosition[leftOrTop] -= ((mathAbs(targetOverlap[leftOrTop]) + mathAbs(targetOverlap[rightOrBottom])) / 2);
           }
-        } else if (containerOverflow[leftOrTop] < containerOverflow[rightOrBottom]) {
-          if (mathAbs(containerOverflow[leftOrTop]) <= mathAbs(containerOverflow[rightOrBottom])) {
-            targetPosition[leftOrTop] += mathAbs(containerOverflow[leftOrTop]);
+        } else if (targetOverlap[leftOrTop] < targetOverlap[rightOrBottom]) {
+          if (mathAbs(targetOverlap[leftOrTop]) <= mathAbs(targetOverlap[rightOrBottom])) {
+            targetPosition[leftOrTop] += mathAbs(targetOverlap[leftOrTop]);
           } else {
-            targetPosition[leftOrTop] += ((mathAbs(containerOverflow[leftOrTop]) + mathAbs(containerOverflow[rightOrBottom])) / 2);
+            targetPosition[leftOrTop] += ((mathAbs(targetOverlap[leftOrTop]) + mathAbs(targetOverlap[rightOrBottom])) / 2);
           }
         }
 
-        // Update container's overflow
-        containerOverflow = getOverflow(targetWidth, targetHeight, targetPosition, targetParentOffset, containerWidth, containerHeight, containerOffset);
+        // Update target's overlap
+        targetOverlap = getOverlap(targetWidth, targetHeight, targetPosition, targetParentOffset, containerWidth, containerHeight, containerOffset);
 
         // Force push one of the sides if needed
-        if (onCollision[leftOrTop] === forcedPush && containerOverflow[leftOrTop] < 0) {
-          targetPosition[leftOrTop] += mathAbs(containerOverflow[leftOrTop]);
-        } else if (onCollision[rightOrBottom] === forcedPush && containerOverflow[rightOrBottom] < 0) {
-          targetPosition[leftOrTop] -= mathAbs(containerOverflow[rightOrBottom]);
+        if (onCollision[leftOrTop] === forcedPush && targetOverlap[leftOrTop] < 0) {
+          targetPosition[leftOrTop] += mathAbs(targetOverlap[leftOrTop]);
+        } else if (onCollision[rightOrBottom] === forcedPush && targetOverlap[rightOrBottom] < 0) {
+          targetPosition[leftOrTop] -= mathAbs(targetOverlap[rightOrBottom]);
         }
 
       // If pushing is needed from left or top side only, push it!
-      } else if ((onCollision[leftOrTop] === forcedPush || onCollision[leftOrTop] === push) && containerOverflow[leftOrTop] < 0) {
-        targetPosition[leftOrTop] += mathAbs(containerOverflow[leftOrTop]);
+      } else if ((onCollision[leftOrTop] === forcedPush || onCollision[leftOrTop] === push) && targetOverlap[leftOrTop] < 0) {
+        targetPosition[leftOrTop] += mathAbs(targetOverlap[leftOrTop]);
 
       // If pushing is needed from right or bottom side only, push it!
-      } else if ((onCollision[rightOrBottom] === forcedPush || onCollision[rightOrBottom] === push) && containerOverflow[rightOrBottom] < 0) {
-        targetPosition[leftOrTop] -= mathAbs(containerOverflow[rightOrBottom]);
+      } else if ((onCollision[rightOrBottom] === forcedPush || onCollision[rightOrBottom] === push) && targetOverlap[rightOrBottom] < 0) {
+        targetPosition[leftOrTop] -= mathAbs(targetOverlap[rightOrBottom]);
       }
 
     }
@@ -378,6 +374,7 @@
         targetHeight = getHeight(targetElement),
         targetParentOffset = getParentOffset(targetElement),
         targetPosition,
+        targetOverlap,
 
         // Pre-define base element's data vars
         baseElement = opts.base,
@@ -389,16 +386,15 @@
         containerElement,
         containerWidth,
         containerHeight,
-        containerOffset,
-        containerOverflow;
+        containerOffset;
 
     // Calculate base element's dimensions and offset.
     // If base is an array we assume it's a coordinate.
-    getStringifiedType.call(opts.base) === '[object Array]' ? (
+    getStringifiedType.call(baseElement) === '[object Array]' ? (
       baseWidth = baseHeight = 0,
       baseOffset = getOffset(baseElement[2] || window),
-      baseOffset.left += baseElement[0],
-      baseOffset.top += baseElement[1]
+      baseOffset[str_left] += baseElement[0],
+      baseOffset[str_top] += baseElement[1]
     ) : (
       baseWidth = getWidth(baseElement),
       baseHeight = getHeight(baseElement),
@@ -407,21 +403,28 @@
 
     // Get target position
     targetPosition = {
-      left: getBasePosition(opts.position[0] + opts.position[2], baseOffset.left + opts.offset.x - targetParentOffset.left, baseWidth, targetWidth),
-      top: getBasePosition(opts.position[1] + opts.position[3], baseOffset.top + opts.offset.y - targetParentOffset.top, baseHeight, targetHeight)
+      left: getBasePosition(opts.position[0] + opts.position[2], baseOffset[str_left] + opts.offset.x - targetParentOffset[str_left], baseWidth, targetWidth),
+      top: getBasePosition(opts.position[1] + opts.position[3], baseOffset[str_top] + opts.offset.y - targetParentOffset[str_top], baseHeight, targetHeight)
     };
 
     // If container is defined
-    if (opts.container !== null) {
+    if (opts.container) {
 
-      // Get container dimensions and offset,
-      // and calculate how much the target element
-      // overflows the container on each side
+      // Get container dimensions and offset
       containerElement = opts.container;
-      containerWidth = getWidth(containerElement);
-      containerHeight = getHeight(containerElement);
-      containerOffset = getOffset(containerElement);
-      containerOverflow = getOverflow(targetWidth, targetHeight, targetPosition, targetParentOffset, containerWidth, containerHeight, containerOffset);
+      getStringifiedType.call(containerElement) === '[object Array]' ? (
+        containerWidth = containerHeight = 0,
+        containerOffset = getOffset(containerElement[2] || window),
+        containerOffset[str_left] += containerElement[0],
+        containerOffset[str_top] += containerElement[1]
+      ) : (
+        containerWidth = getWidth(containerElement),
+        containerHeight = getHeight(containerElement),
+        containerOffset = getOffset(containerElement)
+      );
+
+      // Calculate how much target element's sides overlap the corresponding sides of the container
+      targetOverlap = getOverlap(targetWidth, targetHeight, targetPosition, targetParentOffset, containerWidth, containerHeight, containerOffset);
 
       // Collision handling (skip if onCollision is null)
       if (typeof onCollision === str_function) {
@@ -433,7 +436,8 @@
             offset: {
               x: targetParentOffset.x + targetPosition.x,
               y: targetParentOffset.y + targetPosition.y
-            }
+            },
+            overlap: targetOverlap
           },
           base: {
             element: baseElement,
@@ -445,14 +449,13 @@
             element: containerElement,
             width: containerWidth,
             height: containerHeight,
-            offset: containerOffset,
-            overflow: containerOverflow
+            offset: containerOffset
           }
         });
       } else {
         onCollision = getSanitizedOnCollision(onCollision);
-        if (onCollision !== null) {
-          pushOnCollision(targetWidth, targetHeight, targetPosition, targetParentOffset, containerWidth, containerHeight, containerOffset, containerOverflow, onCollision);
+        if (onCollision) {
+          pushOnCollision(targetWidth, targetHeight, targetPosition, targetParentOffset, containerWidth, containerHeight, containerOffset, targetOverlap, onCollision);
         }
       }
 
@@ -460,8 +463,8 @@
 
     // Set or return the final values
     if (method === 'set') {
-      targetElement.style.left = targetPosition.left + 'px';
-      targetElement.style.top = targetPosition.top + 'px';
+      targetElement.style[str_left] = targetPosition[str_left] + 'px';
+      targetElement.style[str_top] = targetPosition[str_top] + 'px';
     } else {
       return targetPosition;
     }
