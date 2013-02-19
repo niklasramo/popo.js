@@ -159,7 +159,7 @@
         offset, style, left, right, top, bottom;
 
     posProp === 'fixed' ? (
-      offset = {left: 0, top: 0}
+      offset = {left: 0, top: 0} // TODO: isn't this supposed to be window's offset?!?
     ) : posProp === 'absolute' ? (
       offset = getOffset(getOffsetParent(el), true)
     ) : posProp !== 'relative' ? (
