@@ -1,5 +1,5 @@
 /*!
- * Popo JS - v0.7.9.1 - 19/2/2013
+ * Popo JS - v0.7.9.2 - 19/2/2013
  *
  * Copyright (c) 2013 Niklas Rämö
  * Released under the MIT license
@@ -274,8 +274,7 @@
     opts.offset = getSanitizedOffset(opts.offset);
 
     // NOTE!
-    // onCollision sanitation happens in position function and only if needed,
-    // meaning only if container is defined.
+    // onCollision sanitation happens inside position function (if container is defined)
 
     return opts;
 
@@ -369,21 +368,21 @@
     var opts = getPreSanitizedOptions(instanceOptions),
         onCollision = opts.onCollision,
 
-        // Pre-define target element's data vars
+        // Pre-define target variables
         targetWidth = getWidth(targetElement),
         targetHeight = getHeight(targetElement),
         targetParentOffset = getParentOffset(targetElement),
         targetPosition,
         targetOverlap,
 
-        // Pre-define base element's data vars
+        // Pre-define base variables
         baseElement = opts.base,
         baseWidth,
         baseHeight,
         baseOffset,
 
-        // Pre-define container element's data vars
-        containerElement,
+        // Pre-define container variables
+        containerElement = opts.container,
         containerWidth,
         containerHeight,
         containerOffset;
@@ -410,8 +409,8 @@
     // If container is defined
     if (opts.container) {
 
-      // Get container dimensions and offset
-      containerElement = opts.container;
+      // Get container dimensions and offset.
+      // If container is an array we assume it's a coordinate.
       getStringifiedType.call(containerElement) === '[object Array]' ? (
         containerWidth = containerHeight = 0,
         containerOffset = getOffset(containerElement[2] || window),
