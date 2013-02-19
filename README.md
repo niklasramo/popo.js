@@ -25,6 +25,7 @@ Download Popo JS library and include it in your HTML Document, preferrably insid
 
 * Target element's CSS position property must be *relative*, *absolute* or *fixed*.
 * The CSS display property of target element, base element and container element must not be *none*.
+* Target element's margin affects the final position calculated by Popo. This is a known feature, not a bug.
 
 ###Start using
 
