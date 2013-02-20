@@ -380,7 +380,7 @@
         targetWidth = getWidth(targetElement),
         targetHeight = getHeight(targetElement),
         targetParentOffset = getParentOffset(targetElement),
-        targetPosition,
+        targetOffset,
         targetOverlap,
 
         // Pre-define base variables
@@ -408,9 +408,17 @@
       baseOffset = getOffset(baseElement)
     );
 
-    // Get container dimensions and offset.
-    // If container is an array we assume it's a coordinate.
-    if (opts.container) {
+    // Calculate target elment's new position
+    targetPosition = {
+      left: getBasePosition(opts.position[0] + opts.position[2], baseOffset[str_left] + opts.offset.x - targetParentOffset[str_left], baseWidth, targetWidth),
+      top: getBasePosition(opts.position[1] + opts.position[3], baseOffset[str_top] + opts.offset.y - targetParentOffset[str_top], baseHeight, targetHeight)
+    };
+
+    // If container is defined, let's do some extra calculations and collision handling stuff
+    if (containerElement) {
+
+      // Calculate container element's dimensions and offset.
+      // If container is an array we assume it's a coordinate.
       getStringifiedType.call(containerElement) === '[object Array]' ? (
         containerWidth = containerHeight = 0,
         containerOffset = getOffset(containerElement[2] || window),
@@ -421,32 +429,27 @@
         containerHeight = getHeight(containerElement),
         containerOffset = getOffset(containerElement)
       );
-    }
 
-    // Get target position
-    targetPosition = {
-      left: getBasePosition(opts.position[0] + opts.position[2], baseOffset[str_left] + opts.offset.x - targetParentOffset[str_left], baseWidth, targetWidth),
-      top: getBasePosition(opts.position[1] + opts.position[3], baseOffset[str_top] + opts.offset.y - targetParentOffset[str_top], baseHeight, targetHeight)
-    };
-
-    // If container is defined
-    if (opts.container) {
-
-      // Calculate how much target element's sides overlap the corresponding sides of the container
+      // Calculate how much target element's sides overlap with the container element's sides
       targetOverlap = getOverlap(targetWidth, targetHeight, targetPosition, targetParentOffset, containerWidth, containerHeight, containerOffset);
 
       // Collision handling (skip if onCollision is null)
       if (typeof onCollision === str_function) {
 
-        // TODO: Add parameter that tells how much the x and y coordinates of target changed during positioning
-        // or find an alternative way to calculate that
-        // TODO: target.parentOffset -> target.offset (find a not too heavy way)
-        onCollision(targetPosition, targetOverlap {
+        // Calculate target's current offset. Used only for providing useful 
+        // extra data when onCollision callback function is used.
+        targetOffset = getOffset(targetElement);
+
+        onCollision(targetPosition, targetOverlap, {
           target: {
             element: targetElement,
             width: targetWidth,
             height: targetHeight,
-            parentOffset: targetParentOffset
+            offset: targetOffset,
+            position: {
+              left: targetOffset[str_left] - targetParentOffset[str_left],
+              top: targetOffset[str_top] - targetParentOffset[str_top]
+            }
           },
           base: {
             element: baseElement,
