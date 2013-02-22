@@ -1,10 +1,20 @@
 $(function(){
 
-  // Get elements
+  console.log('docElem clientLeft: ' + document.documentElement.clientLeft);
+  console.log('docElem clientTop: ' + document.documentElement.clientTop);
+  console.log('body clientLeft: ' + document.body.clientLeft);
+  console.log('body clientTop: ' + document.body.clientTop);
+  console.log('---');
+  console.log('docElem gbcrLeft: ' + document.documentElement.getBoundingClientRect().left);
+  console.log('docElem gbcrTop: ' + document.documentElement.getBoundingClientRect().top);
+  console.log('body gbcrLeft: ' + document.body.getBoundingClientRect().left);
+  console.log('body gbcrTop: ' + document.body.getBoundingClientRect().top);
+
   var $target = $('#target'),
       $overlap = $('#overlap'),
       $handle = $('#drag-handle'),
-      $container = $('#container');
+      $container = $('#container'),
+      dragCoords = {x: 0, y: 0};
 
   //
   // Functions
@@ -12,33 +22,30 @@ $(function(){
 
   function checkOverlap() {
 
-    window.popo.get($target[0], {
+    popo.get($target[0], {
       base: $target[0],
       position: 'left top left top',
       container: $container[0],
-      onCollision: function (targetPosition, positionData) {
-
-        // Get container overlap data
-        var overlap = positionData.target.overlap;
+      onCollision: function (targetPosition, targetOverlap, positionData) {
 
         // Update inner target's position
         $overlap.css({
-          left: overlap.left < 0 ? Math.abs(overlap.left) : 0,
-          right: overlap.right < 0 ? Math.abs(overlap.right) : 0,
-          top: overlap.top < 0 ? Math.abs(overlap.top) : 0,
-          bottom: overlap.bottom < 0 ? Math.abs(overlap.bottom) : 0
+          left: targetOverlap.left < 0 ? Math.abs(targetOverlap.left) : 0,
+          right: targetOverlap.right < 0 ? Math.abs(targetOverlap.right) : 0,
+          top: targetOverlap.top < 0 ? Math.abs(targetOverlap.top) : 0,
+          bottom: targetOverlap.bottom < 0 ? Math.abs(targetOverlap.bottom) : 0
         });
 
         // If box is fully within container
-        if (overlap.left >= 0 && overlap.right >= 0 && overlap.top >= 0 && overlap.bottom >= 0) {
+        if (targetOverlap.left >= 0 && targetOverlap.right >= 0 && targetOverlap.top >= 0 && targetOverlap.bottom >= 0) {
           $container.removeClass('partial').addClass('full');
 
         // If box is fully outside container
         } else if (
-          (overlap.left < 0 && Math.abs(overlap.left) >= positionData.target.width) || 
-          (overlap.right < 0 && Math.abs(overlap.right) >= positionData.target.width) || 
-          (overlap.top < 0 && Math.abs(overlap.top) >= positionData.target.height) || 
-          (overlap.bottom < 0 && Math.abs(overlap.bottom) >= positionData.target.height)
+          (targetOverlap.left < 0 && Math.abs(targetOverlap.left) >= positionData.target.width) || 
+          (targetOverlap.right < 0 && Math.abs(targetOverlap.right) >= positionData.target.width) || 
+          (targetOverlap.top < 0 && Math.abs(targetOverlap.top) >= positionData.target.height) || 
+          (targetOverlap.bottom < 0 && Math.abs(targetOverlap.bottom) >= positionData.target.height)
           ) {
           $container.removeClass('full partial');
 
@@ -57,34 +64,52 @@ $(function(){
   //
 
   // Hammer drag with Popo's help
-  $target.hammer({drag_max_touches:0}).on('touch dragstart drag dragend', function (ev) {
+  Hammer($target[0], {drag_max_touches: 0, drag_min_distance: 1}).on('touch dragstart drag dragend', function (ev) {
 
     ev.gesture.preventDefault();
-
-    // Hide/show drag handle
-    if (ev.type === 'dragstart') {
-      $handle.show();
-    } else if (ev.type === 'dragend') {
-      $handle.hide();
-    }
 
     // Get the touch event
     var touch = ev.gesture.touches[0];
 
-    // Position target element with popo
-    window.popo.set($(this)[0], {
-      base: [touch.pageX, touch.pageY],
+    // Hide/show drag handle
+    if (ev.type === 'dragstart') {
+      $handle[0].style.display = 'block';
+    } else if (ev.type === 'dragend') {
+      $handle[0].style.display = 'none';
+    }
+
+    // Position target element with Popo
+    popo.set($target[0], {
+      base: $target[0],
       position: 'left top left top',
-      container: $(this)[0],
-      onCollision: function (targetPosition, positionData) {
-        console.log(targetPosition);
-        console.log(positionData.base.offset.left - positionData.target.offset.left);
+      container: $target[0],
+      onCollision: function (targetPosition, targetOverlap, data) {
+
+        console.log('target_offset_left: ' + data.target.offset.left);
+        console.log('target_offset_top: ' + data.target.offset.top);
+
+        console.log('base_offset_left: ' + data.base.offset.left);
+        console.log('base_offset_top: ' + data.base.offset.top);
+
+        console.log('target_pos_left: ' + data.target.position.left);
+        console.log('target_pos_top: ' + data.target.position.top);
+
+        console.log('target_new_pos_left: ' + targetPosition.left);
+        console.log('target_new_pos_top: ' + targetPosition.top);
+        console.log('-----------------------------------------');
+
         /*
-        targetPosition.left += positionData.base.offset.left - positionData.target.offset.left;
-        targetPosition.top += positionData.base.offset.top - positionData.target.offset.top;
+        if (ev.type !== 'touch') {
+          targetPosition.left = targetPosition.left + (touch.pageX < dragCoords.x ? -Math.abs(dragCoords.x - touch.pageX) : Math.abs(dragCoords.x - touch.pageX));
+          targetPosition.top = targetPosition.top + (touch.pageY < dragCoords.y ? -Math.abs(dragCoords.y - touch.pageY) : Math.abs(dragCoords.y - touch.pageY));
+        }
         */
       }
     });
+
+    // Update the coordinates
+    dragCoords.x = touch.pageX;
+    dragCoords.y = touch.pageY; 
 
     // Check overlap
     checkOverlap();
@@ -101,7 +126,7 @@ $(function(){
   //
 
   // Align $target to the center of $container
-  window.popo.set($target[0], {
+  popo.set($target[0], {
     base: $container[0],
     position: 'center center center center'
   });

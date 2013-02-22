@@ -1,5 +1,5 @@
 /*!
- * Popo JS - v0.7.9.2 - 19/2/2013
+ * Popo JS - v0.7.9.3 - 20/2/2013
  *
  * Copyright (c) 2013 Niklas Rämö
  * Released under the MIT license
@@ -149,6 +149,7 @@
         offsetParent = offsetParent === body ? docElem : offsetParent.offsetParent;
       }
     }
+
     return offsetParent;
 
   }
@@ -317,6 +318,9 @@
 
   function pushOnCollision(targetWidth, targetHeight, targetPosition, targetParentOffset, containerWidth, containerHeight, containerOffset, targetOverlap, onCollision) {
 
+    // TODO: Remove dependency from getOverlap function
+    // TODO: Make this function return the values instead of setting them
+
     var push = 'push',
         forcedPush = 'push!',
         sides = [[str_left, str_right], [str_top, str_bottom]],
@@ -376,20 +380,23 @@
     var opts = getPreSanitizedOptions(instanceOptions),
         onCollision = opts.onCollision,
 
-        // Pre-define target variables
+        // Containers for target's (yet to be) calculated data 
+        targetPositionNew,
+        targetOverlapNew,
+
+        // Get target's current data
         targetWidth = getWidth(targetElement),
         targetHeight = getHeight(targetElement),
         targetParentOffset = getParentOffset(targetElement),
         targetOffset,
-        targetOverlap,
 
-        // Pre-define base variables
+        // Get base element and pre-define base data variables
         baseElement = opts.base,
         baseWidth,
         baseHeight,
         baseOffset,
 
-        // Pre-define container variables
+        // Get container element and pre-define container data variables
         containerElement = opts.container,
         containerWidth,
         containerHeight,
@@ -408,8 +415,8 @@
       baseOffset = getOffset(baseElement)
     );
 
-    // Calculate target elment's new position
-    targetPosition = {
+    // Calculate target element's new position
+    targetPositionNew = {
       left: getBasePosition(opts.position[0] + opts.position[2], baseOffset[str_left] + opts.offset.x - targetParentOffset[str_left], baseWidth, targetWidth),
       top: getBasePosition(opts.position[1] + opts.position[3], baseOffset[str_top] + opts.offset.y - targetParentOffset[str_top], baseHeight, targetHeight)
     };
@@ -431,24 +438,24 @@
       );
 
       // Calculate how much target element's sides overlap with the container element's sides
-      targetOverlap = getOverlap(targetWidth, targetHeight, targetPosition, targetParentOffset, containerWidth, containerHeight, containerOffset);
+      targetOverlapNew = getOverlap(targetWidth, targetHeight, targetPositionNew, targetParentOffset, containerWidth, containerHeight, containerOffset);
 
-      // Collision handling (skip if onCollision is null)
+      // If onCollision option is a callback function
       if (typeof onCollision === str_function) {
 
-        // Calculate target's current offset. Used only for providing useful 
-        // extra data when onCollision callback function is used.
+        // Get target's current offset
         targetOffset = getOffset(targetElement);
 
-        onCollision(targetPosition, targetOverlap, {
+        // Call the callback function and define the arguments
+        onCollision(targetPositionNew, targetOverlapNew, {
           target: {
             element: targetElement,
             width: targetWidth,
             height: targetHeight,
             offset: targetOffset,
             position: {
-              left: targetOffset[str_left] - targetParentOffset[str_left],
-              top: targetOffset[str_top] - targetParentOffset[str_top]
+              left: targetOffset[str_left] > targetParentOffset[str_left] ? mathAbs(targetOffset[str_left] - targetParentOffset[str_left]) : -mathAbs(targetOffset[str_left] - targetParentOffset[str_left]),
+              top: targetOffset[str_top] > targetParentOffset[str_top] ? mathAbs(targetOffset[str_top] - targetParentOffset[str_top]) : -mathAbs(targetOffset[str_top] - targetParentOffset[str_top])
             }
           },
           base: {
@@ -465,11 +472,15 @@
           }
         });
 
+      // If onCollision option is not a callback function
       } else {
 
+        // Sanitize onCollision
         onCollision = getSanitizedOnCollision(onCollision);
+
+        // If onCollision passed sanitation run the calculated position through pre-defined collision methods
         if (onCollision) {
-          pushOnCollision(targetWidth, targetHeight, targetPosition, targetParentOffset, containerWidth, containerHeight, containerOffset, targetOverlap, onCollision);
+          pushOnCollision(targetWidth, targetHeight, targetPositionNew, targetParentOffset, containerWidth, containerHeight, containerOffset, targetOverlapNew, onCollision);
         }
 
       }
@@ -478,10 +489,10 @@
 
     // Set or return the final values
     if (method === 'set') {
-      targetElement.style[str_left] = targetPosition[str_left] + 'px';
-      targetElement.style[str_top] = targetPosition[str_top] + 'px';
+      targetElement.style[str_left] = targetPositionNew[str_left] + 'px';
+      targetElement.style[str_top] = targetPositionNew[str_top] + 'px';
     } else {
-      return targetPosition;
+      return targetPositionNew;
     }
 
   }

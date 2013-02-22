@@ -4,7 +4,8 @@
 //
 
 var result, expected, prop, i, temp,
-    positionStyles = ['relative', 'absolute', 'fixed'],
+    ltIE8 = $('html').hasClass('lt-ie8'),
+    positionStyles = ltIE8 ? ['relative', 'absolute'] : ['relative', 'absolute', 'fixed'],
     $wrapper = $('#test-wrapper'),
     wrapper = $wrapper[0],
     $target = $('#test-target'),
@@ -152,7 +153,7 @@ function getObjectLength(obj) {
 // TESTS
 //
 
-test('Set method - default positions', positionsLength * 3, function() {
+test('Set method - default positions', ltIE8 ? positionsLength * 2 : positionsLength * 3, function() {
 
   for (i = 0; i < positionStyles.length; i++) {
 
@@ -183,7 +184,7 @@ test('Set method - default positions', positionsLength * 3, function() {
 
 });
 
-test('Get method - default positions', positionsLength * 3, function() {
+test('Get method - default positions', ltIE8 ? positionsLength * 2 : positionsLength * 3, function() {
 
   for (i = 0; i < positionStyles.length; i++) {
 
@@ -365,8 +366,8 @@ test('onCollision callback', 2, function() {
     position: positions.center_center_center_center.name,
     base: base,
     container: container,
-    onCollision: function (targetPosition, data) {
-      result = [targetPosition, data.target.element, data.base.element, data.container.element];
+    onCollision: function (targetPosition, targetOverlap, posData) {
+      result = [targetPosition, posData.target.element, posData.base.element, posData.container.element];
     }
   });
 
@@ -380,7 +381,7 @@ test('onCollision callback', 2, function() {
     position: positions.center_center_center_center.name,
     base: base,
     container: container,
-    onCollision: function (targetPosition) {
+    onCollision: function (targetPosition, targetOverlap, posData) {
       expected = [targetPosition.left - 1000, targetPosition.top + 1000];
     }
   });
