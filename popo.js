@@ -138,18 +138,10 @@
 
   function getOffsetParent(el) {
 
-    var offsetParent;
-    if (el === docElem) {
-      offsetParent = doc;
-    } else if (el === body) {
-      offsetParent = docElem;
-    } else {
-      offsetParent = el.offsetParent;
-      while (offsetParent !== docElem && getPositionProperty(offsetParent) === 'static') {
-        offsetParent = offsetParent === body ? docElem : offsetParent.offsetParent;
-      }
+    var offsetParent = el.offsetParent || doc;
+    while (offsetParent !== doc && getPositionProperty(offsetParent) === 'static') {
+      offsetParent = offsetParent.offsetParent || doc;
     }
-
     return offsetParent;
 
   }
