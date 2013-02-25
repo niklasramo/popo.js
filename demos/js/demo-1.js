@@ -1,14 +1,23 @@
 $(function(){
 
-  console.log('docElem clientLeft: ' + document.documentElement.clientLeft);
-  console.log('docElem clientTop: ' + document.documentElement.clientTop);
-  console.log('body clientLeft: ' + document.body.clientLeft);
-  console.log('body clientTop: ' + document.body.clientTop);
-  console.log('---');
-  console.log('docElem gbcrLeft: ' + document.documentElement.getBoundingClientRect().left);
-  console.log('docElem gbcrTop: ' + document.documentElement.getBoundingClientRect().top);
-  console.log('body gbcrLeft: ' + document.body.getBoundingClientRect().left);
-  console.log('body gbcrTop: ' + document.body.getBoundingClientRect().top);
+  /*
+  $(document).on('click', function (){
+    console.log('----------------------');
+    console.log('docElem.gbcr().left: ' + document.documentElement.getBoundingClientRect().left);
+    console.log('$("html").offset().left: ' + $('html').offset().left);
+    console.log('body.gbcr().top: ' + document.body.getBoundingClientRect().top);
+    console.log('$("body").offset().left: ' + $('body').offset().left);
+    console.log('----------------------');
+    console.log('docElem clientLeft: ' + document.documentElement.clientLeft);
+    console.log('$("html").css("border-left-width"): ' + parseFloat($('html').css('border-left-width')));
+    console.log('body clientLeft: ' + document.body.clientLeft);
+    console.log('$("body").css("border-left-width"): ' + parseFloat($('body').css('border-left-width')));
+    console.log('----------------------');
+    console.log('window.pageYOffset: ' + window.pageYOffset);
+    console.log('docElem.scrollTop: ' + document.documentElement.scrollTop);
+    console.log('body.scrollTop: ' + document.body.scrollTop);
+  });
+  */
 
   var $target = $('#target'),
       $overlap = $('#overlap'),
@@ -84,26 +93,10 @@ $(function(){
       position: 'left top left top',
       container: $target[0],
       onCollision: function (targetPosition, targetOverlap, data) {
-
-        console.log('target_offset_left: ' + data.target.offset.left);
-        console.log('target_offset_top: ' + data.target.offset.top);
-
-        console.log('base_offset_left: ' + data.base.offset.left);
-        console.log('base_offset_top: ' + data.base.offset.top);
-
-        console.log('target_pos_left: ' + data.target.position.left);
-        console.log('target_pos_top: ' + data.target.position.top);
-
-        console.log('target_new_pos_left: ' + targetPosition.left);
-        console.log('target_new_pos_top: ' + targetPosition.top);
-        console.log('-----------------------------------------');
-
-        /*
         if (ev.type !== 'touch') {
           targetPosition.left = targetPosition.left + (touch.pageX < dragCoords.x ? -Math.abs(dragCoords.x - touch.pageX) : Math.abs(dragCoords.x - touch.pageX));
           targetPosition.top = targetPosition.top + (touch.pageY < dragCoords.y ? -Math.abs(dragCoords.y - touch.pageY) : Math.abs(dragCoords.y - touch.pageY));
         }
-        */
       }
     });
 

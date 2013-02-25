@@ -1,5 +1,5 @@
 /*!
- * Popo JS - v0.7.9.3 - 20/2/2013
+ * Popo JS - v0.7.9.4 - 25/2/2013
  *
  * Copyright (c) 2013 Niklas Rämö
  * Released under the MIT license
@@ -57,6 +57,20 @@
 
   }
 
+  function getStyle(el, prop) {
+
+    return el.style && el.style[prop] ? (
+      el.style[prop]
+    ) : el.currentStyle ? (
+      el.currentStyle[prop]
+    ) : doc.defaultView && doc.defaultView.getComputedStyle ? (
+      doc.defaultView.getComputedStyle(el, null).getPropertyValue(prop)
+    ) : (
+      null
+    );
+
+  }
+
   function getWidth(el) {
 
     return el === window ? (
@@ -81,66 +95,67 @@
 
   }
 
-  function getViewportScrollLeft() {
-
-    return typeof window.pageXOffset === str_number ? window.pageXOffset : docElem.scrollLeft || body.scrollLeft;
-
-  }
-
-  function getViewportScrollTop() {
-
-    return typeof window.pageYOffset === str_number ? window.pageYOffset : docElem.scrollTop || body.scrollTop;
-
-  }
-
   function getOffset(el, includeBorders) {
 
     var offsetLeft = 0,
         offsetTop = 0,
+        viewportScrollLeft = window.pageXOffset || docElem.scrollLeft || body.scrollLeft,
+        viewportScrollTop = window.pageYOffset || docElem.scrollTop || body.scrollTop,
+        documentBorderLeft,
+        documentBorderTop,
         rect;
 
     if (el === window) {
 
-      offsetLeft = getViewportScrollLeft();
-      offsetTop = getViewportScrollTop();
+      offsetLeft = viewportScrollLeft;
+      offsetTop = viewportScrollTop;
 
-    } else if (el !== doc) {
+    /*
+    TODO: Support html element's offset with includeBorders functionality
+    } else if (el === docElem && includeBorders) {
 
-      rect = el[str_getBoundingClientRect]();
-      if (typeof rect !== 'undefined') {
-        offsetLeft = rect[str_left] + getViewportScrollLeft();
-        offsetTop = rect[str_top]  + getViewportScrollTop();
-        if (includeBorders) {
-          offsetLeft += el.clientLeft;
-          offsetTop += el.clientTop;
-        }
+      borderTopWidth = getStyle(el, 'border-left-width') || getStyle(el, 'borderLeftWidth');
+      borderLeftWidth = getStyle(el, 'border-top-width') || getStyle(el, 'borderTopWidth');
+      offsetLeft += borderWidths[borderLeftWidth] || parseFloat(borderLeftWidth) || 0;
+      offsetTop += borderWidths[borderTopWidth] || parseFloat(borderTopWidth) || 0;
+    */
+
+    } else if (el !== doc && el !== docElem) {
+
+      // Borrowed from jQuery core.
+      // The logic below works beautifully for all elements in almost
+      // all browsers (IE7+). The only exception is the html element,
+      // which outputs inconsistent gbcr, clientLeft and clientTop values
+      // depending on the browser. For that reason the logic below assumes
+      // that the html element has zero left/top offset and no left/top border.
+
+      rect = el[str_getBoundingClientRect]() || 0;
+      offsetLeft += rect[str_left] + viewportScrollLeft - /* IE7 Fix */docElem.clientLeft;
+      offsetTop += rect[str_top] + viewportScrollTop - /* IE7 Fix */docElem.clientTop;
+      if (includeBorders) {
+        offsetLeft += el.clientLeft;
+        offsetTop += el.clientTop;
       }
 
     }
 
-    return {left: offsetLeft, top: offsetTop};
-
-  }
-
-  function getPositionProperty(el) {
-
-    return el.style.position ? (
-      el.style.position
-    ) : el.currentStyle ? (
-      el.currentStyle.position
-    ) : doc.defaultView && doc.defaultView.getComputedStyle ? (
-      doc.defaultView.getComputedStyle(el, null).getPropertyValue('position')
-    ) : (
-      'static'
-    );
+    return {
+      left: offsetLeft,
+      top: offsetTop
+    };
 
   }
 
   function getOffsetParent(el) {
 
-    var offsetParent = el.offsetParent || doc;
-    while (offsetParent !== doc && getPositionProperty(offsetParent) === 'static') {
-      offsetParent = offsetParent.offsetParent || doc;
+    // This function uses the following assumptions:
+    // * el CSS position style is 'absolute'
+    // * document.documentElement.offsetParent === null
+    // * document.body.offsetParent === null
+
+    var offsetParent = el === body ? docElem : el.offsetParent || doc;
+    while (offsetParent !== doc && getStyle(offsetParent, 'position') === 'static') {
+      offsetParent = offsetParent === body ? docElem : offsetParent.offsetParent || doc;
     }
     return offsetParent;
 
@@ -148,20 +163,23 @@
 
   function getParentOffset(el) {
 
-    var posProp = getPositionProperty(el),
+    var positionStyle = getStyle(el, 'position'),
         offset, style, left, right, top, bottom;
 
-    posProp === 'fixed' ? (
+    positionStyle === 'fixed' ? (
 
       offset = getOffset(window)
 
-    ) : posProp === 'absolute' ? (
+    ) : positionStyle === 'absolute' ? (
 
       offset = getOffset(getOffsetParent(el), true)
 
-    ) : posProp === 'relative' ? (
+    ) : positionStyle === 'relative' ? (
 
-      // TODO: Make this part shorter and faster
+      // TODO: Get the offset without touching the element's styles,
+      // because if the element has transitions enabled the results
+      // will be incorrect. Consider dropping the support for relatively
+      // positioned elements if necessary.
 
       // Store original styles
       style = el.style,
