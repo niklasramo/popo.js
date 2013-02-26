@@ -4,7 +4,7 @@
 
 Popo JS is a stand-alone cross-browser JavaScript library that makes it easy to position elements relative to other elements in various ways. Popo JS is heavily influenced by **[jQuery UI Position plugin](http://jqueryui.com/position/)**.
 
-The aim of Popo JS is to simplify the process of positioning DOM elements with JavaScript. The library is designed to work in all modern browsers (Chrome, Opera, Firefox, Safari, IE6+). However, it's a given there are still some currently unknown bugs between the lines so further testing is still needed to eradicate them.
+The aim of Popo JS is to simplify the process of positioning DOM elements with JavaScript. The library is designed to work in all modern browsers (Chrome, Opera, Firefox, Safari, IE7+). However, it's a given there are still some currently unknown bugs between the lines so further testing is still needed to eradicate them.
 
 **NOTE: Keep in mind that there will be API changes before v1.0 release.**
 
@@ -12,8 +12,8 @@ The aim of Popo JS is to simplify the process of positioning DOM elements with J
 
 ###Download
 
-* **[v0.7.9.1 - Production](https://raw.github.com/niklasramo/popo/master/popo.min.js)** (4.6kb minified)
-* **[v0.7.9.1 - Development](https://raw.github.com/niklasramo/popo/master/popo.js)** (16kb uncompressed)
+* **[v0.7.9.4 - Production](https://raw.github.com/niklasramo/popo/master/popo.min.js)** (4.6kb minified)
+* **[v0.7.9.4 - Development](https://raw.github.com/niklasramo/popo/master/popo.js)** (16kb uncompressed)
 
 Download Popo JS library and include it in your HTML Document, preferrably inside the head tag.
 
@@ -25,6 +25,8 @@ Download Popo JS library and include it in your HTML Document, preferrably insid
 
 * Target element's CSS position property must be *relative*, *absolute* or *fixed*.
 * The CSS display property of target element, base element and container element must not be *none*.
+* The target element's margin affects the final position calculated by Popo (this is a feature not a bug).
+* The html element's left offset (margin-left and left CSS properties), top offset (margin-top and top CSS properties), left border and top border must be to zero.
 
 ###Start using
 
