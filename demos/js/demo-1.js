@@ -1,24 +1,5 @@
 $(function(){
 
-  /*
-  $(document).on('click', function (){
-    console.log('----------------------');
-    console.log('docElem.gbcr().left: ' + document.documentElement.getBoundingClientRect().left);
-    console.log('$("html").offset().left: ' + $('html').offset().left);
-    console.log('body.gbcr().top: ' + document.body.getBoundingClientRect().top);
-    console.log('$("body").offset().left: ' + $('body').offset().left);
-    console.log('----------------------');
-    console.log('docElem clientLeft: ' + document.documentElement.clientLeft);
-    console.log('$("html").css("border-left-width"): ' + parseFloat($('html').css('border-left-width')));
-    console.log('body clientLeft: ' + document.body.clientLeft);
-    console.log('$("body").css("border-left-width"): ' + parseFloat($('body').css('border-left-width')));
-    console.log('----------------------');
-    console.log('window.pageYOffset: ' + window.pageYOffset);
-    console.log('docElem.scrollTop: ' + document.documentElement.scrollTop);
-    console.log('body.scrollTop: ' + document.body.scrollTop);
-  });
-  */
-
   var $target = $('#target'),
       $overlap = $('#overlap'),
       $handle = $('#drag-handle'),
@@ -28,6 +9,18 @@ $(function(){
   //
   // Functions
   //
+
+  function getStyle(el, prop) {
+
+    return el.currentStyle ? (
+      el.currentStyle[prop]
+    ) : document.defaultView && document.defaultView.getComputedStyle ? (
+      document.defaultView.getComputedStyle(el, null).getPropertyValue(prop)
+    ) : (
+      null
+    );
+
+  }
 
   function checkOverlap() {
 

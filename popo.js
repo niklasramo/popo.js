@@ -73,36 +73,41 @@
 
   function getWidth(el) {
 
-    return el === window ? (
-      docElem.clientWidth || body.clientWidth
-    ) : el === doc ? (
-      Math.max(docElem.clientWidth, docElem.offsetWidth, docElem.scrollWidth, body.scrollWidth, body.offsetWidth)
-    ) : (
-      el[str_getBoundingClientRect]().width || el.offsetWidth
-    );
+    var width;
+    if (el === window) {
+      width = window.innerWidth || docElem.clientWidth || body.clientWidth;
+    } else if (el === doc) {
+      width = Math.max(docElem.clientWidth, docElem.offsetWidth, docElem.scrollWidth, body.scrollWidth, body.offsetWidth);
+    } else {
+      width = el[str_getBoundingClientRect]().width || el.offsetWidth;
+    }
+    return width;
 
   }
 
   function getHeight(el) {
 
-    return el === window ? (
-      docElem.clientHeight || body.clientHeight
-    ) : el === doc ? (
-      Math.max(docElem.clientHeight, docElem.offsetHeight, docElem.scrollHeight, body.scrollHeight, body.offsetHeight)
-    ) : (
-      el[str_getBoundingClientRect]().height || el.offsetHeight
-    );
+    var height;
+    if (el === window) {
+      height = window.innerHeight || docElem.clientHeight || body.clientHeight;
+    } else if (el === doc) {
+      height = Math.max(docElem.clientHeight, docElem.offsetHeight, docElem.scrollHeight, body.scrollHeight, body.offsetHeight);
+    } else {
+      height = el[str_getBoundingClientRect]().height || el.offsetHeight;
+    }
+    return height;
 
   }
 
   function getOffset(el, includeBorders) {
 
+    // This function is pretty much borrowed from jQuery core so a humble
+    // thank you is in place here =)
+
     var offsetLeft = 0,
         offsetTop = 0,
         viewportScrollLeft = window.pageXOffset || docElem.scrollLeft || body.scrollLeft,
         viewportScrollTop = window.pageYOffset || docElem.scrollTop || body.scrollTop,
-        documentBorderLeft,
-        documentBorderTop,
         rect;
 
     if (el === window) {
@@ -110,19 +115,8 @@
       offsetLeft = viewportScrollLeft;
       offsetTop = viewportScrollTop;
 
-    /*
-    TODO: Support html element's offset with includeBorders functionality
-    } else if (el === docElem && includeBorders) {
-
-      borderTopWidth = getStyle(el, 'border-left-width') || getStyle(el, 'borderLeftWidth');
-      borderLeftWidth = getStyle(el, 'border-top-width') || getStyle(el, 'borderTopWidth');
-      offsetLeft += borderWidths[borderLeftWidth] || parseFloat(borderLeftWidth) || 0;
-      offsetTop += borderWidths[borderTopWidth] || parseFloat(borderTopWidth) || 0;
-    */
-
     } else if (el !== doc && el !== docElem) {
 
-      // Borrowed from jQuery core.
       // The logic below works beautifully for all elements in almost
       // all browsers (IE7+). The only exception is the html element,
       // which outputs inconsistent gbcr, clientLeft and clientTop values
@@ -164,7 +158,7 @@
   function getParentOffset(el) {
 
     var positionStyle = getStyle(el, 'position'),
-        offset, style, left, right, top, bottom;
+        offset, left, top;
 
     positionStyle === 'fixed' ? (
 
@@ -181,6 +175,16 @@
       // will be incorrect. Consider dropping the support for relatively
       // positioned elements if necessary.
 
+      offset = getOffset(el),
+      left = getStyle(el, 'left'),
+      top = getStyle(el, 'top'),
+      left = left.indexOf('%') !== -1 ? getWidth(el.parentNode, true) * (parseFloat(left) / 100) : parseFloat(left),
+      top = top.indexOf('%') !== -1 ? getHeight(el.parentNode, true) * (parseFloat(top) / 100) : parseFloat(top),
+      offset.left -= parseFloat(left),
+      offset.top -= parseFloat(top)
+
+      /*
+      OLD METHOD
       // Store original styles
       style = el.style,
       left = style[str_left],
@@ -199,6 +203,7 @@
       style[str_right] = right,
       style[str_top] = top,
       style[str_bottom] = bottom
+      */
 
     ) : (
 

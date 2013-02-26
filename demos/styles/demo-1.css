@@ -32,21 +32,15 @@ html, body {
   width: 100%;
   overflow: hidden;
 }
-html {
-  position: relative;
-}
-body {
-  border-left: 5px solid #000;
-  border-top: 5px solid #000;
-}
 #target, #overlap, #title {
   display: block;
   position: absolute;
   cursor: move;
 }
 #target {
-  left: 50%;
-  top: 50%;
+  position: relative;
+  left: 10px;
+  top: 10px;
   width: 150px;
   height: 150px;
   line-height: 150px;
@@ -96,20 +90,10 @@ body {
 #container.full {
   background: #cee6cc;
 }
-
 #target, #container {
   -webkit-transition: background 200ms ease;
   -moz-transition: background 200ms ease;
   -ms-transition: background 200ms ease;
   -o-transition: background 200ms ease;
   transition: background 200ms ease;
-}
-
-#test {
-  background: #ff0000;
-  width: 50px;
-  height: 50px;
-  position: absolute;
-  left: 0;
-  top: 0;
 }
