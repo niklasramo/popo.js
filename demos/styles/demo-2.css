@@ -46,8 +46,8 @@ html {
 #target {
   display: block;
   position: relative;
-  left: 50%;
-  top: 50%;
+  right: -1in;
+  top: 5px;
   border: 5px solid #ff0000;
   width: 150px;
   height: 150px;

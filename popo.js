@@ -19,6 +19,9 @@
       // Cache math functions
       mathAbs = Math.abs,
 
+      // Cache the pixels values of all absolute CSS units
+      units = {'px': 1, 'in': 0, 'cm': 0, 'mm': 0, 'pt': 0, 'pc': 0},
+
       // Cache repeating strings and object keys (for better compression)
       str_left = 'left',
       str_right = 'right',
@@ -158,58 +161,64 @@
   function getParentOffset(el) {
 
     var positionStyle = getStyle(el, 'position'),
-        offset, left, top;
+        offset, prop, i, directions, adjustments;
 
-    positionStyle === 'fixed' ? (
+    if (positionStyle === 'fixed') {
 
-      offset = getOffset(window)
+      offset = getOffset(window);
 
-    ) : positionStyle === 'absolute' ? (
+    } else if (positionStyle === 'absolute') {
 
-      offset = getOffset(getOffsetParent(el), true)
+      offset = getOffset(getOffsetParent(el), true);
 
-    ) : positionStyle === 'relative' ? (
+    } else if (positionStyle === 'relative') {
 
-      // TODO: Get the offset without touching the element's styles,
-      // because if the element has transitions enabled the results
-      // will be incorrect. Consider dropping the support for relatively
-      // positioned elements if necessary.
+      // In the case of a relatively positoned element we are only interested
+      // in the element's offset in "unpositioned" state (when the left, top, right
+      // and bottom values are "auto"), because the offset of the parentNode
+      // or offsetParent element does not always equal the "unpositioned" state of
+      // a relatively positioned element.
 
-      offset = getOffset(el),
-      left = getStyle(el, 'left'),
-      top = getStyle(el, 'top'),
-      left = left.indexOf('%') !== -1 ? getWidth(el.parentNode, true) * (parseFloat(left) / 100) : parseFloat(left),
-      top = top.indexOf('%') !== -1 ? getHeight(el.parentNode, true) * (parseFloat(top) / 100) : parseFloat(top),
-      offset.left -= parseFloat(left),
-      offset.top -= parseFloat(top)
+      // TODO: Account also for %, em and ex
 
-      /*
-      OLD METHOD
-      // Store original styles
-      style = el.style,
-      left = style[str_left],
-      right = style[str_right],
-      top = style[str_top],
-      bottom = style[str_bottom],
+      offset = getOffset(el);
+      directions = [[getStyle(el, 'left'), getStyle(el, 'right')], [getStyle(el, 'top'), getStyle(el, 'bottom')]];
+      adjustments = [0, 0];
 
-      // Reset element's left/right/top/bottom properties
-      style[str_left] = style[str_right] = style[str_top] = style[str_bottom] = 'auto',
+      for (i = 0; i < directions.length; i++) {
 
-      // Get the element's offset
-      offset = getOffset(el),
+        // Jump to the next pair if both values are "auto"
+        if (directions[i][0] === 'auto' && directions[i][1] === 'auto') { continue; }
 
-      // Restore element's original props
-      style[str_left] = left,
-      style[str_right] = right,
-      style[str_top] = top,
-      style[str_bottom] = bottom
-      */
+        // If left/top is "auto", let's check how much right/bottom
+        // values are affecting the position
+        if (directions[i][0] === 'auto') {
+          for (prop in units) {
+            if (directions[i][1].indexOf(prop) !== -1) {
+              adjustments[i] = -(parseFloat(directions[i][1]) * units[prop]);
+            }
+          }
 
-    ) : (
+        // Otherwise we only need to check how much left/top values are affecting the position
+        } else {
+          for (prop in units) {
+            if (directions[i][0].indexOf(prop) !== -1) {
+              adjustments[i] = parseFloat(directions[i][0]) * units[prop];
+            }
+          }
+        }
+
+      }
+
+      // Adjust offset
+      offset.left -= adjustments[0];
+      offset.top -= adjustments[1];
+
+    } else {
 
       offset = getOffset(el)
 
-    );
+    }
 
     return offset;
 
@@ -511,6 +520,36 @@
     }
 
   }
+
+  /*===========
+    Run tests
+  ===========*/
+
+  (function(){
+
+    // Create a test element
+    var testElem = document.createElement('div'),
+        style = testElem.style;
+
+    // Append test element to body
+    body.appendChild(testElem);
+
+    // Give the test element all the needed styles
+    style.display = 'block';
+    style.width = '1in';
+    style.padding = '0px';
+
+    // Calculate pixel values of all absolute CSS units
+    units['in'] = testElem.clientWidth;
+    units['cm'] = units['in'] / 2.54;
+    units['mm'] = units['in'] / 25.4;
+    units['pt'] = units['in'] / 72;
+    units['pc'] = units['in'] / 6;
+
+    // Remove test element
+    testElem.parentNode.removeChild(testElem);
+
+  })();
 
   /*=========
     Unleash
