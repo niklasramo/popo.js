@@ -36,6 +36,36 @@
       getStringifiedType = Object.prototype.toString;
 
   /*===========
+    Run tests
+  ===========*/
+
+  (function(){
+
+    // Create a test element
+    var testElem = document.createElement('div'),
+        style = testElem.style;
+
+    // Append test element to body
+    body.appendChild(testElem);
+
+    // Give the test element all the needed styles
+    style.display = 'block';
+    style.width = '1in';
+    style.padding = '0px';
+
+    // Calculate pixel values of all absolute CSS units
+    units['in'] = testElem.clientWidth;
+    units['cm'] = units['in'] / 2.54;
+    units['mm'] = units['in'] / 25.4;
+    units['pt'] = units['in'] / 72;
+    units['pc'] = units['in'] / 6;
+
+    // Remove test element
+    testElem.parentNode.removeChild(testElem);
+
+  })();
+
+  /*===========
     Functions
   ===========*/
 
@@ -161,7 +191,7 @@
   function getParentOffset(el) {
 
     var positionStyle = getStyle(el, 'position'),
-        offset, prop, i, directions, adjustments;
+        offset, i, prop, positions, adjustment;
 
     if (positionStyle === 'fixed') {
 
@@ -182,28 +212,25 @@
       // TODO: Account also for %, em and ex
 
       offset = getOffset(el);
-      directions = [[getStyle(el, 'left'), getStyle(el, 'right')], [getStyle(el, 'top'), getStyle(el, 'bottom')]];
-      adjustments = [0, 0];
+      positions = [[getStyle(el, 'left'), getStyle(el, 'right')], [getStyle(el, 'top'), getStyle(el, 'bottom')]];
+      adjustment = [0, 0];
 
-      for (i = 0; i < directions.length; i++) {
+      for (i = 0; i < 2; i++) {
 
         // Jump to the next pair if both values are "auto"
-        if (directions[i][0] === 'auto' && directions[i][1] === 'auto') { continue; }
+        if (positions[i][0] === 'auto' && positions[i][1] === 'auto') { continue; }
 
-        // If left/top is "auto", let's check how much right/bottom
-        // values are affecting the position
-        if (directions[i][0] === 'auto') {
+        // Calculate how much the current position is affecting the current offset
+        if (positions[i][0] === 'auto') {
           for (prop in units) {
-            if (directions[i][1].indexOf(prop) !== -1) {
-              adjustments[i] = -(parseFloat(directions[i][1]) * units[prop]);
+            if (positions[i][1].indexOf(prop) !== -1) {
+              adjustment[i] = -(parseFloat(positions[i][1]) * units[prop]);
             }
           }
-
-        // Otherwise we only need to check how much left/top values are affecting the position
         } else {
           for (prop in units) {
-            if (directions[i][0].indexOf(prop) !== -1) {
-              adjustments[i] = parseFloat(directions[i][0]) * units[prop];
+            if (positions[i][0].indexOf(prop) !== -1) {
+              adjustment[i] = parseFloat(positions[i][0]) * units[prop];
             }
           }
         }
@@ -211,8 +238,8 @@
       }
 
       // Adjust offset
-      offset.left -= adjustments[0];
-      offset.top -= adjustments[1];
+      offset.left -= adjustment[0];
+      offset.top -= adjustment[1];
 
     } else {
 
@@ -520,36 +547,6 @@
     }
 
   }
-
-  /*===========
-    Run tests
-  ===========*/
-
-  (function(){
-
-    // Create a test element
-    var testElem = document.createElement('div'),
-        style = testElem.style;
-
-    // Append test element to body
-    body.appendChild(testElem);
-
-    // Give the test element all the needed styles
-    style.display = 'block';
-    style.width = '1in';
-    style.padding = '0px';
-
-    // Calculate pixel values of all absolute CSS units
-    units['in'] = testElem.clientWidth;
-    units['cm'] = units['in'] / 2.54;
-    units['mm'] = units['in'] / 25.4;
-    units['pt'] = units['in'] / 72;
-    units['pc'] = units['in'] / 6;
-
-    // Remove test element
-    testElem.parentNode.removeChild(testElem);
-
-  })();
 
   /*=========
     Unleash
