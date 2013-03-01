@@ -5,7 +5,7 @@
 
 var result, expected, prop, i, temp,
     ltIE8 = $('html').hasClass('lt-ie8'),
-    positionStyles = ltIE8 ? ['relative', 'absolute'] : ['relative', 'absolute', 'fixed'],
+    positionStyles = ltIE8 ? ['absolute'] : ['absolute', 'fixed'],
     $wrapper = $('#test-wrapper'),
     wrapper = $wrapper[0],
     $target = $('#test-target'),
@@ -153,7 +153,7 @@ function getObjectLength(obj) {
 // TESTS
 //
 
-test('Set method - default positions', ltIE8 ? positionsLength * 2 : positionsLength * 3, function() {
+test('Set method - default positions', ltIE8 ? positionsLength : positionsLength * 2, function() {
 
   for (i = 0; i < positionStyles.length; i++) {
 
@@ -184,7 +184,7 @@ test('Set method - default positions', ltIE8 ? positionsLength * 2 : positionsLe
 
 });
 
-test('Get method - default positions', ltIE8 ? positionsLength * 2 : positionsLength * 3, function() {
+test('Get method - default positions', ltIE8 ? positionsLength * 1 : positionsLength * 2, function() {
 
   for (i = 0; i < positionStyles.length; i++) {
 

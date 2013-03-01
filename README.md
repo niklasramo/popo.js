@@ -12,8 +12,8 @@ The aim of Popo JS is to simplify the process of positioning DOM elements with J
 
 ###Download
 
-* **[v0.7.9.4 - Production](https://raw.github.com/niklasramo/popo/master/popo.min.js)** (4.6kb minified)
-* **[v0.7.9.4 - Development](https://raw.github.com/niklasramo/popo/master/popo.js)** (16kb uncompressed)
+* **[v0.7.9.9 - Production](https://raw.github.com/niklasramo/popo/master/popo.min.js)** (4.6kb minified)
+* **[v0.7.9.9 - Development](https://raw.github.com/niklasramo/popo/master/popo.js)** (16kb uncompressed)
 
 Download Popo JS library and include it in your HTML Document, preferrably inside the head tag.
 
@@ -23,7 +23,7 @@ Download Popo JS library and include it in your HTML Document, preferrably insid
 
 ###Know the prequisites
 
-* Target element's CSS position property must be *relative*, *absolute* or *fixed*.
+* Target element's CSS position property must be *absolute* or *fixed*. Positioning *relative* elements is not supported yet, but it is planned for 1.0 release.
 * The CSS display property of target element, base element and container element must not be *none*.
 * The target element's margin affects the final position calculated by Popo (this is a feature not a bug).
 * The html element's left offset (margin-left and left CSS properties), top offset (margin-top and top CSS properties), left border and top border must be to zero.

@@ -1,5 +1,5 @@
 /*!
- * Popo JS - v0.7.9.4 - 25/2/2013
+ * Popo JS - v0.7.9.9 - 1/3/2013
  *
  * Copyright (c) 2013 Niklas Rämö
  * Released under the MIT license
@@ -11,16 +11,13 @@
 
   var libName = 'popo',
 
-      // Cache some elements
+      // Cache some elements and global functions
       doc = window.document,
       docElem = doc.documentElement,
       body = doc.body,
-
-      // Cache math functions
-      mathAbs = Math.abs,
-
-      // Cache the pixels values of all absolute CSS units
-      units = {'px': 1, 'in': 0, 'cm': 0, 'mm': 0, 'pt': 0, 'pc': 0},
+      math = Math,
+      mathAbs = math.abs,
+      toFloat = parseFloat,
 
       // Cache repeating strings and object keys (for better compression)
       str_left = 'left',
@@ -34,36 +31,6 @@
 
       // A shortcut for getting the stringified type of an object
       getStringifiedType = Object.prototype.toString;
-
-  /*===========
-    Run tests
-  ===========*/
-
-  (function(){
-
-    // Create a test element
-    var testElem = document.createElement('div'),
-        style = testElem.style;
-
-    // Append test element to body
-    body.appendChild(testElem);
-
-    // Give the test element all the needed styles
-    style.display = 'block';
-    style.width = '1in';
-    style.padding = '0px';
-
-    // Calculate pixel values of all absolute CSS units
-    units['in'] = testElem.clientWidth;
-    units['cm'] = units['in'] / 2.54;
-    units['mm'] = units['in'] / 25.4;
-    units['pt'] = units['in'] / 72;
-    units['pc'] = units['in'] / 6;
-
-    // Remove test element
-    testElem.parentNode.removeChild(testElem);
-
-  })();
 
   /*===========
     Functions
@@ -92,12 +59,10 @@
 
   function getStyle(el, prop) {
 
-    return el.style && el.style[prop] ? (
-      el.style[prop]
+    return doc.defaultView && doc.defaultView.getComputedStyle ? (
+      doc.defaultView.getComputedStyle(el, null).getPropertyValue(prop)
     ) : el.currentStyle ? (
       el.currentStyle[prop]
-    ) : doc.defaultView && doc.defaultView.getComputedStyle ? (
-      doc.defaultView.getComputedStyle(el, null).getPropertyValue(prop)
     ) : (
       null
     );
@@ -106,36 +71,32 @@
 
   function getWidth(el) {
 
-    var width;
-    if (el === window) {
-      width = window.innerWidth || docElem.clientWidth || body.clientWidth;
-    } else if (el === doc) {
-      width = Math.max(docElem.clientWidth, docElem.offsetWidth, docElem.scrollWidth, body.scrollWidth, body.offsetWidth);
-    } else {
-      width = el[str_getBoundingClientRect]().width || el.offsetWidth;
-    }
-    return width;
+    return el === window ? (
+      window.innerWidth || docElem.clientWidth || body.clientWidth
+    ) : el === doc ? (
+      math.max(docElem.clientWidth, docElem.offsetWidth, docElem.scrollWidth, body.scrollWidth, body.offsetWidth)
+    ) : (
+      el[str_getBoundingClientRect]().width || el.offsetWidth
+    );
 
   }
 
   function getHeight(el) {
 
-    var height;
-    if (el === window) {
-      height = window.innerHeight || docElem.clientHeight || body.clientHeight;
-    } else if (el === doc) {
-      height = Math.max(docElem.clientHeight, docElem.offsetHeight, docElem.scrollHeight, body.scrollHeight, body.offsetHeight);
-    } else {
-      height = el[str_getBoundingClientRect]().height || el.offsetHeight;
-    }
-    return height;
+    return el === window ? (
+      window.innerHeight || docElem.clientHeight || body.clientHeight
+    ) : el === doc ? (
+      math.max(docElem.clientHeight, docElem.offsetHeight, docElem.scrollHeight, body.scrollHeight, body.offsetHeight)
+    ) : (
+      el[str_getBoundingClientRect]().height || el.offsetHeight
+    );
 
   }
 
   function getOffset(el, includeBorders) {
 
     // This function is pretty much borrowed from jQuery core so a humble
-    // thank you is in place here =)
+    // nod with gratitude is in place here =)
 
     var offsetLeft = 0,
         offsetTop = 0,
@@ -188,69 +149,6 @@
 
   }
 
-  function getParentOffset(el) {
-
-    var positionStyle = getStyle(el, 'position'),
-        offset, i, prop, positions, adjustment;
-
-    if (positionStyle === 'fixed') {
-
-      offset = getOffset(window);
-
-    } else if (positionStyle === 'absolute') {
-
-      offset = getOffset(getOffsetParent(el), true);
-
-    } else if (positionStyle === 'relative') {
-
-      // In the case of a relatively positoned element we are only interested
-      // in the element's offset in "unpositioned" state (when the left, top, right
-      // and bottom values are "auto"), because the offset of the parentNode
-      // or offsetParent element does not always equal the "unpositioned" state of
-      // a relatively positioned element.
-
-      // TODO: Account also for %, em and ex
-
-      offset = getOffset(el);
-      positions = [[getStyle(el, 'left'), getStyle(el, 'right')], [getStyle(el, 'top'), getStyle(el, 'bottom')]];
-      adjustment = [0, 0];
-
-      for (i = 0; i < 2; i++) {
-
-        // Jump to the next pair if both values are "auto"
-        if (positions[i][0] === 'auto' && positions[i][1] === 'auto') { continue; }
-
-        // Calculate how much the current position is affecting the current offset
-        if (positions[i][0] === 'auto') {
-          for (prop in units) {
-            if (positions[i][1].indexOf(prop) !== -1) {
-              adjustment[i] = -(parseFloat(positions[i][1]) * units[prop]);
-            }
-          }
-        } else {
-          for (prop in units) {
-            if (positions[i][0].indexOf(prop) !== -1) {
-              adjustment[i] = parseFloat(positions[i][0]) * units[prop];
-            }
-          }
-        }
-
-      }
-
-      // Adjust offset
-      offset.left -= adjustment[0];
-      offset.top -= adjustment[1];
-
-    } else {
-
-      offset = getOffset(el)
-
-    }
-
-    return offset;
-
-  }
-
   function getSanitizedOffset(offsetOption) {
 
     var offset = {x: 0, y: 0},
@@ -270,19 +168,19 @@
       if (itemLen === 2 && item[0].indexOf('deg') !== -1) {
 
         // Get angle and distance
-        ang = parseFloat(item[0]);
-        dist = parseFloat(item[1]);
+        ang = toFloat(item[0]);
+        dist = toFloat(item[1]);
 
         // Apply offsets only if the values are even remotely significant
         if (typeof ang === str_number && typeof dist === str_number && dist !== 0) {
-          offset.x += Math.round((Math.cos(ang * (Math.PI/180)) * dist) * decimal) / decimal;
-          offset.y += Math.round((Math.sin(ang * (Math.PI/180)) * dist) * decimal) / decimal;
+          offset.x += math.round((math.cos(ang * (math.PI/180)) * dist) * decimal) / decimal;
+          offset.y += math.round((math.sin(ang * (math.PI/180)) * dist) * decimal) / decimal;
         }
 
       // If is normal offset
       } else if (itemLen === 1 || itemLen === 2) {
-        offset.x += parseFloat(item[0]);
-        offset.y += itemLen === 1 ? parseFloat(item[0]) : parseFloat(item[1]);
+        offset.x += toFloat(item[0]);
+        offset.y += itemLen === 1 ? toFloat(item[0]) : toFloat(item[1]);
       }
 
     }
@@ -438,7 +336,7 @@
         // Get target's current data
         targetWidth = getWidth(targetElement),
         targetHeight = getHeight(targetElement),
-        targetParentOffset = getParentOffset(targetElement),
+        targetParentOffset = getStyle(targetElement, 'position') === 'fixed' ? getOffset(window) : getOffset(getOffsetParent(targetElement), true),
         targetOffset,
 
         // Get base element and pre-define base data variables
