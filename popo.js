@@ -158,17 +158,15 @@
   function getOffsetParent(el) {
 
     var elemPos = getStyle(el, 'position'),
-        offsetParent;
+        offsetParent = el.offsetParent;
 
     if (elemPos === 'fixed') {
       offsetParent = window;
     } else if (elemPos === 'absolute') {
-      offsetParent = el === body ? docElem : el.offsetParent || doc;
+      offsetParent = el === body ? docElem : offsetParent || doc;
       while (offsetParent !== doc && getStyle(offsetParent, 'position') === 'static') {
         offsetParent = offsetParent === body ? docElem : offsetParent.offsetParent || doc;
       }
-    } else {
-      offsetParent = el;
     }
 
     return offsetParent;
