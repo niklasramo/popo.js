@@ -1,5 +1,5 @@
 /*!
- * Popo JS - v0.7.9.9 - 1/3/2013
+ * Popo JS - v0.8.1 - 5/3/2013
  *
  * Copyright (c) 2013 Niklas Rämö
  * Released under the MIT license
@@ -26,8 +26,6 @@
       str_bottom = 'bottom',
       str_center = 'center',
       str_function = 'function',
-      str_number = 'number',
-      str_getBoundingClientRect = 'getBoundingClientRect',
 
       // A shortcut for getting the stringified type of an object
       getStringifiedType = Object.prototype.toString;
@@ -45,9 +43,10 @@
   function merge(arr) {
 
     var obj = {},
+        len = arr.length,
         i, prop;
 
-    for (i = 0; i < arr.length; i++) {
+    for (i = 0; i < len; i++) {
       for (prop in arr[i]) {
         obj[prop] = arr[i][prop];
       }
@@ -59,8 +58,8 @@
 
   function getStyle(el, prop) {
 
-    return doc.defaultView && doc.defaultView.getComputedStyle ? (
-      doc.defaultView.getComputedStyle(el, null).getPropertyValue(prop)
+    return window.getComputedStyle ? (
+      window.getComputedStyle(el, null).getPropertyValue(prop)
     ) : el.currentStyle ? (
       el.currentStyle[prop]
     ) : (
@@ -72,11 +71,11 @@
   function getWidth(el) {
 
     return el === window ? (
-      window.innerWidth || docElem.clientWidth || body.clientWidth
-    ) : el === doc ? (
-      math.max(docElem.clientWidth, docElem.offsetWidth, docElem.scrollWidth, body.scrollWidth, body.offsetWidth)
+      docElem.clientWidth
+    ) : el === doc || el === docElem ? (
+      math.max(docElem.scrollWidth, body.scrollWidth)
     ) : (
-      el[str_getBoundingClientRect]().width || el.offsetWidth
+      el.getBoundingClientRect().width || el.offsetWidth
     );
 
   }
@@ -84,11 +83,11 @@
   function getHeight(el) {
 
     return el === window ? (
-      window.innerHeight || docElem.clientHeight || body.clientHeight
-    ) : el === doc ? (
-      math.max(docElem.clientHeight, docElem.offsetHeight, docElem.scrollHeight, body.scrollHeight, body.offsetHeight)
+      docElem.clientHeight
+    ) : el === doc || el === docElem ? (
+      math.max(docElem.scrollHeight, body.scrollHeight)
     ) : (
-      el[str_getBoundingClientRect]().height || el.offsetHeight
+      el.getBoundingClientRect().height || el.offsetHeight
     );
 
   }
@@ -98,11 +97,10 @@
     // This function is pretty much borrowed from jQuery core so a humble
     // nod with gratitude is in place here =)
 
-    var offsetLeft = 0,
-        offsetTop = 0,
+    var offsetLeft = offsetTop = 0,
         viewportScrollLeft = window.pageXOffset || docElem.scrollLeft || body.scrollLeft,
         viewportScrollTop = window.pageYOffset || docElem.scrollTop || body.scrollTop,
-        rect;
+        rect, offsetParent;
 
     if (el === window) {
 
@@ -117,9 +115,32 @@
       // depending on the browser. For that reason the logic below assumes
       // that the html element has zero left/top offset and no left/top border.
 
-      rect = el[str_getBoundingClientRect]() || 0;
-      offsetLeft += rect[str_left] + viewportScrollLeft - /* IE7 Fix */docElem.clientLeft;
-      offsetTop += rect[str_top] + viewportScrollTop - /* IE7 Fix */docElem.clientTop;
+      rect = el.getBoundingClientRect();
+
+      if (rect) {
+
+        offsetLeft += rect[str_left] + viewportScrollLeft - /* IE7 Fix */docElem.clientLeft;
+        offsetTop += rect[str_top] + viewportScrollTop - /* IE7 Fix */docElem.clientTop;
+
+      } else {
+
+        // Experimental fallback based on: http://www.quirksmode.org/js/findpos.html
+        // Not working yet
+
+        offsetLeft += el.offsetLeft || 0;
+        offsetTop += el.offsetTop || 0;
+        offsetParent = getOffsetParent(el);
+
+        if (offsetParent) {
+          while (offsetParent) {
+            offsetLeft += el.offsetLeft;
+            offsetTop += el.offsetTop;
+            offsetParent = getOffsetParent(el);
+          }
+        }
+
+      }
+
       if (includeBorders) {
         offsetLeft += el.clientLeft;
         offsetTop += el.clientTop;
@@ -136,15 +157,20 @@
 
   function getOffsetParent(el) {
 
-    // This function uses the following assumptions:
-    // * el CSS position style is 'absolute'
-    // * document.documentElement.offsetParent === null
-    // * document.body.offsetParent === null
+    var elemPos = getStyle(el, 'position'),
+        offsetParent;
 
-    var offsetParent = el === body ? docElem : el.offsetParent || doc;
-    while (offsetParent !== doc && getStyle(offsetParent, 'position') === 'static') {
-      offsetParent = offsetParent === body ? docElem : offsetParent.offsetParent || doc;
+    if (elemPos === 'fixed') {
+      offsetParent = window;
+    } else if (elemPos === 'absolute') {
+      offsetParent = el === body ? docElem : el.offsetParent || doc;
+      while (offsetParent !== doc && getStyle(offsetParent, 'position') === 'static') {
+        offsetParent = offsetParent === body ? docElem : offsetParent.offsetParent || doc;
+      }
+    } else {
+      offsetParent = el;
     }
+
     return offsetParent;
 
   }
@@ -165,14 +191,14 @@
       itemLen = item.length;
 
       // If is angle offset
-      if (itemLen === 2 && item[0].indexOf('deg') !== -1) {
+      if (itemLen === 2 && item[0].indexOf('deg') >= 0) {
 
         // Get angle and distance
         ang = toFloat(item[0]);
         dist = toFloat(item[1]);
 
         // Apply offsets only if the values are even remotely significant
-        if (typeof ang === str_number && typeof dist === str_number && dist !== 0) {
+        if (typeof ang === 'number' && typeof dist === 'number' && dist !== 0) {
           offset.x += math.round((math.cos(ang * (math.PI/180)) * dist) * decimal) / decimal;
           offset.y += math.round((math.sin(ang * (math.PI/180)) * dist) * decimal) / decimal;
         }
@@ -219,20 +245,11 @@
       }
     }
 
-    // Sanitize position
+    // Sanitize options
     opts.position = typeof opts.position === str_function ? opts.position().split(' ') : opts.position.split(' ');
-
-    // Sanitize base element
     opts.base = typeof opts.base === str_function ? opts.base() : opts.base;
-
-    // Sanitize container
     opts.container = typeof opts.container === str_function ? opts.container() : opts.container;
-
-    // Sanitize offset
     opts.offset = getSanitizedOffset(opts.offset);
-
-    // NOTE!
-    // onCollision sanitation happens inside position function (if container is defined)
 
     return opts;
 
@@ -336,7 +353,7 @@
         // Get target's current data
         targetWidth = getWidth(targetElement),
         targetHeight = getHeight(targetElement),
-        targetParentOffset = getStyle(targetElement, 'position') === 'fixed' ? getOffset(window) : getOffset(getOffsetParent(targetElement), true),
+        targetParentOffset = getOffset(getOffsetParent(targetElement), true),
         targetOffset,
 
         // Get base element and pre-define base data variables
