@@ -120,4 +120,11 @@ $(function(){
   // The initial overlap check
   checkOverlap();
 
+  // Get some test data after positioning
+  console.log('target offsetLeft: ' + $target[0].offsetLeft);
+  console.log('target gbcr left: ' + $target[0].getBoundingClientRect().left);
+  console.log('docElem offsetLeft: ' + document.documentElement.offsetLeft);
+  console.log('docElem gbcr left: ' + document.documentElement.getBoundingClientRect().left);
+  console.log('docElem.clientLeft: ' + document.documentElement.clientLeft);
+
 });

@@ -1,5 +1,5 @@
 /*!
- * Popo JS - v0.8.1 - 5/3/2013
+ * Popo JS - v0.8.0 - 6/3/2013
  *
  * Copyright (c) 2013 Niklas Rämö
  * Released under the MIT license
@@ -36,7 +36,8 @@
 
   function trim(str) {
 
-    return typeof String.prototype.trim === str_function ? str.trim() : str.replace(/^\s+|\s+$/g, '');
+    // Based on: http://stackoverflow.com/questions/498970/how-do-i-trim-a-string-in-javascript/498995#498995
+    return String.prototype.trim ? str.trim() : str.replace(/^\s+|\s+$/g, '');
 
   }
 
@@ -58,6 +59,8 @@
 
   function getStyle(el, prop) {
 
+    // A crude implementation for getting the computed value of a style property
+    // Based on jQuery source & http://www.quirksmode.org/dom/getstyles.html
     return window.getComputedStyle ? (
       window.getComputedStyle(el, null).getPropertyValue(prop)
     ) : el.currentStyle ? (
@@ -65,6 +68,30 @@
     ) : (
       null
     );
+
+  }
+
+  function getOffsetParent(el) {
+
+    // This function is custom implementation of offsetParent and tailored for
+    // the use in this plugin specifically. Adresses the issue that body element's and html element's
+    // offsetParent returns usually undefined/null. Also for fixed elements the offsetParent
+    // should be window in all cases in order for the calculations in this plugin to return correct
+    // results.
+
+    var elemPos = getStyle(el, 'position'),
+        offsetParent = el.offsetParent;
+
+    if (elemPos === 'fixed') {
+      offsetParent = window;
+    } else if (elemPos === 'absolute') {
+      offsetParent = el === body ? docElem : offsetParent || doc;
+      while (offsetParent !== doc && getStyle(offsetParent, 'position') === 'static') {
+        offsetParent = offsetParent === body ? docElem : offsetParent.offsetParent || doc;
+      }
+    }
+
+    return offsetParent;
 
   }
 
@@ -94,10 +121,17 @@
 
   function getOffset(el, includeBorders) {
 
-    // This function is pretty much borrowed from jQuery core so a humble
-    // nod with gratitude is in place here =)
+    // This function is mostly borrowed from jQuery core so a humble
+    // thank you is in place here =) The only real problem is the root element
+    // aka the html element aka the documentElement, which throws highly inconsistent
+    // data depending on the browser, so we are taking an easy way out here
+    // and process the root element as the document and just hope that the user does
+    // not give any border, padding or margin to the root element or try to position it
+    // in any way. A fix for this problem is direly needed, but it involves a lot of reworking
+    // of the whole plugin, so that is a task for another day.
 
-    var offsetLeft = offsetTop = 0,
+    var offsetLeft = 0,
+        offsetTop = 0,
         viewportScrollLeft = window.pageXOffset || docElem.scrollLeft || body.scrollLeft,
         viewportScrollTop = window.pageYOffset || docElem.scrollTop || body.scrollTop,
         rect, offsetParent;
@@ -109,34 +143,26 @@
 
     } else if (el !== doc && el !== docElem) {
 
-      // The logic below works beautifully for all elements in almost
-      // all browsers (IE7+). The only exception is the html element,
-      // which outputs inconsistent gbcr, clientLeft and clientTop values
-      // depending on the browser. For that reason the logic below assumes
-      // that the html element has zero left/top offset and no left/top border.
-
       rect = el.getBoundingClientRect();
 
       if (rect) {
 
-        offsetLeft += rect[str_left] + viewportScrollLeft - /* IE7 Fix */docElem.clientLeft;
-        offsetTop += rect[str_top] + viewportScrollTop - /* IE7 Fix */docElem.clientTop;
+        offsetLeft += rect[str_left] + viewportScrollLeft - /* IE7 Fix*/ docElem.clientLeft;
+        offsetTop += rect[str_top] + viewportScrollTop - /* IE7 Fix*/ docElem.clientTop;
 
       } else {
 
-        // Experimental fallback based on: http://www.quirksmode.org/js/findpos.html
-        // Not working yet
+        // Experimental fallback for gbcr, probably needs a bit more tweaking and testing
+        // Thanks to PPK for the basic idea: http://www.quirksmode.org/js/findpos.html
 
         offsetLeft += el.offsetLeft || 0;
         offsetTop += el.offsetTop || 0;
         offsetParent = getOffsetParent(el);
 
-        if (offsetParent) {
-          while (offsetParent) {
-            offsetLeft += el.offsetLeft;
-            offsetTop += el.offsetTop;
-            offsetParent = getOffsetParent(el);
-          }
+        while (offsetParent) {
+          offsetLeft += offsetParent === window ? viewportScrollLeft : offsetParent.offsetLeft || 0;
+          offsetTop += offsetParent === window ? viewportScrollTop : offsetParent.offsetTop || 0;
+          offsetParent = getOffsetParent(offsetParent);
         }
 
       }
@@ -152,24 +178,6 @@
       left: offsetLeft,
       top: offsetTop
     };
-
-  }
-
-  function getOffsetParent(el) {
-
-    var elemPos = getStyle(el, 'position'),
-        offsetParent = el.offsetParent;
-
-    if (elemPos === 'fixed') {
-      offsetParent = window;
-    } else if (elemPos === 'absolute') {
-      offsetParent = el === body ? docElem : offsetParent || doc;
-      while (offsetParent !== doc && getStyle(offsetParent, 'position') === 'static') {
-        offsetParent = offsetParent === body ? docElem : offsetParent.offsetParent || doc;
-      }
-    }
-
-    return offsetParent;
 
   }
 
@@ -366,8 +374,8 @@
         containerHeight,
         containerOffset;
 
-    // Calculate base element's dimensions and offset.
-    // If base is an array we assume it's a coordinate.
+    // Calculate base element's dimensions and offset
+    // If base is an array we assume it's a coordinate
     getStringifiedType.call(baseElement) === '[object Array]' ? (
       baseWidth = baseHeight = 0,
       baseOffset = getOffset(baseElement[2] || window),
@@ -388,8 +396,8 @@
     // If container is defined, let's do some extra calculations and collision handling stuff
     if (containerElement) {
 
-      // Calculate container element's dimensions and offset.
-      // If container is an array we assume it's a coordinate.
+      // Calculate container element's dimensions and offset
+      // If container is an array we assume it's a coordinate
       getStringifiedType.call(containerElement) === '[object Array]' ? (
         containerWidth = containerHeight = 0,
         containerOffset = getOffset(containerElement[2] || window),
