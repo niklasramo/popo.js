@@ -121,8 +121,7 @@
 
   function getOffset(el, includeBorders) {
 
-    // This function is mostly borrowed from jQuery core so a humble
-    // thank you is in place here =) The only real problem is the root element
+    // This function works like a charm for all elements except for the root element
     // aka the html element aka the documentElement, which throws highly inconsistent
     // data depending on the browser, so we are taking an easy way out here
     // and process the root element as the document and just hope that the user does
@@ -145,7 +144,10 @@
 
       rect = el.getBoundingClientRect();
 
-      if (rect) {
+      if (rect && typeof rect[str_left] === 'number' && typeof rect[str_top] === 'number') {
+
+        // The logic below is borrowed straight from jQuery core so a humble
+        // thank you is in place here =)
 
         offsetLeft += rect[str_left] + viewportScrollLeft - /* IE7 Fix*/ docElem.clientLeft;
         offsetTop += rect[str_top] + viewportScrollTop - /* IE7 Fix*/ docElem.clientTop;
@@ -158,7 +160,6 @@
         offsetLeft += el.offsetLeft || 0;
         offsetTop += el.offsetTop || 0;
         offsetParent = getOffsetParent(el);
-
         while (offsetParent) {
           offsetLeft += offsetParent === window ? viewportScrollLeft : offsetParent.offsetLeft || 0;
           offsetTop += offsetParent === window ? viewportScrollTop : offsetParent.offsetTop || 0;
