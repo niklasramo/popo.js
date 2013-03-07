@@ -4,7 +4,7 @@
 
 Popo JS is a stand-alone cross-browser JavaScript library that makes it easy to position elements relative to other elements in various ways. Popo JS is heavily influenced by **[jQuery UI Position plugin](http://jqueryui.com/position/)**.
 
-The aim of Popo JS is to simplify the process of positioning DOM elements with JavaScript. The library is designed to work in all modern browsers (Chrome, Opera, Firefox, Safari, IE7+). However, it's a given there are still some currently unknown bugs between the lines so further testing is still needed to eradicate them.
+The aim of Popo JS is to simplify the process of positioning DOM elements with JavaScript. The library is designed to work in all modern browsers (Chrome, Opera, Firefox, Safari, IE7+).
 
 **NOTE: Keep in mind that there will be API changes before v1.0 release.**
 
@@ -12,8 +12,8 @@ The aim of Popo JS is to simplify the process of positioning DOM elements with J
 
 ###Download
 
-* **[v0.7.9.9 - Production](https://raw.github.com/niklasramo/popo/master/popo.min.js)** (4.4kb minified)
-* **[v0.7.9.9 - Development](https://raw.github.com/niklasramo/popo/master/popo.js)** (16kb uncompressed)
+* **[v0.8 - Production](https://raw.github.com/niklasramo/popo/master/popo.min.js)** (4.4kb minified)
+* **[v0.8 - Development](https://raw.github.com/niklasramo/popo/master/popo.js)** (23kb uncompressed)
 
 Download Popo JS library and include it in your HTML Document, preferrably inside the head tag.
 
@@ -26,7 +26,7 @@ Download Popo JS library and include it in your HTML Document, preferrably insid
 * Target element's CSS position property must be *absolute* or *fixed*. Positioning *relative* elements is not supported yet, but it is planned for 1.0 release.
 * The CSS display property of target element, base element and container element must not be *none*.
 * The target element's margin affects the final position calculated by Popo (this is a feature not a bug).
-* The html element's left offset (margin-left and left CSS properties), top offset (margin-top and top CSS properties), left border and top border must be to zero.
+* The root element (documentElement) provides highly inconsistent data and functionality per browser so please try to avoid positioning it and giving it any padding, margin or borders.
 
 ###Start using
 
@@ -39,7 +39,7 @@ window.popo[methodName]( targetElement, options );
 // A real world example
 // -> place target in the center of base 
 window.popo.set( document.getElementById("target"), {
-  position: "center",
+  position: "center center center center",
   base: document.getElementById("base")
 });
 ```
@@ -56,7 +56,7 @@ Name | Description
 Property | Default | Type | Description
 --- | --- | --- | ---
 **base** | window | *Element, Array* | <p>Defines which element the target element is positioned against.</p><p>Alternatively you can define a coordinate by providing an array containining the coordinates and an element that is used as the parent element for the coordinates. The format is: [x-coordinate, y-coordinate, element]. The coordinates must be numbers (integers or floats) and the element must be a DOM element, the document object or the window object.</p>
-**position** | "center" | *String* | <p>Defines the target element's position relative to the base element. The format is "targetX targetY baseX baseY". Use `left`, `right` and `center` to describe the horizontal position and `top`, `bottom` and `center` to describe the vertical position.</p>
+**position** | "center center center center" | *String* | <p>Defines the target element's position relative to the base element. The format is "targetX targetY baseX baseY". Use `left`, `right` and `center` to describe the horizontal position and `top`, `bottom` and `center` to describe the vertical position.</p>
 **offset** | "0" | *String* | <p>Defines a horizontal and a vertical offset (in pixels). For basic usage provide the option with a string containing two numbers (e.g. "-12 90"). The format is "offsetX offsetY". One number will be used for both offsets (e.g. "10").</p><p>For a bit more advanced usage you can define an angular offset by providing the option with an angle in degrees and a distance in pixels (e.g. "120deg 300"). Note that the first value must have the trailing "deg" string for Popo to identify the offset as an angular offset. Also note that zero degrees points to east.</p><p>For even more advanced usage you can provide the option with multiple offsets by separating the different offsets with a comma (e.g. "12, 30deg -600, -56 98, 1000deg 9").</p>
 **container** | null | *Element* | <p>Defines an optional container element that is used for collision detection.</p>
 **onCollision** | "push" | *String, Function* | <p>Defines what to do when the target element overflows the container element. The container element must be defined for this option to have any effect. You can either define a built-in collision method for each side with the format "left top right bottom" (e.g. "push none none push") or pass in a function and use this option as a callback function.</p><p>Popo has two built-in collision methods, <code>push</code> and <code>push!</code>, <code>none</code> will skip collision handling.</p><p><code>push</code> method tries to keep the targeted sides of the target element within the container element's boundaries. If you assign <code>push</code> method to the opposite sides the force of push will be equal on both sides. If you want to force one of the sides to be always pushed fully inside the container element's area, you can assign a forced push to that side with <code>push!</code> method.</p>

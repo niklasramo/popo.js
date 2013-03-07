@@ -126,5 +126,10 @@ $(function(){
   console.log('docElem offsetLeft: ' + document.documentElement.offsetLeft);
   console.log('docElem gbcr left: ' + document.documentElement.getBoundingClientRect().left);
   console.log('docElem.clientLeft: ' + document.documentElement.clientLeft);
+  console.log('---');
+  console.log('docElem clientWidth: ' + document.documentElement.clientWidth);
+  console.log('body clientWidth: ' + document.body.clientWidth);
+  console.log('docElem offsetWidth: ' + document.documentElement.offsetWidth);
+  console.log('body offsetWidth: ' + document.body.offsetWidth);
 
 });
