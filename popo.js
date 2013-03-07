@@ -81,7 +81,7 @@
   * @function   getStyle
   * @param      el {HtmlElement}
   * @param      prop {String}
-  * @returns    {HTMLElement}/null
+  * @returns    {String}/null
   *
   * A crude implementation for getting the computed value of a style property.
   * Based on jQuery source (http://code.jquery.com/jquery-1.9.1.js) and
