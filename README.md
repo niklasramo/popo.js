@@ -127,7 +127,7 @@ window.popo.set( target, {
   
   // Note that alternatively you can use onCollision as a callback
   // function so you can create your own collision method.
-  // => onCollision: function (targetPosition, positionData) {}
+  // => onCollision: function (targetPosition, targetOverlap, positionData) {}
   onCollision: "push! none push push"
   
 });
