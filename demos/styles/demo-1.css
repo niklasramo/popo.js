@@ -31,15 +31,19 @@ html, body {
   height: 100%;
   overflow: hidden;
   background: #f9f9f9;
+
 }
-#target, #overlap, #title {
+#target,
+#overlap,
+#title {
   display: block;
   position: absolute;
   cursor: move;
 }
 #target {
-  left: 50%;
-  top: 50%;
+  position: absolute;
+  left: 10px;
+  top: 10px;
   width: 150px;
   height: 150px;
   line-height: 150px;
@@ -89,8 +93,8 @@ html, body {
 #container.full {
   background: #cee6cc;
 }
-
-#target, #container {
+#target,
+#container {
   -webkit-transition: background 200ms ease;
   -moz-transition: background 200ms ease;
   -ms-transition: background 200ms ease;

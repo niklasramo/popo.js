@@ -34,7 +34,7 @@ time, mark, audio, video {
   height: 100px;
 }
 #test-target {
-  position: relative;
+  position: absolute;
   width: 10px;
   height: 10px;
 }
