@@ -6,16 +6,16 @@ Popo JS is a stand-alone cross-browser JavaScript library that makes it easy to 
 
 The aim of Popo JS is to simplify the process of positioning DOM elements with JavaScript. The library is designed to work in all modern browsers (Chrome, Opera, Firefox, Safari, IE7+).
 
-**NOTE: Keep in mind that there will be API changes before v1.0 release.**
+**NOTE: Keep in mind that there might be some API changes before v1.0 release.**
 
 ##Get started
 
 ###Download
 
-* **[v0.8 - Production](https://raw.github.com/niklasramo/popo/master/popo.min.js)** (4.4kb minified)
-* **[v0.8 - Development](https://raw.github.com/niklasramo/popo/master/popo.js)** (23kb uncompressed)
+* **[v0.8.1 - Production](https://raw.github.com/niklasramo/popo/master/popo.min.js)** (4.2kb minified)
+* **[v0.8.1 - Development](https://raw.github.com/niklasramo/popo/master/popo.js)** (21kb uncompressed)
 
-Download Popo JS library and include it in your HTML Document, preferrably inside the head tag.
+Download Popo JS library and include it in your HTML Document.
 
 ```html
 <script src="popo.min.js"></script>
@@ -26,7 +26,7 @@ Download Popo JS library and include it in your HTML Document, preferrably insid
 * Target element's CSS position property must be *absolute* or *fixed*. Positioning *relative* elements is not supported yet, but it is planned for 1.0 release.
 * The CSS display property of target element, base element and container element must not be *none*.
 * The target element's margin affects the final position calculated by Popo (this is a feature not a bug).
-* The root element (documentElement) provides highly inconsistent data and functionality per browser so please try to avoid positioning it and giving it any padding, margin or borders.
+* Popo uses the outer width/height (includes scrollbar, borders and padding) of an html element when calculating positions. However, for window object, document object and the root element (documentElement) the scrollbar size is omitted.
 
 ###Start using
 
@@ -122,7 +122,6 @@ window.popo.set( target, {
   // Formats:
   // "left-top-right-bottom"
   // "left-right top-bottom"
-  // "left top-bottom right"
   // "left top right bottom"
   
   // Note that alternatively you can use onCollision as a callback

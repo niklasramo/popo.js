@@ -1,5 +1,5 @@
 /*!
- * Popo JS - v0.8.0 - 7/3/2013
+ * Popo JS - v0.8.1 - 9/3/2013
  * Copyright (c) 2013 Niklas Rämö <inramo@gmail.com>
  * Released under the MIT license
  */
@@ -14,15 +14,12 @@
 
   var libName = 'popo',
 
-      // Cache references to often used elements
+      // Cache the containing window's document
       doc = window.document,
-      docElem = doc.documentElement,
-      body = doc.body,
 
-      // Cache references to often used global functions
+      // Cache Math object and Math.abs function
       math = Math,
       mathAbs = math.abs,
-      toFloat = parseFloat,
 
       // Cache often used strings
       str_left = 'left',
@@ -31,6 +28,8 @@
       str_bottom = 'bottom',
       str_center = 'center',
       str_function = 'function',
+      str_documentElement = 'documentElement',
+      str_body = 'body',
 
       // Create a shortcut for getting the stringified type of an object
       getStringifiedType = Object.prototype.toString;
@@ -117,9 +116,9 @@
     if (elemPos === 'fixed') {
       offsetParent = window;
     } else if (elemPos === 'absolute') {
-      offsetParent = el === body ? docElem : offsetParent || doc;
+      offsetParent = el === doc[str_body] ? doc[str_documentElement] : offsetParent || doc;
       while (offsetParent !== doc && getStyle(offsetParent, 'position') === 'static') {
-        offsetParent = offsetParent === body ? docElem : offsetParent.offsetParent || doc;
+        offsetParent = offsetParent === doc[str_body] ? doc[str_documentElement] : offsetParent.offsetParent || doc;
       }
     }
 
@@ -141,9 +140,9 @@
   function getWidth(el) {
 
     return el === window ? (
-      docElem.clientWidth
-    ) : el === doc || el === docElem ? (
-      math.max(docElem.scrollWidth, body.scrollWidth)
+      doc[str_documentElement].clientWidth
+    ) : el === doc || el === doc[str_documentElement] ? (
+      math.max(doc[str_documentElement].scrollWidth, doc[str_body].scrollWidth)
     ) : (
       el.getBoundingClientRect().width || el.offsetWidth
     );
@@ -164,9 +163,9 @@
   function getHeight(el) {
 
     return el === window ? (
-      docElem.clientHeight
-    ) : el === doc || el === docElem ? (
-      math.max(docElem.scrollHeight, body.scrollHeight)
+      doc[str_documentElement].clientHeight
+    ) : el === doc || el === doc[str_documentElement] ? (
+      math.max(doc[str_documentElement].scrollHeight, doc[str_body].scrollHeight)
     ) : (
       el.getBoundingClientRect().height || el.offsetHeight
     );
@@ -194,8 +193,8 @@
 
     var offsetLeft = 0,
         offsetTop = 0,
-        viewportScrollLeft = window.pageXOffset || docElem.scrollLeft || body.scrollLeft,
-        viewportScrollTop = window.pageYOffset || docElem.scrollTop || body.scrollTop,
+        viewportScrollLeft = window.pageXOffset || doc[str_documentElement].scrollLeft || doc[str_body].scrollLeft || 0,
+        viewportScrollTop = window.pageYOffset || doc[str_documentElement].scrollTop || doc[str_body].scrollTop || 0,
         rect, offsetParent;
 
     if (el === window) {
@@ -203,7 +202,7 @@
       offsetLeft = viewportScrollLeft;
       offsetTop = viewportScrollTop;
 
-    } else if (el !== doc && el !== docElem) {
+    } else if (el !== doc && el !== doc[str_documentElement]) {
 
       rect = el.getBoundingClientRect();
 
@@ -211,8 +210,8 @@
 
         // The logic below is borrowed straight from jQuery core so a humble
         // thank you is in place here =)
-        offsetLeft += rect[str_left] + viewportScrollLeft - /* IE7 Fix*/ docElem.clientLeft;
-        offsetTop += rect[str_top] + viewportScrollTop - /* IE7 Fix*/ docElem.clientTop;
+        offsetLeft += rect[str_left] + viewportScrollLeft - /* IE7 Fix*/ doc[str_documentElement].clientLeft;
+        offsetTop += rect[str_top] + viewportScrollTop - /* IE7 Fix*/ doc[str_documentElement].clientTop;
 
       } else {
 
@@ -230,8 +229,8 @@
       }
 
       if (includeBorders) {
-        offsetLeft += el.clientLeft;
-        offsetTop += el.clientTop;
+        offsetLeft += el.clientLeft || 0;
+        offsetTop += el.clientTop || 0;
       }
 
     }
@@ -255,6 +254,7 @@
   function getSanitizedOffset(offsetOption) {
 
     var offset = {x: 0, y: 0},
+        toFloat = parseFloat,
         decimal = 1000000,
         items = typeof offsetOption === str_function ? trim(offsetOption()).split(',') : offsetOption.split(','),
         itemsLen = items.length,
@@ -377,103 +377,64 @@
   }
 
   /**
-  * @function   getOverlap
-  * @param      targetWidth {Number}
-  * @param      targetHeight {Number}
-  * @param      targetPosition {Object}
-  * @param      targetParentOffset {Object}
-  * @param      containerWidth {Number}
-  * @param      containerHeight {Number}
-  * @param      containerOffset {Object}
-  * @returns    {Object}
-  *
-  * A function for calculating how much the target element overlaps the container element.
-  * Returns an object that contains four properties (left, top, right, bottom) which
-  * indicate how much the target element overlaps the container in pixels. A negative value
-  * indicates that the target is outside the container.
-  */
-  function getOverlap(targetWidth, targetHeight, targetPosition, targetParentOffset, containerWidth, containerHeight, containerOffset) {
-
-    return {
-      left: targetPosition[str_left] + targetParentOffset[str_left] - containerOffset[str_left],
-      right: (containerOffset[str_left] + containerWidth) - (targetPosition[str_left] + targetParentOffset[str_left] + targetWidth),
-      top: targetPosition[str_top] + targetParentOffset[str_top] - containerOffset[str_top],
-      bottom: (containerOffset[str_top] + containerHeight) - (targetPosition[str_top] + targetParentOffset[str_top] + targetHeight)
-    };
-
-  }
-
-  /**
   * @function   pushOnCollision
-  * @param      targetWidth {Number}
-  * @param      targetHeight {Number}
-  * @param      targetPosition {Object}
-  * @param      targetParentOffset {Object}
-  * @param      containerWidth {Number}
-  * @param      containerHeight {Number}
-  * @param      containerOffset {Object}
-  * @param      targetOverlap {Object}
   * @param      onCollision {Object}
-  * @returns    nothing
+  * @param      targetOverlap {Object}
+  * @param      vertical {Boolean}
+  * @returns    {Number}
   *
-  * A function for correcting the target element's position if needed.
+  * A function for correcting the target element's position if needed. The vertical parameter
+  * tells the function whether to return y-axis correction or x-axis correction. The returned
+  * number is the horizontal/vertical correction in pixels.
   */
-  function pushOnCollision(targetWidth, targetHeight, targetPosition, targetParentOffset, containerWidth, containerHeight, containerOffset, targetOverlap, onCollision) {
+  function pushOnCollision(onCollision, targetOverlap, vertical) {
 
-    // TODO: Remove dependency from getOverlap function
-    // TODO: Make this function return the values instead of setting them
+    var ret = 0,
+        push = 'push',
+        fPush = push + '!',
+        left = vertical ? str_top : str_left,
+        right = vertical ? str_bottom : str_right,
+        leftCollision = onCollision[left],
+        rightCollision = onCollision[right],
+        leftOverlap = targetOverlap[left],
+        rightOverlap = targetOverlap[right],
+        sizeDifference = leftOverlap + rightOverlap;
 
-    var push = 'push',
-        forcedPush = 'push!',
-        sides = [[str_left, str_right], [str_top, str_bottom]],
-        leftOrTop, rightOrBottom, i;
+    // If pushing is needed from both sides
+    if ((leftCollision == push || leftCollision == fPush) && (rightCollision == push || rightCollision == fPush) && (leftOverlap < 0 || rightOverlap < 0)) {
 
-    for (i = 0; i < 2; i++) {
-
-      leftOrTop = sides[i][0];
-      rightOrBottom = sides[i][1];
-
-      // If pushing is needed from both sides
-      if ( (onCollision[leftOrTop] === push || onCollision[leftOrTop] === forcedPush) &&
-           (onCollision[rightOrBottom] === push || onCollision[rightOrBottom] === forcedPush) &&
-           (targetOverlap[leftOrTop] < 0 || targetOverlap[rightOrBottom] < 0)
-         ) {
-
-        // Push from opposite sides equally
-        if (targetOverlap[leftOrTop] > targetOverlap[rightOrBottom]) {
-          if (mathAbs(targetOverlap[rightOrBottom]) <= mathAbs(targetOverlap[leftOrTop])) {
-            targetPosition[leftOrTop] -= mathAbs(targetOverlap[rightOrBottom]);
-          } else {
-            targetPosition[leftOrTop] -= ((mathAbs(targetOverlap[leftOrTop]) + mathAbs(targetOverlap[rightOrBottom])) / 2);
-          }
-        } else if (targetOverlap[leftOrTop] < targetOverlap[rightOrBottom]) {
-          if (mathAbs(targetOverlap[leftOrTop]) <= mathAbs(targetOverlap[rightOrBottom])) {
-            targetPosition[leftOrTop] += mathAbs(targetOverlap[leftOrTop]);
-          } else {
-            targetPosition[leftOrTop] += ((mathAbs(targetOverlap[leftOrTop]) + mathAbs(targetOverlap[rightOrBottom])) / 2);
-          }
-        }
-
-        // Update target's overlap
-        targetOverlap = getOverlap(targetWidth, targetHeight, targetPosition, targetParentOffset, containerWidth, containerHeight, containerOffset);
-
-        // Force push one of the sides if needed
-        if (onCollision[leftOrTop] === forcedPush && targetOverlap[leftOrTop] < 0) {
-          targetPosition[leftOrTop] += mathAbs(targetOverlap[leftOrTop]);
-        } else if (onCollision[rightOrBottom] === forcedPush && targetOverlap[rightOrBottom] < 0) {
-          targetPosition[leftOrTop] -= mathAbs(targetOverlap[rightOrBottom]);
-        }
-
-      // If pushing is needed from left or top side only, push it!
-      } else if ((onCollision[leftOrTop] === forcedPush || onCollision[leftOrTop] === push) && targetOverlap[leftOrTop] < 0) {
-        targetPosition[leftOrTop] += mathAbs(targetOverlap[leftOrTop]);
-
-      // If pushing is needed from right or bottom side only, push it!
-      } else if ((onCollision[rightOrBottom] === forcedPush || onCollision[rightOrBottom] === push) && targetOverlap[rightOrBottom] < 0) {
-        targetPosition[leftOrTop] -= mathAbs(targetOverlap[rightOrBottom]);
+      // Do push correction from opposite sides with equal force
+      if (leftOverlap < rightOverlap) {
+        ret -= sizeDifference < 0 ? leftOverlap + mathAbs(sizeDifference / 2) : leftOverlap;
+      }
+      if (rightOverlap < leftOverlap) {
+        ret += sizeDifference < 0 ? rightOverlap + mathAbs(sizeDifference / 2) : rightOverlap;
       }
 
+      // Update overlap data
+      leftOverlap += ret;
+      rightOverlap -= ret;
+
+      // Check if left/top side forced push correction is needed
+      if (leftCollision == fPush && rightCollision != fPush && leftOverlap < 0) {
+        ret -= leftOverlap;
+      }
+
+      // Check if right/top side forced push correction is needed
+      if (rightCollision == fPush && leftCollision != fPush && rightOverlap < 0) {
+        ret += rightOverlap;
+      }
+
+    // Check if pushing is needed from left or top side only
+    } else if ((leftCollision == fPush || leftCollision == push) && leftOverlap < 0) {
+      ret -= leftOverlap;
+
+    // Check if pushing is needed from right or bottom side only
+    } else if ((rightCollision == fPush || rightCollision == push) && rightOverlap < 0) {
+      ret += rightOverlap;
     }
+
+    return ret;
 
   }
 
@@ -482,41 +443,36 @@
   * @param      method {String}
   * @param      targetElement {HtmlElement}
   * @param      instanceOptions {Object}
-  * @returns    {Object}/nothing
+  * @returns    {Object}
   *
   * A function for controlling the logic and flow of the positioning process.
   * Sets the final left/top CSS property values to the target element if the
   * method parameter is "set". In other cases the function returns an object
   * containing the final values.
   */
-  function position(method, targetElement, instanceOptions) {
+  function position(targetElement, instanceOptions, setPosition) {
 
     var opts = getSanitizedOptions(instanceOptions),
-
-        // Let's store the onCollision option inside a variable for better minification
         onCollision = opts.onCollision,
 
-        // Containers for target's (yet to be) calculated data 
-        targetPositionNew,
-        targetOverlapNew,
+        // Container for position data object used in onCollision callback
+        positionData,
 
-        // Get target's current data
+        // Get target's data
         targetWidth = getWidth(targetElement),
         targetHeight = getHeight(targetElement),
-        targetParentOffset = getOffset(getOffsetParent(targetElement), true),
-        targetOffset,
+        targetParentOffset = getOffset(getOffsetParent(targetElement), 1),
+        targetOffset, // The offset will be calculated only if onCollision callback is called
+        targetOverlap, // Container for target's overlap data
+        targetPositionNew, // Container for target's final position
 
         // Get base element and pre-define base data variables
         baseElement = opts.base,
-        baseWidth,
-        baseHeight,
-        baseOffset,
+        baseWidth, baseHeight, baseOffset,
 
         // Get container element and pre-define container data variables
         containerElement = opts.container,
-        containerWidth,
-        containerHeight,
-        containerOffset;
+        containerWidth, containerHeight, containerOffset;
 
     // Calculate base element's dimensions and offset
     // If base is an array we assume it's a coordinate
@@ -554,7 +510,12 @@
       );
 
       // Calculate how much target element's sides overlap with the container element's sides
-      targetOverlapNew = getOverlap(targetWidth, targetHeight, targetPositionNew, targetParentOffset, containerWidth, containerHeight, containerOffset);
+      targetOverlap = {
+        left: targetPositionNew[str_left] + targetParentOffset[str_left] - containerOffset[str_left],
+        right: (containerOffset[str_left] + containerWidth) - (targetPositionNew[str_left] + targetParentOffset[str_left] + targetWidth),
+        top: targetPositionNew[str_top] + targetParentOffset[str_top] - containerOffset[str_top],
+        bottom: (containerOffset[str_top] + containerHeight) - (targetPositionNew[str_top] + targetParentOffset[str_top] + targetHeight)
+      };
 
       // If onCollision option is a callback function
       if (typeof onCollision === str_function) {
@@ -562,8 +523,8 @@
         // Get target's current offset
         targetOffset = getOffset(targetElement);
 
-        // Call the callback function and define the arguments
-        onCollision(targetPositionNew, targetOverlapNew, {
+        // Create positionData object for onCollision callback
+        positionData = {
           target: {
             element: targetElement,
             width: targetWidth,
@@ -586,17 +547,19 @@
             height: containerHeight,
             offset: containerOffset
           }
-        });
+        };
+
+        // Call the callback function and define the arguments
+        onCollision(targetPositionNew, targetOverlap, positionData);
 
       // If onCollision option is not a callback function
       } else {
 
-        // Sanitize onCollision
+        // Sanitize onCollision option and check if the target's position needs correction
         onCollision = getSanitizedOnCollision(onCollision);
-
-        // If onCollision passed sanitation run the calculated position through pre-defined collision methods
         if (onCollision) {
-          pushOnCollision(targetWidth, targetHeight, targetPositionNew, targetParentOffset, containerWidth, containerHeight, containerOffset, targetOverlapNew, onCollision);
+          targetPositionNew[str_left] += pushOnCollision(onCollision, targetOverlap);
+          targetPositionNew[str_top] += pushOnCollision(onCollision, targetOverlap, 1);
         }
 
       }
@@ -604,9 +567,10 @@
     }
 
     // Set or return the final values
-    if (method === 'set') {
+    if (setPosition) {
       targetElement.style[str_left] = targetPositionNew[str_left] + 'px';
       targetElement.style[str_top] = targetPositionNew[str_top] + 'px';
+      return window;
     } else {
       return targetPositionNew;
     }
@@ -621,11 +585,10 @@
   // define public methods and default options
   window[libName] = {
     set: function (el, opts) {
-      position('set', el, opts);
-      return this;
+      return position(el, opts, 1);
     },
     get: function (el, opts) {
-      return position('get', el, opts);
+      return position(el, opts);
     },
     defaults: {
       base: window,
