@@ -1,6 +1,7 @@
 /*!
- * Popo JS - v0.8.1 - 9/3/2013
- * Copyright (c) 2013 Niklas Rämö <inramo@gmail.com>
+ * Popo JS - v0.8.2 - 12/3/2013
+ * https://github.com/niklasramo/popo
+ * Copyright (c) 2012, 2013 Niklas Rämö <inramo@gmail.com>
  * Released under the MIT license
  */
 
@@ -385,7 +386,9 @@
   *
   * A function for correcting the target element's position if needed. The vertical parameter
   * tells the function whether to return y-axis correction or x-axis correction. The returned
-  * number is the horizontal/vertical correction in pixels.
+  * number is the horizontal/vertical correction in pixels. Do not be fooled by the usage of
+  * "left" and "right" in variable names, they will reflect "top" and "bottom" when vertical
+  * parameter is truthy.
   */
   function pushOnCollision(onCollision, targetOverlap, vertical) {
 
@@ -440,14 +443,14 @@
 
   /**
   * @function   position
-  * @param      method {String}
   * @param      targetElement {HtmlElement}
   * @param      instanceOptions {Object}
-  * @returns    {Object}
+  * @param      setPosition {Boolean}
+  * @returns    {Object}/window
   *
   * A function for controlling the logic and flow of the positioning process.
   * Sets the final left/top CSS property values to the target element if the
-  * method parameter is "set". In other cases the function returns an object
+  * setPosition parameter is a truthy value. In other cases the function returns an object
   * containing the final values.
   */
   function position(targetElement, instanceOptions, setPosition) {
@@ -590,6 +593,9 @@
     get: function (el, opts) {
       return position(el, opts);
     },
+    offset: getOffset,
+    width: getWidth,
+    height: getHeight,
     defaults: {
       base: window,
       position: 'center center center center',
