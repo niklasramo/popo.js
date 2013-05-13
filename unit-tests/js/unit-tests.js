@@ -184,7 +184,7 @@ $(function(){
           top: positions[prop].top
         };
 
-        result = window.popo.get($target[0], {
+        result = popo($target[0], 'get', {
           position: positions[prop].name,
           base: $base[0]
         });
@@ -208,7 +208,7 @@ $(function(){
 
       resetInlineStyles();
 
-      result = window.popo.get($target[0], {
+      result = popo($target[0], 'get', {
         position: positions.center_center_center_center.name,
         base: $base[0],
         offset: '5'
@@ -225,7 +225,7 @@ $(function(){
 
       resetInlineStyles();
 
-      result = window.popo.get($target[0], {
+      result = popo($target[0], 'get', {
         position: positions.center_center_center_center.name,
         base: $base[0],
         offset: '5 -5'
@@ -242,7 +242,7 @@ $(function(){
 
       resetInlineStyles();
 
-      result = window.popo.get($target[0], {
+      result = popo($target[0], 'get', {
         position: positions.center_center_center_center.name,
         base: $base[0],
         offset: '-19, 90deg 2'
@@ -259,7 +259,7 @@ $(function(){
 
       resetInlineStyles();
 
-      result = window.popo.get($target[0], {
+      result = popo($target[0], 'get', {
         position: positions.center_center_center_center.name,
         base: $base[0],
         offset: '-19 97, 0deg 99'
@@ -276,7 +276,7 @@ $(function(){
 
       resetInlineStyles();
 
-      result = window.popo.get($target[0], {
+      result = popo($target[0], 'get', {
         position: positions.center_center_center_center.name,
         base: $base[0],
         offset: '-19 97, 90deg 99'
@@ -293,7 +293,7 @@ $(function(){
 
       resetInlineStyles();
 
-      result = window.popo.get($target[0], {
+      result = popo($target[0], 'get', {
         position: positions.center_center_center_center.name,
         base: $base[0],
         offset: '-19 97, 180deg 99'
@@ -310,7 +310,7 @@ $(function(){
 
       resetInlineStyles();
 
-      result = window.popo.get($target[0], {
+      result = popo($target[0], 'get', {
         position: positions.center_center_center_center.name,
         base: $base[0],
         offset: '-19 97, 270deg 99'
@@ -331,7 +331,7 @@ $(function(){
 
       resetInlineStyles();
 
-      window.popo.get($target[0], {
+      popo($target[0], 'get', {
         position: positions.center_center_center_center.name,
         base: $base[0],
         container: $container[0],
@@ -348,14 +348,14 @@ $(function(){
 
       resetInlineStyles();
 
-      expected = window.popo.get($target[0], {
+      expected = popo($target[0], 'get', {
         position: positions.center_center_center_center.name,
         base: $base[0]
       });
       expected.left -= 1000;
       expected.top -= 1000;
 
-      result = window.popo.get($target[0], {
+      result = popo($target[0], 'get', {
         position: positions.center_center_center_center.name,
         base: $base[0],
         container: $container[0],
@@ -375,7 +375,7 @@ $(function(){
 
       resetInlineStyles();
 
-      result = window.popo.get($target[0], {
+      result = popo($target[0], 'get', {
         position: positions.center_center_center_center.name,
         base: $base[0],
         container: $container[0],
@@ -393,7 +393,7 @@ $(function(){
 
       resetInlineStyles();
 
-      result = window.popo.get($target[0], {
+      result = popo($target[0], 'get', {
         position: positions.center_center_center_center.name,
         base: $base[0],
         container: $container[0],
@@ -409,7 +409,7 @@ $(function(){
 
       // Assertion #3
 
-      result = window.popo.get($target[0], {
+      result = popo($target[0], 'get', {
         position: positions.center_center_center_center.name,
         base: $base[0],
         container: $container[0],
@@ -425,7 +425,7 @@ $(function(){
 
       // Assertion #4
 
-      result = window.popo.get($target[0], {
+      result = popo($target[0], 'get', {
         position: positions.center_center_center_center.name,
         base: $base[0],
         container: $container[0],
@@ -441,7 +441,7 @@ $(function(){
 
       // Assertion #5
 
-      result = window.popo.get($target[0], {
+      result = popo($target[0], 'get', {
         position: positions.center_center_center_center.name,
         base: $base[0],
         container: $container[0],
@@ -457,7 +457,7 @@ $(function(){
 
       // Assertion #6
 
-      result = window.popo.get($target[0], {
+      result = popo($target[0], 'get', {
         position: positions.center_center_center_center.name,
         base: $base[0],
         container: $container[0],
@@ -473,7 +473,7 @@ $(function(){
 
       // Assertion #7
 
-      result = window.popo.get($target[0], {
+      result = popo($target[0], 'get', {
         position: positions.center_center_center_center.name,
         base: $base[0],
         container: $container[0],
@@ -495,7 +495,7 @@ $(function(){
 
       // Assertion #1
 
-      result = window.popo.get($target[0], {
+      result = popo($target[0], 'get', {
         position: 'left top left top',
         base: [5, -5, $base[0]]
       });
@@ -513,7 +513,7 @@ $(function(){
 
       resetInlineStyles();
 
-      result = window.popo.get($target[0], {
+      result = popo($target[0], 'get', {
         position: ' ' + ' ' + ' ' + ' ' + ' ' + positions.center_center_center_center.name + ' ' + ' ' + ' ' + ' ' + ' ',
         offset: '                0 0 ',
         base: $base[0]
@@ -525,6 +525,46 @@ $(function(){
       };
 
       deepEqual(result, expected, 'Whitespace is trimmed correctly from options');
+
+    });
+
+    test('Set method chaining', 4, function() {
+
+      // Assertion #1
+
+      resetInlineStyles();
+
+      result = popo($target[0]);
+      expected = $target[0];
+
+      deepEqual(result, expected, 'popo(element) => returns element and uses set method');
+
+      // Assertion #2
+
+      resetInlineStyles();
+
+      result = popo($target[0], 'set');
+      expected = $target[0];
+
+      deepEqual(result, expected, 'popo(element, "set") => returns element and uses set method');
+
+      // Assertion #4
+
+      resetInlineStyles();
+
+      result = popo($target[0], {});
+      expected = $target[0];
+
+      deepEqual(result, expected, 'popo(element, options) => returns element and uses set method');
+
+      // Assertion #3
+
+      resetInlineStyles();
+
+      result = popo($target[0], 'set', {});
+      expected = $target[0];
+
+      deepEqual(result, expected, 'popo(element, "set", options) => returns element and uses set method');
 
     });
 

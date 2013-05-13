@@ -1,17 +1,25 @@
-/*!
- * Popo JS - v0.8.2 - 12/3/2013
+/*! Popo JS - v0.9.0 - 13/5/2013
  * https://github.com/niklasramo/popo
  * Copyright (c) 2012, 2013 Niklas Rämö <inramo@gmail.com>
- * Released under the MIT license
- */
+ * Released under the MIT license */
+
+// TODOS / BUGFIXES
+// * Programmatically find the offset of relatively positioned element (Hoohaa!)
+// * Revise sub-unit handling
+// * Revise docReady
+// * Revise code size => working on it
+// * Run mobile tests
+// * Performance tests
+
+// FUTURE FEATURES
+// * Make offset support all units (at least %)
+// * Additional public methods => popo(element, method);
+//   -> offset
+//   -> width
+//   -> height
 
 (function (window, undefined) {
-
-  "use strict";
-
-  /*===========
-    Variables
-  ============*/
+  'use strict';
 
   var libName = 'popo',
 
@@ -19,7 +27,7 @@
       doc = window.document,
 
       // Cache Math object and Math.abs function
-      math = Math,
+      math = window.Math,
       mathAbs = math.abs,
 
       // Cache often used strings
@@ -31,13 +39,10 @@
       str_function = 'function',
       str_documentElement = 'documentElement',
       str_body = 'body',
+      str_gbcr = 'getBoundingClientRect',
 
-      // Create a shortcut for getting the stringified type of an object
-      getStringifiedType = Object.prototype.toString;
-
-  /*===========
-    Functions
-  ===========*/
+      // Use an object's toString function to identify the type of an object
+      getType = ({}).toString;
 
   /**
   * @function   trim
@@ -49,7 +54,7 @@
   */
   function trim(str) {
 
-    return String.prototype.trim ? str.trim() : str.replace(/^\s+|\s+$/g, '');
+    return str.trim ? str.trim() : str.replace(/^\s+|\s+$/g, '');
 
   }
 
@@ -81,7 +86,7 @@
   * @function   getStyle
   * @param      el {HtmlElement}
   * @param      prop {String}
-  * @returns    {String}/null
+  * @returns    {String}/{null}
   *
   * A crude implementation for getting the computed value of a style property.
   * Based on jQuery source (http://code.jquery.com/jquery-1.9.1.js) and
@@ -105,7 +110,7 @@
   * @returns    {HtmlElement}
   *
   * A custom implementation of offsetParent and tailored for the use in this library specifically.
-  * Adresses the issue that body element's and html element's  offsetParent returns usually
+  * Adresses the issue that body element's and html element's offsetParent returns usually
   * undefined/null. Also for fixed elements the offsetParent should be window in all cases in order
   * for the calculations in this library to return correct results.
   */
@@ -114,11 +119,11 @@
     var elemPos = getStyle(el, 'position'),
         offsetParent = el.offsetParent;
 
-    if (elemPos === 'fixed') {
+    if (elemPos == 'fixed') {
       offsetParent = window;
-    } else if (elemPos === 'absolute') {
+    } else if (elemPos == 'absolute') {
       offsetParent = el === doc[str_body] ? doc[str_documentElement] : offsetParent || doc;
-      while (offsetParent !== doc && getStyle(offsetParent, 'position') === 'static') {
+      while (offsetParent !== doc && getStyle(offsetParent, 'position') == 'static') {
         offsetParent = offsetParent === doc[str_body] ? doc[str_documentElement] : offsetParent.offsetParent || doc;
       }
     }
@@ -145,7 +150,7 @@
     ) : el === doc || el === doc[str_documentElement] ? (
       math.max(doc[str_documentElement].scrollWidth, doc[str_body].scrollWidth)
     ) : (
-      el.getBoundingClientRect().width || el.offsetWidth
+      el[str_gbcr] ? el[str_gbcr]().width : el.offsetWidth
     );
 
   }
@@ -168,7 +173,7 @@
     ) : el === doc || el === doc[str_documentElement] ? (
       math.max(doc[str_documentElement].scrollHeight, doc[str_body].scrollHeight)
     ) : (
-      el.getBoundingClientRect().height || el.offsetHeight
+      el[str_gbcr] ? el[str_gbcr]().height : el.offsetHeight
     );
 
   }
@@ -205,9 +210,9 @@
 
     } else if (el !== doc && el !== doc[str_documentElement]) {
 
-      rect = el.getBoundingClientRect();
+      rect = el[str_gbcr] && el[str_gbcr]();
 
-      if (rect && typeof rect[str_left] === 'number' && typeof rect[str_top] === 'number') {
+      if (rect) {
 
         // The logic below is borrowed straight from jQuery core so a humble
         // thank you is in place here =)
@@ -255,36 +260,24 @@
   function getSanitizedOffset(offsetOption) {
 
     var offset = {x: 0, y: 0},
-        toFloat = parseFloat,
-        decimal = 1000000,
+        toFloat = window.parseFloat,
+        decimal = 1e6,
         items = typeof offsetOption === str_function ? trim(offsetOption()).split(',') : offsetOption.split(','),
-        itemsLen = items.length,
-        item, itemLen, ang, dist, i;
+        itemsLength = items.length,
+        item, itemVal1, itemVal2, i;
 
-    // Loop through all offset declarations
-    for (i = 0; i < itemsLen; i++) {
+    for (i = itemsLength; i--;) {
 
-      // Get offset item and offset item length
       item = trim(items[i]).split(' ');
-      itemLen = item.length;
+      itemVal1 = toFloat(item[0]) || 0;
+      itemVal2 = item.length > 1 ? toFloat(item[1]) || 0 : itemVal1;
 
-      // If is angle offset
-      if (itemLen === 2 && item[0].indexOf('deg') >= 0) {
-
-        // Get angle and distance
-        ang = toFloat(item[0]);
-        dist = toFloat(item[1]);
-
-        // Apply offsets only if the values are even remotely significant
-        if (typeof ang === 'number' && typeof dist === 'number' && dist !== 0) {
-          offset.x += math.round((math.cos(ang * (math.PI/180)) * dist) * decimal) / decimal;
-          offset.y += math.round((math.sin(ang * (math.PI/180)) * dist) * decimal) / decimal;
-        }
-
-      // If is normal offset
-      } else if (itemLen === 1 || itemLen === 2) {
-        offset.x += toFloat(item[0]);
-        offset.y += itemLen === 1 ? toFloat(item[0]) : toFloat(item[1]);
+      if (item[0].indexOf('deg') > -1 && item.length > 1 && itemVal2) {
+        offset.x += math.round((math.cos(itemVal1 * (math.PI/180)) * itemVal2) * decimal) / decimal;
+        offset.y += math.round((math.sin(itemVal1 * (math.PI/180)) * itemVal2) * decimal) / decimal;
+      } else {
+        offset.x += itemVal1;
+        offset.y += itemVal2;
       }
 
     }
@@ -296,7 +289,7 @@
   /**
   * @function   getSanitizedOnCollision
   * @param      onCollisionOption {String}
-  * @returns    {Object}/null
+  * @returns    {Object}/{null}
   *
   * A function for sanitizing the onCollision option. Transforms the string value into an object
   * that contains left/top/right/bottom parameters. If the string value can not be validated
@@ -305,18 +298,19 @@
   function getSanitizedOnCollision(onCollisionOption) {
 
     var array = typeof onCollisionOption === 'string' && onCollisionOption.length > 0 ? onCollisionOption.split(' ') : '',
-        len = array.length;
+        len = array.length,
+        ret = null;
 
     if (len > 0 && len < 5) {
-      return {
+      ret = {
         left: array[0],
         top: len > 1 ? array[1] : array[0],
         right: len > 2 ? array[2] : array[0],
-        bottom: len === 4 ? array[3] : len === 1 ? array[0] : array[1]
+        bottom: len > 3 ? array[3] : len < 2 ? array[0] : array[1]
       };
-    } else {
-      return null;
     }
+    
+    return ret;
 
   }
 
@@ -329,25 +323,25 @@
   * the instance options and tries to validate all options except for onCollision
   * option.
   */
-  function getSanitizedOptions(instanceOptions) {
+  function getSanitizedOptions(options) {
 
-    var opts = getStringifiedType.call(instanceOptions) === '[object Object]' ? merge([window[libName].defaults, instanceOptions]) : merge([window[libName].defaults]),
-        prop;
+    // Merge instance options with default options
+    options = getType.call(options) === '[object Object]' ? merge([window[libName].defaults, options]) : merge([window[libName].defaults]);
 
     // Trim all strings
-    for (prop in opts) {
-      if (typeof opts[prop] === 'string') {
-        opts[prop] = trim(opts[prop]);
+    for (var prop in options) {
+      if (typeof options[prop] === 'string') {
+        options[prop] = trim(options[prop]);
       }
     }
 
     // Sanitize options
-    opts.position = typeof opts.position === str_function ? opts.position().split(' ') : opts.position.split(' ');
-    opts.base = typeof opts.base === str_function ? opts.base() : opts.base;
-    opts.container = typeof opts.container === str_function ? opts.container() : opts.container;
-    opts.offset = getSanitizedOffset(opts.offset);
+    options.position = typeof options.position === str_function ? options.position().split(' ') : options.position.split(' ');
+    options.base = typeof options.base === str_function ? options.base() : options.base;
+    options.container = typeof options.container === str_function ? options.container() : options.container;
+    options.offset = getSanitizedOffset(options.offset);
 
-    return opts;
+    return options;
 
   }
 
@@ -443,43 +437,40 @@
 
   /**
   * @function   position
-  * @param      targetElement {HtmlElement}
-  * @param      instanceOptions {Object}
-  * @param      setPosition {Boolean}
-  * @returns    {Object}/window
+  * @param      element {HtmlElement}
+  * @param      method {String}
+  * @param      options {Object}
+  * @returns    {Object}/{window}
   *
-  * A function for controlling the logic and flow of the positioning process.
-  * Sets the final left/top CSS property values to the target element if the
-  * setPosition parameter is a truthy value. In other cases the function returns an object
-  * containing the final values.
+  * The primary function for controlling the logic and flow of the positioning process.
   */
-  function position(targetElement, instanceOptions, setPosition) {
+  function position(element, method, options) {
 
-    var opts = getSanitizedOptions(instanceOptions),
-        onCollision = opts.onCollision,
+    // Sanitize options
+    options = getSanitizedOptions(typeof method === 'string' ? options : method);
 
-        // Container for position data object used in onCollision callback
-        positionData,
+        // Cache onCollision option for better minification
+    var onCollision = options.onCollision,
 
         // Get target's data
-        targetWidth = getWidth(targetElement),
-        targetHeight = getHeight(targetElement),
-        targetParentOffset = getOffset(getOffsetParent(targetElement), 1),
+        targetWidth = getWidth(element),
+        targetHeight = getHeight(element),
+        targetParentOffset = getOffset(getOffsetParent(element), 1),
         targetOffset, // The offset will be calculated only if onCollision callback is called
         targetOverlap, // Container for target's overlap data
         targetPositionNew, // Container for target's final position
 
         // Get base element and pre-define base data variables
-        baseElement = opts.base,
+        baseElement = options.base,
         baseWidth, baseHeight, baseOffset,
 
         // Get container element and pre-define container data variables
-        containerElement = opts.container,
+        containerElement = options.container,
         containerWidth, containerHeight, containerOffset;
 
     // Calculate base element's dimensions and offset
     // If base is an array we assume it's a coordinate
-    getStringifiedType.call(baseElement) === '[object Array]' ? (
+    getType.call(baseElement) === '[object Array]' ? (
       baseWidth = baseHeight = 0,
       baseOffset = getOffset(baseElement[2] || window),
       baseOffset[str_left] += baseElement[0],
@@ -492,8 +483,8 @@
 
     // Calculate target element's new position
     targetPositionNew = {
-      left: getBasePosition(opts.position[0] + opts.position[2], baseOffset[str_left] + opts.offset.x - targetParentOffset[str_left], baseWidth, targetWidth),
-      top: getBasePosition(opts.position[1] + opts.position[3], baseOffset[str_top] + opts.offset.y - targetParentOffset[str_top], baseHeight, targetHeight)
+      left: getBasePosition(options.position[0] + options.position[2], baseOffset[str_left] + options.offset.x - targetParentOffset[str_left], baseWidth, targetWidth),
+      top: getBasePosition(options.position[1] + options.position[3], baseOffset[str_top] + options.offset.y - targetParentOffset[str_top], baseHeight, targetHeight)
     };
 
     // If container is defined, let's do some extra calculations and collision handling stuff
@@ -501,7 +492,7 @@
 
       // Calculate container element's dimensions and offset
       // If container is an array we assume it's a coordinate
-      getStringifiedType.call(containerElement) === '[object Array]' ? (
+      getType.call(containerElement) === '[object Array]' ? (
         containerWidth = containerHeight = 0,
         containerOffset = getOffset(containerElement[2] || window),
         containerOffset[str_left] += containerElement[0],
@@ -524,12 +515,12 @@
       if (typeof onCollision === str_function) {
 
         // Get target's current offset
-        targetOffset = getOffset(targetElement);
+        targetOffset = getOffset(element);
 
-        // Create positionData object for onCollision callback
-        positionData = {
+        // Call the callback function and define the arguments
+        onCollision(targetPositionNew, targetOverlap, {
           target: {
-            element: targetElement,
+            element: element,
             width: targetWidth,
             height: targetHeight,
             offset: targetOffset,
@@ -550,10 +541,7 @@
             height: containerHeight,
             offset: containerOffset
           }
-        };
-
-        // Call the callback function and define the arguments
-        onCollision(targetPositionNew, targetOverlap, positionData);
+        });
 
       // If onCollision option is not a callback function
       } else {
@@ -570,39 +558,26 @@
     }
 
     // Set or return the final values
-    if (setPosition) {
-      targetElement.style[str_left] = targetPositionNew[str_left] + 'px';
-      targetElement.style[str_top] = targetPositionNew[str_top] + 'px';
-      return window;
-    } else {
+    if (method === 'get') {
       return targetPositionNew;
+    } else {
+      element.style[str_left] = targetPositionNew[str_left] + 'px';
+      element.style[str_top] = targetPositionNew[str_top] + 'px';
+      return element;
     }
 
   }
 
-  /*=========
-    Unleash
-  =========*/
+  // Bind position function to window object
+  window[libName] = position;
 
-  // Bind the library to window object and
-  // define public methods and default options
-  window[libName] = {
-    set: function (el, opts) {
-      return position(el, opts, 1);
-    },
-    get: function (el, opts) {
-      return position(el, opts);
-    },
-    offset: getOffset,
-    width: getWidth,
-    height: getHeight,
-    defaults: {
-      base: window,
-      position: 'center center center center',
-      offset: '0',
-      container: null,
-      onCollision: 'push'
-    }
+  // Define default options
+  window[libName].defaults = {
+    base: window,
+    position: 'center center center center',
+    offset: '0',
+    container: null,
+    onCollision: 'none'
   };
 
 })(window);
