@@ -2,17 +2,15 @@
 
 *A JavaScript library for positioning elements*
 
-Popo JS is a stand-alone cross-browser JavaScript library that makes it easy to position elements relative to other elements in various ways. Popo JS is heavily influenced by **[jQuery UI Position plugin](http://jqueryui.com/position/)**.
+Popo JS is a stand-alone cross-browser (Chrome, Opera, Firefox, Safari, IE7+) JavaScript library that makes it easy to position elements relative to other elements in various ways. Popo JS is heavily influenced by **[jQuery UI Position plugin](http://jqueryui.com/position/)**.
 
-The aim of Popo JS is to simplify the process of positioning DOM elements with JavaScript. The library is designed to work in all modern browsers (Chrome, Opera, Firefox, Safari, IE7+).
-
-**NOTE: Keep in mind that there might be some API changes before v1.0 release.**
+**NOTE: Keep in mind that there might be some drastic API changes before v1.0 release.**
 
 ##Get started
 
 ###Download
 
-* **[v0.9 - Production](https://raw.github.com/niklasramo/popo/master/popo.min.js)** (4.2kb minified)
+* **[v0.9 - Production](https://raw.github.com/niklasramo/popo/master/popo.min.js)** (4kb minified)
 * **[v0.9 - Development](https://raw.github.com/niklasramo/popo/master/popo.js)** (21kb uncompressed)
 
 Download Popo JS library and include it in your HTML Document.
@@ -21,7 +19,7 @@ Download Popo JS library and include it in your HTML Document.
 <script src="popo.min.js"></script>
 ```
 
-###Know the prequisites
+###Learn about the prequisites
 
 * Target element's CSS position property must be *absolute* or *fixed*. Positioning *relative* elements is not supported yet, but it is planned for 1.0 release.
 * The CSS display property of target element, base element and container element must not be *none*.
@@ -34,14 +32,14 @@ Download Popo JS library and include it in your HTML Document.
 popo(element, method, options);
 ```
 
-__element__ (type: element)
+__element__ *(type: element, required)*  
 Provide the target element that you want to position.
 
-__method__ (type: string)
-Provide a method (`set` or `get`). Optional. Defaults to `set`.
+__method__ *(type: string, optional)*  
+Provide a method (`set` or `get`). Defaults to `set`.
 
-__method__ (type: object)
-Provide an object containing options. Optional. You can change the default options by modifying `window.popo.defaults`.
+__options__ *(type: object, optional)*  
+Provide an object containing options. You can change the default options by modifying `popo.defaults`.
 
 ## Methods
 
