@@ -60,12 +60,12 @@ Property | Default | Type | Description
 
 ##Examples
 
-__EX-1:__ Use `set` method to position target on top of base.
+__EX-1:__ Position target on top of base.
 
 ```javascript
-popo(targetElement, {
+popo(document.getElementById("target"), {
   position: "center bottom center top",
-  base: baseElement
+  base: document.getElementById("base")
 });
 ```
 
@@ -73,53 +73,13 @@ __EX-2:__ Use `get` method to retrieve target's position without actually positi
 
 ```javascript
 // The get method returns an object containing the final left and top values
-var position = popo(targetElement, 'get', {
+var position = popo(document.getElementById("target"), 'get', {
   position: "left top right center",
-  base: baseElement
+  base: document.getElementById("base")
 });
 
 // position.left => returns the final left position of target element 
 // position.top => returns the final top position of target element
-```
-
-__EX-3:__ A bit more detailed example.
-
-```javascript
-popo(targetElement, {
-
-  // A compulsory base element that defines which element
-  // the target element is positioned against. Defaults to window.
-  base: baseElement,
-
-  // The syntax here is similar to jQuery UI Position plugin.
-  // Format => "targetX targetY baseX baseY"
-  position: "center top left bottom",
-  
-  // Define a single offset or multiple offsets separated with comma.
-  offset: "12, 30deg -600, -56 98, 1000deg 9",
-
-  // An optional container element that is used for collision detection.
-  // Defaults to null. Must to be defined for onCollision option to have
-  // any effect.
-  container: containerElement,
-
-  // Define a collision method using one of the formats below with
-  // available methods. The idea is to define a collision method for
-  // each side separately or use one of the shorthand formats.
-
-  // Methods: "none", "push", "push!"
-
-  // Formats:
-  // "left-top-right-bottom"
-  // "left-right top-bottom"
-  // "left top right bottom"
-  
-  // Note that alternatively you can use onCollision as a callback
-  // function so you can create your own collision method.
-  // => onCollision: function (targetPosition, targetOverlap, positionData) {}
-  onCollision: "push! none push push"
-  
-});
 ```
 
 ## License
