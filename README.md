@@ -6,8 +6,8 @@ Popo is a cross-browser (Chrome, Opera, Firefox, Safari, IE7+) JavaScript librar
 
 ##Download
 
-* **[v0.9 - Production](https://raw.github.com/niklasramo/popo/master/popo.min.js)** (4kb minified)
-* **[v0.9 - Development](https://raw.github.com/niklasramo/popo/master/popo.js)** (21kb uncompressed)
+* **[v0.9 - Production](https://raw.github.com/niklasramo/popo/dev/popo.min.js)** (4kb minified)
+* **[v0.9 - Development](https://raw.github.com/niklasramo/popo/dev/popo.js)** (21kb uncompressed)
 
 ##Usage
 
