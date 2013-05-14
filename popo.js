@@ -1,22 +1,11 @@
-/*! Popo JS - v0.9.0 - 13/5/2013
+/*! Popo JS - v0.9.0dev - 14/5/2013
  * https://github.com/niklasramo/popo
  * Copyright (c) 2012, 2013 Niklas Rämö <inramo@gmail.com>
  * Released under the MIT license */
 
-// TODOS / BUGFIXES
-// * Programmatically find the offset of relatively positioned element (Hoohaa!)
-// * Revise sub-unit handling
-// * Revise docReady
-// * Revise code size => working on it
-// * Run mobile tests
-// * Performance tests
-
-// FUTURE FEATURES
-// * Make offset support all units (at least %)
-// * Additional public methods => popo(element, method);
-//   -> offset
-//   -> width
-//   -> height
+// TODOS
+// * Programmatically find the "zero" position of a relatively positioned element
+// * Merge offset/height/width in a smart way so that gbcr does not get called multiple times
 
 (function (window, undefined) {
   'use strict';
@@ -36,6 +25,8 @@
       str_top = 'top',
       str_bottom = 'bottom',
       str_center = 'center',
+      str_width = 'width',
+      str_height = 'height',
       str_function = 'function',
       str_documentElement = 'documentElement',
       str_body = 'body',
@@ -116,12 +107,12 @@
   */
   function getOffsetParent(el) {
 
-    var elemPos = getStyle(el, 'position'),
-        offsetParent = el.offsetParent;
+    var offsetParent = el.offsetParent,
+        pos = offsetParent && getStyle(el, 'position');
 
-    if (elemPos == 'fixed') {
+    if (pos == 'fixed') {
       offsetParent = window;
-    } else if (elemPos == 'absolute') {
+    } else if (pos == 'absolute') {
       offsetParent = el === doc[str_body] ? doc[str_documentElement] : offsetParent || doc;
       while (offsetParent !== doc && getStyle(offsetParent, 'position') == 'static') {
         offsetParent = offsetParent === doc[str_body] ? doc[str_documentElement] : offsetParent.offsetParent || doc;
@@ -150,7 +141,7 @@
     ) : el === doc || el === doc[str_documentElement] ? (
       math.max(doc[str_documentElement].scrollWidth, doc[str_body].scrollWidth)
     ) : (
-      el[str_gbcr] ? el[str_gbcr]().width : el.offsetWidth
+      el[str_gbcr] && str_width in el[str_gbcr]() ? el[str_gbcr]()[str_width] : el.offsetWidth
     );
 
   }
@@ -173,7 +164,7 @@
     ) : el === doc || el === doc[str_documentElement] ? (
       math.max(doc[str_documentElement].scrollHeight, doc[str_body].scrollHeight)
     ) : (
-      el[str_gbcr] ? el[str_gbcr]().height : el.offsetHeight
+      el[str_gbcr] && str_height in el[str_gbcr]() ? el[str_gbcr]()[str_height] : el.offsetHeight
     );
 
   }
@@ -201,7 +192,8 @@
         offsetTop = 0,
         viewportScrollLeft = window.pageXOffset || doc[str_documentElement].scrollLeft || doc[str_body].scrollLeft || 0,
         viewportScrollTop = window.pageYOffset || doc[str_documentElement].scrollTop || doc[str_body].scrollTop || 0,
-        rect, offsetParent;
+        offsetParent = el,
+        rect;
 
     if (el === window) {
 
@@ -212,20 +204,15 @@
 
       rect = el[str_gbcr] && el[str_gbcr]();
 
-      if (rect) {
+      if (rect && str_left in rect && str_top in rect) {
 
-        // The logic below is borrowed straight from jQuery core so a humble
-        // thank you is in place here =)
+        // gbcr based solution (borrowed from jQuery)
         offsetLeft += rect[str_left] + viewportScrollLeft - /* IE7 Fix*/ doc[str_documentElement].clientLeft;
         offsetTop += rect[str_top] + viewportScrollTop - /* IE7 Fix*/ doc[str_documentElement].clientTop;
 
       } else {
 
-        // Experimental fallback for gbcr, probably needs a bit more tweaking and testing
-        // Thanks to PPK for the basic idea: http://www.quirksmode.org/js/findpos.html
-        offsetLeft += el.offsetLeft || 0;
-        offsetTop += el.offsetTop || 0;
-        offsetParent = getOffsetParent(el);
+        // gbcr fallback (borrowed from http://www.quirksmode.org/js/findpos.html)
         while (offsetParent) {
           offsetLeft += offsetParent === window ? viewportScrollLeft : offsetParent.offsetLeft || 0;
           offsetTop += offsetParent === window ? viewportScrollTop : offsetParent.offsetTop || 0;
