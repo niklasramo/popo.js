@@ -1,34 +1,18 @@
-#Popo JS
+#Popo
 
 *A JavaScript library for positioning elements*
 
-Popo JS is a stand-alone cross-browser (Chrome, Opera, Firefox, Safari, IE7+) JavaScript library that makes it easy to position elements relative to other elements in various ways. Popo JS is heavily influenced by **[jQuery UI Position plugin](http://jqueryui.com/position/)**.
+Popo is a cross-browser (Chrome, Opera, Firefox, Safari, IE7+) JavaScript library that makes it easy to position elements relative to other elements in various ways. The library is heavily influenced by **[jQuery UI Position plugin](http://jqueryui.com/position/)**.
 
-**NOTE: Keep in mind that there might be some drastic API changes before v1.0 release.**
+##Download
 
-##Get started
-
-###Download
-
-* **[v0.9 - Production](https://raw.github.com/niklasramo/popo/master/popo.min.js)** (4kb minified)
-* **[v0.9 - Development](https://raw.github.com/niklasramo/popo/master/popo.js)** (21kb uncompressed)
-
-Download Popo JS library and include it in your HTML Document.
-
-```html
-<script src="popo.min.js"></script>
-```
-
-###Learn about the prequisites
-
-* Target element's CSS position property must be *absolute* or *fixed*. Positioning *relative* elements is not supported yet, but it is planned for 1.0 release.
-* The CSS display property of target element, base element and container element must not be *none*.
-* The target element's margin affects the final position calculated by Popo (this is a feature not a bug).
-* Popo uses the outer width/height (includes scrollbar, borders and padding) of an html element when calculating positions. However, for window object, document object and the root element (documentElement) the scrollbar size is omitted.
+* **[v0.9 - Production](https://raw.github.com/niklasramo/popo/dev/popo.min.js)** (4kb minified)
+* **[v0.9 - Development](https://raw.github.com/niklasramo/popo/dev/popo.js)** (21kb uncompressed)
 
 ##Usage
 
 ```javascript
+// The format
 popo(element, method, options);
 ```
 
@@ -54,7 +38,7 @@ Property | Default | Type | Description
 --- | --- | --- | ---
 **base** | window | *Element, Array* | <p>Defines which element the target element is positioned against. Alternatively you can define a coordinate using an array: [x-coordinate, y-coordinate, element].</p>
 **position** | "center center center center" | *String* | <p>Defines the target element's position relative to the base element. The format is "targetX targetY baseX baseY". Use `left`, `right` and `center` to describe the horizontal position and `top`, `bottom` and `center` to describe the vertical position.</p>
-**offset** | "0" | *String* | <p>Defines a horizontal and a vertical offset in pixels. The basic format is "offsetX offsetY", or alternatively just "offset" if you want to use the same value for both the vertical and the horizontal offset. You can also define multiple offsets by separating the offset values with a comma (e.g. "12,12 -21,31 40").</p><p>For a bit more advanced usage you can define an angular offset by providing the option with an angle in degrees and a distance in pixels (e.g. "120deg 300"). Note that the first value must have the trailing "deg" string for Popo to identify the offset as an angular offset. Also note that zero degrees points to east.</p>
+**offset** | "0" | *String* | <p>Defines a horizontal and a vertical offset in pixels. The basic format is "offsetX offsetY", or alternatively just "offset" if you want to use the same value for both the vertical and the horizontal offset. You can also define multiple offsets that stack up by separating the offset values with a comma (e.g. "12,12 -21,31 40").</p><p>For a bit more advanced usage you can define an angular offset by providing the option with an angle in degrees and a distance in pixels (e.g. "120deg 300"). Note that the first value must have the trailing "deg" string for Popo to identify the offset as an angular offset. Also note that zero degrees points to east.</p>
 **container** | null | *Element, Array* | <p>Defines an optional container element that is used for collision detection. Alternatively you can define a coordinate using an array: [x-coordinate, y-coordinate, element].</p>
 **onCollision** | "none" | *String, Function* | <p>Defines what to do when the target element overflows the container element. The container element must be defined for this option to have any effect. You can either define a built-in collision method for each side with the format "left top right bottom" (e.g. "push none none push") or pass in a function and use this option as a callback function.</p><p>Popo has two built-in collision methods, <code>push</code> and <code>push!</code>, <code>none</code> will skip collision handling.</p><p><code>push</code> method tries to keep the targeted sides of the target element within the container element's boundaries. If you assign <code>push</code> method to the opposite sides the force of push will be equal on both sides. If you want to force one of the sides to be always pushed fully inside the container element's area, you can assign a forced push to that side with <code>push!</code> method.</p>
 
@@ -72,15 +56,22 @@ popo(document.getElementById("target"), {
 __EX-2:__ Use `get` method to retrieve target's position without actually positioning the target.
 
 ```javascript
-// The get method returns an object containing the final left and top values
 var position = popo(document.getElementById("target"), 'get', {
   position: "left top right center",
   base: document.getElementById("base")
 });
 
+// The get method returns an object containing the final left and top values
 // position.left => returns the final left position of target element 
 // position.top => returns the final top position of target element
 ```
+
+##Prequisites
+
+* Target element's CSS position property must be *absolute* or *fixed*. Positioning *relative* elements is not supported yet, but it is planned for 1.0 release.
+* The CSS display property of target element, base element and container element must not be *none*.
+* The target element's margin affects the final position calculated by Popo (this is a feature not a bug).
+* Popo uses the outer width/height (includes scrollbar, borders and padding) of an html element when calculating positions. However, for window object, document object and the root element (documentElement) the scrollbar size is omitted.
 
 ## License
 
