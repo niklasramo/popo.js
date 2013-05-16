@@ -1,4 +1,4 @@
-/*! Popo JS - v0.9.0dev - 14/5/2013
+/*! Popo - v0.9.0dev - 16/5/2013
  * https://github.com/niklasramo/popo
  * Copyright (c) 2012, 2013 Niklas Rämö <inramo@gmail.com>
  * Released under the MIT license */
@@ -45,7 +45,7 @@
   */
   function trim(str) {
 
-    return str.trim ? str.trim() : str.replace(/^\s+|\s+$/g, '');
+    return typeof str === 'string' ? (str.trim ? str.trim() : str.replace(/^\s+|\s+$/g, '')) : str;
 
   }
 
@@ -100,21 +100,19 @@
   * @param      el {HtmlElement}
   * @returns    {HtmlElement}
   *
-  * A custom implementation of offsetParent and tailored for the use in this library specifically.
-  * Adresses the issue that body element's and html element's offsetParent returns usually
-  * undefined/null. Also for fixed elements the offsetParent should be window in all cases in order
-  * for the calculations in this library to return correct results.
+  * A custom implementation of offsetParent that solves the problems with
+  * absolute/fixed positioned elements.
   */
   function getOffsetParent(el) {
 
     var offsetParent = el.offsetParent,
-        pos = offsetParent && getStyle(el, 'position');
+        pos = 'style' in el && getStyle(el, 'position');
 
     if (pos == 'fixed') {
       offsetParent = window;
     } else if (pos == 'absolute') {
       offsetParent = el === doc[str_body] ? doc[str_documentElement] : offsetParent || doc;
-      while (offsetParent !== doc && getStyle(offsetParent, 'position') == 'static') {
+      while ('style' in offsetParent && getStyle(offsetParent, 'position') == 'static') {
         offsetParent = offsetParent === doc[str_body] ? doc[str_documentElement] : offsetParent.offsetParent || doc;
       }
     }
@@ -207,8 +205,8 @@
       if (rect && str_left in rect && str_top in rect) {
 
         // gbcr based solution (borrowed from jQuery)
-        offsetLeft += rect[str_left] + viewportScrollLeft - /* IE7 Fix*/ doc[str_documentElement].clientLeft;
-        offsetTop += rect[str_top] + viewportScrollTop - /* IE7 Fix*/ doc[str_documentElement].clientTop;
+        offsetLeft += rect[str_left] + viewportScrollLeft - /* IE7 Fix*/ (doc[str_documentElement].clientLeft || 0);
+        offsetTop += rect[str_top] + viewportScrollTop - /* IE7 Fix*/ (doc[str_documentElement].clientTop || 0);
 
       } else {
 
@@ -247,15 +245,14 @@
   function getSanitizedOffset(offsetOption) {
 
     var offset = {x: 0, y: 0},
+        offsetOption = typeof offsetOption === 'string' ? offsetOption.split(',') : [],
         toFloat = window.parseFloat,
         decimal = 1e6,
-        items = typeof offsetOption === str_function ? trim(offsetOption()).split(',') : offsetOption.split(','),
-        itemsLength = items.length,
         item, itemVal1, itemVal2, i;
 
-    for (i = itemsLength; i--;) {
+    for (i = offsetOption.length; i--;) {
 
-      item = trim(items[i]).split(' ');
+      item = trim(offsetOption[i]).split(' ');
       itemVal1 = toFloat(item[0]) || 0;
       itemVal2 = item.length > 1 ? toFloat(item[1]) || 0 : itemVal1;
 
@@ -284,19 +281,22 @@
   */
   function getSanitizedOnCollision(onCollisionOption) {
 
-    var array = typeof onCollisionOption === 'string' && onCollisionOption.length > 0 ? onCollisionOption.split(' ') : '',
-        len = array.length,
-        ret = null;
+    var ret = typeof onCollisionOption === str_function ? onCollisionOption : null,
+        array, len;
 
-    if (len > 0 && len < 5) {
-      ret = {
-        left: array[0],
-        top: len > 1 ? array[1] : array[0],
-        right: len > 2 ? array[2] : array[0],
-        bottom: len > 3 ? array[3] : len < 2 ? array[0] : array[1]
-      };
+    if (typeof onCollisionOption === 'string' && onCollisionOption.length > 0) {
+      array = onCollisionOption.split(' ');
+      len = array.length;
+      if (len > 0 && len < 5) {
+        ret = {
+          left: array[0],
+          top: len > 1 ? array[1] : array[0],
+          right: len > 2 ? array[2] : array[0],
+          bottom: len > 3 ? array[3] : len < 2 ? array[0] : array[1]
+        };
+      }
     }
-    
+
     return ret;
 
   }
@@ -307,26 +307,22 @@
   * @returns    {Object}
   *
   * A function for sanitizing all options. Merges the global default options with 
-  * the instance options and tries to validate all options except for onCollision
-  * option.
+  * the instance options and sanitizes the merged options.
   */
   function getSanitizedOptions(options) {
 
     // Merge instance options with default options
     options = getType.call(options) === '[object Object]' ? merge([window[libName].defaults, options]) : merge([window[libName].defaults]);
 
-    // Trim all strings
+    // Handle functions in options and trim all strings
     for (var prop in options) {
-      if (typeof options[prop] === 'string') {
-        options[prop] = trim(options[prop]);
-      }
+      options[prop] = trim(typeof options[prop] !== str_function ? options[prop] : prop == 'onCollision' ? options[prop] : options[prop]());
     }
 
-    // Sanitize options
-    options.position = typeof options.position === str_function ? options.position().split(' ') : options.position.split(' ');
-    options.base = typeof options.base === str_function ? options.base() : options.base;
-    options.container = typeof options.container === str_function ? options.container() : options.container;
+    // Deeper sanitation of all options that require special handling
+    options.position = options.position.split(' ');
     options.offset = getSanitizedOffset(options.offset);
+    options.onCollision = getSanitizedOnCollision(options.onCollision);
 
     return options;
 
@@ -498,7 +494,7 @@
         bottom: (containerOffset[str_top] + containerHeight) - (targetPositionNew[str_top] + targetParentOffset[str_top] + targetHeight)
       };
 
-      // If onCollision option is a callback function
+      // If onCollision is a callback function
       if (typeof onCollision === str_function) {
 
         // Get target's current offset
@@ -530,15 +526,11 @@
           }
         });
 
-      // If onCollision option is not a callback function
-      } else {
+      // If onCollision uses predefined collision methods
+      } else if (onCollision) {
 
-        // Sanitize onCollision option and check if the target's position needs correction
-        onCollision = getSanitizedOnCollision(onCollision);
-        if (onCollision) {
-          targetPositionNew[str_left] += pushOnCollision(onCollision, targetOverlap);
-          targetPositionNew[str_top] += pushOnCollision(onCollision, targetOverlap, 1);
-        }
+        targetPositionNew[str_left] += pushOnCollision(onCollision, targetOverlap);
+        targetPositionNew[str_top] += pushOnCollision(onCollision, targetOverlap, 1);
 
       }
 
