@@ -1,4 +1,4 @@
-/*! Popo - v0.9.0dev - 16/5/2013
+/*! Popo - v0.9.0dev - 17/5/2013
  * https://github.com/niklasramo/popo
  * Copyright (c) 2012, 2013 Niklas Rämö <inramo@gmail.com>
  * Released under the MIT license */
@@ -28,6 +28,7 @@
       str_width = 'width',
       str_height = 'height',
       str_function = 'function',
+      str_string = 'string',
       str_documentElement = 'documentElement',
       str_body = 'body',
       str_gbcr = 'getBoundingClientRect',
@@ -45,7 +46,7 @@
   */
   function trim(str) {
 
-    return typeof str === 'string' ? (str.trim ? str.trim() : str.replace(/^\s+|\s+$/g, '')) : str;
+    return typeof str === str_string ? (str.trim ? str.trim() : str.replace(/^\s+|\s+$/g, '')) : str;
 
   }
 
@@ -234,95 +235,80 @@
   }
 
   /**
-  * @function   getSanitizedOffset
-  * @param      offsetOption {String}
-  * @returns    {Object}
-  *
-  * A function for sanitizing the offset option and calculating the
-  * total horizontal and vertical offset that needs to be added
-  * to or removed from the final left/top position values.
-  */
-  function getSanitizedOffset(offsetOption) {
-
-    var offset = {x: 0, y: 0},
-        offsetOption = typeof offsetOption === 'string' ? offsetOption.split(',') : [],
-        toFloat = window.parseFloat,
-        decimal = 1e6,
-        item, itemVal1, itemVal2, i;
-
-    for (i = offsetOption.length; i--;) {
-
-      item = trim(offsetOption[i]).split(' ');
-      itemVal1 = toFloat(item[0]) || 0;
-      itemVal2 = item.length > 1 ? toFloat(item[1]) || 0 : itemVal1;
-
-      if (item[0].indexOf('deg') > -1 && item.length > 1 && itemVal2) {
-        offset.x += math.round((math.cos(itemVal1 * (math.PI/180)) * itemVal2) * decimal) / decimal;
-        offset.y += math.round((math.sin(itemVal1 * (math.PI/180)) * itemVal2) * decimal) / decimal;
-      } else {
-        offset.x += itemVal1;
-        offset.y += itemVal2;
-      }
-
-    }
-
-    return offset;
-
-  }
-
-  /**
-  * @function   getSanitizedOnCollision
-  * @param      onCollisionOption {String}
-  * @returns    {Object}/{null}
-  *
-  * A function for sanitizing the onCollision option. Transforms the string value into an object
-  * that contains left/top/right/bottom parameters. If the string value can not be validated
-  * the function returns null.
-  */
-  function getSanitizedOnCollision(onCollisionOption) {
-
-    var ret = typeof onCollisionOption === str_function ? onCollisionOption : null,
-        array, len;
-
-    if (typeof onCollisionOption === 'string' && onCollisionOption.length > 0) {
-      array = onCollisionOption.split(' ');
-      len = array.length;
-      if (len > 0 && len < 5) {
-        ret = {
-          left: array[0],
-          top: len > 1 ? array[1] : array[0],
-          right: len > 2 ? array[2] : array[0],
-          bottom: len > 3 ? array[3] : len < 2 ? array[0] : array[1]
-        };
-      }
-    }
-
-    return ret;
-
-  }
-
-  /**
   * @function   getSanitizedOptions
-  * @param      instanceOptions {Object}
+  * @param      options {Object}
   * @returns    {Object}
   *
-  * A function for sanitizing all options. Merges the global default options with 
-  * the instance options and sanitizes the merged options.
+  * A function for merging default options with the instance options and sanitizing the result.
   */
   function getSanitizedOptions(options) {
 
     // Merge instance options with default options
     options = getType.call(options) === '[object Object]' ? merge([window[libName].defaults, options]) : merge([window[libName].defaults]);
 
-    // Handle functions in options and trim all strings
+    // Loop through options
     for (var prop in options) {
-      options[prop] = trim(typeof options[prop] !== str_function ? options[prop] : prop == 'onCollision' ? options[prop] : options[prop]());
-    }
 
-    // Deeper sanitation of all options that require special handling
-    options.position = options.position.split(' ');
-    options.offset = getSanitizedOffset(options.offset);
-    options.onCollision = getSanitizedOnCollision(options.onCollision);
+      // Handle functions and whitespace in options
+      options[prop] = trim(typeof options[prop] !== str_function ? options[prop] : prop == 'onCollision' ? options[prop] : options[prop]());
+
+      // Special handling for position
+      if (prop == 'position') {
+        options[prop] = options[prop].split(' ');
+      }
+
+      // Special handling for offset
+      if (prop == 'offset') {
+
+        var offset = typeof options[prop] === str_string ? options[prop].split(',') : [],
+            ret = {x: 0, y: 0},
+            decimal = 1000000,
+            item, itemVal1, itemVal2, i;
+
+        for (i = offset.length; i--;) {
+
+          item = trim(offset[i]).split(' ');
+          itemVal1 = parseFloat(item[0]) || 0;
+          itemVal2 = item.length > 1 ? parseFloat(item[1]) || 0 : itemVal1;
+
+          if (item[0].indexOf('deg') > -1 && item.length > 1 && itemVal2) {
+            ret.x += math.round((math.cos(itemVal1 * (math.PI/180)) * itemVal2) * decimal) / decimal;
+            ret.y += math.round((math.sin(itemVal1 * (math.PI/180)) * itemVal2) * decimal) / decimal;
+          } else {
+            ret.x += itemVal1;
+            ret.y += itemVal2;
+          }
+
+        }
+
+        options[prop] = ret;
+
+      }
+
+      // Special handling for onCollision
+      if (prop == 'onCollision') {
+
+        var ret = typeof options[prop] === str_function ? options[prop] : null,
+            array, len;
+
+        if (typeof options[prop] === str_string && options[prop].length > 0) {
+          array = options[prop].split(' ');
+          len = array.length;
+          if (len > 0 && len < 5) {
+            ret = {
+              left: array[0],
+              top: len > 1 ? array[1] : array[0],
+              right: len > 2 ? array[2] : array[0],
+              bottom: len > 3 ? array[3] : len < 2 ? array[0] : array[1]
+            };
+          }
+        }
+
+        options[prop] = ret;
+
+      }
+
+    }
 
     return options;
 
@@ -430,7 +416,7 @@
   function position(element, method, options) {
 
     // Sanitize options
-    options = getSanitizedOptions(typeof method === 'string' ? options : method);
+    options = getSanitizedOptions(typeof method === str_string ? options : method);
 
         // Cache onCollision option for better minification
     var onCollision = options.onCollision,
