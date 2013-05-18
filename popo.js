@@ -3,17 +3,12 @@
  * Copyright (c) 2012, 2013 Niklas Rämö <inramo@gmail.com>
  * Released under the MIT license */
 
-// TODOS
-// * Important feature: Programmatically find the "zero" position of a relatively positioned element
-// * Speed/size optimization: merge offset/height/width in a smart way so that gbcr does not get called multiple times
-
 (function (window, undefined) {
   'use strict';
 
   var libName = 'popo',
 
       // Cache stuff
-      doc = window.document,
       toFloat = window.parseFloat,
       math = window.Math,
       mathAbs = math.abs,
@@ -32,9 +27,25 @@
       str_height = 'height',
       str_function = 'function',
       str_string = 'string',
-      str_documentElement = 'documentElement',
-      str_body = 'body',
-      str_gbcr = 'getBoundingClientRect';
+      str_gbcr = 'getBoundingClientRect',
+
+      // Placeholders for instance specific elements
+      instWin, instDoc, instDocElem, instBody;
+
+
+  /**
+  * @function   fn_isWin
+  * @arg        el {HtmlElement}
+  * @returns    {Boolean}
+  *
+  * Check if the element is the instWin object. Uses "self" attribute
+  * for comparison to counter an IE6-IE8 specific problem.
+  */
+  function fn_isWin(el) {
+
+    return el.self === instWin.self;
+
+  }
 
   /**
   * @function   fn_trim
@@ -87,8 +98,8 @@
   */
   function fn_getStyle(el, prop) {
 
-    return window.getComputedStyle ? (
-      window.getComputedStyle(el, null).getPropertyValue(prop)
+    return instWin.getComputedStyle ? (
+      instWin.getComputedStyle(el, null).getPropertyValue(prop)
     ) : el.currentStyle ? (
       el.currentStyle[prop]
     ) : (
@@ -111,11 +122,11 @@
         pos = 'style' in el && fn_getStyle(el, 'position');
 
     if (pos == 'fixed') {
-      offsetParent = window;
+      offsetParent = instWin;
     } else if (pos == 'absolute') {
-      offsetParent = el === doc[str_body] ? doc[str_documentElement] : offsetParent || doc;
+      offsetParent = el === instBody ? instDocElem : offsetParent || instDoc;
       while ('style' in offsetParent && fn_getStyle(offsetParent, 'position') == 'static') {
-        offsetParent = offsetParent === doc[str_body] ? doc[str_documentElement] : offsetParent.offsetParent || doc;
+        offsetParent = offsetParent === instBody ? instDocElem : offsetParent.offsetParent || instDoc;
       }
     }
 
@@ -136,10 +147,10 @@
   */
   function fn_getWidth(el) {
 
-    return el === window ? (
-      doc[str_documentElement].clientWidth
-    ) : el === doc || el === doc[str_documentElement] ? (
-      math.max(doc[str_documentElement].scrollWidth, doc[str_body].scrollWidth)
+    return fn_isWin(el) ? (
+      instDocElem.clientWidth
+    ) : el === instDoc || el === instDocElem ? (
+      math.max(instDocElem.scrollWidth, instBody.scrollWidth)
     ) : (
       el[str_gbcr] && str_width in el[str_gbcr]() ? el[str_gbcr]()[str_width] : el.offsetWidth
     );
@@ -159,10 +170,10 @@
   */
   function fn_getHeight(el) {
 
-    return el === window ? (
-      doc[str_documentElement].clientHeight
-    ) : el === doc || el === doc[str_documentElement] ? (
-      math.max(doc[str_documentElement].scrollHeight, doc[str_body].scrollHeight)
+    return fn_isWin(el) ? (
+      instDocElem.clientHeight
+    ) : el === instDoc || el === instDocElem ? (
+      math.max(instDocElem.scrollHeight, instBody.scrollHeight)
     ) : (
       el[str_gbcr] && str_height in el[str_gbcr]() ? el[str_gbcr]()[str_height] : el.offsetHeight
     );
@@ -190,32 +201,32 @@
 
     var offsetLeft = 0,
         offsetTop = 0,
-        viewportScrollLeft = window.pageXOffset || doc[str_documentElement].scrollLeft || doc[str_body].scrollLeft || 0,
-        viewportScrollTop = window.pageYOffset || doc[str_documentElement].scrollTop || doc[str_body].scrollTop || 0,
+        viewportScrollLeft = instWin.pageXOffset || instDocElem.scrollLeft || instBody.scrollLeft || 0,
+        viewportScrollTop = instWin.pageYOffset || instDocElem.scrollTop || instBody.scrollTop || 0,
         offsetParent = el,
         gbcr;
 
-    if (el === window) {
+    if (fn_isWin(el)) {
 
       offsetLeft = viewportScrollLeft;
       offsetTop = viewportScrollTop;
 
-    } else if (el !== doc && el !== doc[str_documentElement]) {
+    } else if (el !== instDoc && el !== instDocElem) {
 
       gbcr = el[str_gbcr] && el[str_gbcr]();
 
       if (gbcr && str_left in gbcr && str_top in gbcr) {
 
         // gbcr based solution (borrowed from jQuery)
-        offsetLeft += gbcr[str_left] + viewportScrollLeft - /* IE7 Fix*/ (doc[str_documentElement].clientLeft || 0);
-        offsetTop += gbcr[str_top] + viewportScrollTop - /* IE7 Fix*/ (doc[str_documentElement].clientTop || 0);
+        offsetLeft += gbcr[str_left] + viewportScrollLeft - /* IE7 Fix*/ (instDocElem.clientLeft || 0);
+        offsetTop += gbcr[str_top] + viewportScrollTop - /* IE7 Fix*/ (instDocElem.clientTop || 0);
 
       } else {
 
         // gbcr fallback (borrowed from http://www.quirksmode.org/js/findpos.html)
         while (offsetParent) {
-          offsetLeft += offsetParent === window ? viewportScrollLeft : offsetParent.offsetLeft || 0;
-          offsetTop += offsetParent === window ? viewportScrollTop : offsetParent.offsetTop || 0;
+          offsetLeft += fn_isWin(offsetParent) ? viewportScrollLeft : offsetParent.offsetLeft || 0;
+          offsetTop += fn_isWin(offsetParent) ? viewportScrollTop : offsetParent.offsetTop || 0;
           offsetParent = fn_getOffsetParent(offsetParent);
         }
 
@@ -242,18 +253,19 @@
   *
   * A function for merging default options with the instance options and sanitizing the result.
   */
-  function fn_getSanitizedOptions(options) {
+  function fn_getSanitizedOptions(el, options) {
 
-    var i, prop, ret, offset, decimal, item, itemVal1, itemVal2, array, len;
+    var defaultOptions = window[libName].defaults,
+        i, prop, ret, offset, decimal, item, itemVal1, itemVal2, array, len;
 
     // Merge instance options with default options
-    options = getType.call(options) === '[object Object]' ? fn_merge([window[libName].defaults, options]) : fn_merge([window[libName].defaults]);
+    options = getType.call(options) === '[object Object]' ? fn_merge([defaultOptions, options]) : fn_merge([defaultOptions]);
 
     // Loop through options
     for (prop in options) {
 
       // Handle functions and whitespace in options
-      options[prop] = fn_trim(typeof options[prop] !== str_function ? options[prop] : prop == 'onCollision' ? options[prop] : options[prop]());
+      options[prop] = fn_trim(typeof options[prop] !== str_function ? options[prop] : prop == 'onCollision' ? options[prop] : options[prop](el));
 
       // Special handling for position
       if (prop == 'position') {
@@ -357,15 +369,15 @@
   function fn_pushOnCollision(onCollision, targetOverlap, vertical) {
 
     var ret = 0,
-        push = 'push',
-        fPush = push + '!',
-        left = vertical ? str_top : str_left,
-        right = vertical ? str_bottom : str_right,
-        leftCollision = onCollision[left],
-        rightCollision = onCollision[right],
-        leftOverlap = targetOverlap[left],
-        rightOverlap = targetOverlap[right],
-        sizeDifference = leftOverlap + rightOverlap;
+      push = 'push',
+      fPush = push + '!',
+      left = vertical ? str_top : str_left,
+      right = vertical ? str_bottom : str_right,
+      leftCollision = onCollision[left],
+      rightCollision = onCollision[right],
+      leftOverlap = targetOverlap[left],
+      rightOverlap = targetOverlap[right],
+      sizeDifference = leftOverlap + rightOverlap;
 
     // If pushing is needed from both sides
     if ((leftCollision == push || leftCollision == fPush) && (rightCollision == push || rightCollision == fPush) && (leftOverlap < 0 || rightOverlap < 0)) {
@@ -416,33 +428,46 @@
   */
   function fn_position(element, method, options) {
 
-    // Sanitize options
-    options = fn_getSanitizedOptions(typeof method === str_string ? options : method);
+    // Assign instance specific window, document, documentElement and body
+    instDoc = element.ownerDocument;
+    instWin = instDoc.defaultView || instDoc.parentWindow;
+    instDocElem = instDoc.documentElement;
+    instBody = instDoc.body;
 
-        // Cache onCollision option for better minification
+    // Sanitize options
+    options = fn_getSanitizedOptions(element, typeof method === str_string ? options : method);
+
     var onCollision = options.onCollision,
 
-        // Get target's data
-        targetWidth = fn_getWidth(element),
-        targetHeight = fn_getHeight(element),
-        targetParentOffset = fn_getOffset(fn_getOffsetParent(element), 1),
-        targetOffset, // The offset will be calculated only if onCollision callback is called
-        targetOverlap, // Container for target's overlap data
-        targetPositionNew, // Container for target's final position
+      // Containers for target's final position and overlap data
+      targetPositionNew,
+      targetOverlap,
 
-        // Get base element and pre-define base data variables
-        baseElement = options.base,
-        baseWidth, baseHeight, baseOffset,
+      // Get target's data
+      targetWidth = fn_getWidth(element),
+      targetHeight = fn_getHeight(element),
+      targetParentOffset = fn_getOffset(fn_getOffsetParent(element), 1),
 
-        // Get container element and pre-define container data variables
-        containerElement = options.container,
-        containerWidth, containerHeight, containerOffset;
+      // Target offset will be calculated only if onCollision callback is called
+      targetOffset,
+
+      // Get base element and predefine base data variables
+      baseElement = options.base,
+      baseWidth,
+      baseHeight,
+      baseOffset,
+
+      // Get container element and predefine container data variables
+      containerElement = options.container,
+      containerWidth,
+      containerHeight,
+      containerOffset;
 
     // Calculate base element's dimensions and offset
     // If base is an array we assume it's a coordinate
     getType.call(baseElement) === '[object Array]' ? (
       baseWidth = baseHeight = 0,
-      baseOffset = fn_getOffset(baseElement[2] || window),
+      baseOffset = fn_getOffset(baseElement[2] || instWin),
       baseOffset[str_left] += baseElement[0],
       baseOffset[str_top] += baseElement[1]
     ) : (
@@ -457,14 +482,14 @@
       top: fn_getBasePosition(options.position[1] + options.position[3], baseOffset[str_top] + options.offset.y - targetParentOffset[str_top], baseHeight, targetHeight)
     };
 
-    // If container is defined, let's do some extra calculations and collision handling stuff
+    // If container is defined, let's do some extra calculations and possibly collision correction
     if (containerElement) {
 
       // Calculate container element's dimensions and offset
       // If container is an array we assume it's a coordinate
       getType.call(containerElement) === '[object Array]' ? (
         containerWidth = containerHeight = 0,
-        containerOffset = fn_getOffset(containerElement[2] || window),
+        containerOffset = fn_getOffset(containerElement[2] || instWin),
         containerOffset[str_left] += containerElement[0],
         containerOffset[str_top] += containerElement[1]
       ) : (
@@ -534,10 +559,13 @@
 
   }
 
-  // Bind popo to global object
+  // Bind the library to global object
   window[libName] = fn_position;
   window[libName].defaults = {
-    base: window,
+    base: function (el) {
+      el = el.ownerDocument;
+      return el.defaultView || el.parentWindow;
+    },
     position: 'center center center center',
     offset: '0',
     container: null,
