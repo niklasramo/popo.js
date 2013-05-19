@@ -24,7 +24,7 @@ $(function(){
 
   function checkOverlap() {
 
-    popo.get($target[0], {
+    popo($target[0], 'get', {
       base: $target[0],
       position: 'left top left top',
       container: $container[0],
@@ -81,7 +81,7 @@ $(function(){
     }
 
     // Position target element with Popo
-    popo.set($target[0], {
+    popo($target[0], {
       base: $target[0],
       position: 'left top left top',
       container: $target[0],
@@ -112,24 +112,12 @@ $(function(){
   //
 
   // Align $target to the center of $container
-  popo.set($target[0], {
+  popo($target[0], {
     base: $container[0],
     position: 'center center center center'
   });
 
   // The initial overlap check
   checkOverlap();
-
-  // Get some test data after positioning
-  console.log('target offsetLeft: ' + $target[0].offsetLeft);
-  console.log('target gbcr left: ' + $target[0].getBoundingClientRect().left);
-  console.log('docElem offsetLeft: ' + document.documentElement.offsetLeft);
-  console.log('docElem gbcr left: ' + document.documentElement.getBoundingClientRect().left);
-  console.log('docElem.clientLeft: ' + document.documentElement.clientLeft);
-  console.log('---');
-  console.log('docElem clientWidth: ' + document.documentElement.clientWidth);
-  console.log('body clientWidth: ' + document.body.clientWidth);
-  console.log('docElem offsetWidth: ' + document.documentElement.offsetWidth);
-  console.log('body offsetWidth: ' + document.body.offsetWidth);
 
 });
