@@ -6,8 +6,8 @@ popo.js is a cross-browser (Chrome, Opera, Firefox, Safari, IE7+) JavaScript lib
 
 ##Download
 
-* **[v0.9 - Production](https://raw.github.com/niklasramo/popo/dev/popo.min.js)** (4kb minified)
-* **[v0.9 - Development](https://raw.github.com/niklasramo/popo/dev/popo.js)** (21kb uncompressed)
+* **[v0.9 - Production](https://raw.github.com/niklasramo/popo/master/popo.min.js)** (4.1kb minified)
+* **[v0.9 - Development](https://raw.github.com/niklasramo/popo/master/popo.js)** (19.3kb uncompressed)
 
 ##Usage
 
@@ -20,7 +20,7 @@ __element__ *(type: element, required)*
 Provide the target element that you want to position.
 
 __method__ *(type: string, optional)*  
-Provide a method (`set` or `get`). Defaults to `set`.
+Provide a method (`set` or `get`). Defaults to `set`, if not specified.
 
 __options__ *(type: object, optional)*  
 Provide an object containing options. You can change the default options by modifying `popo.defaults`.
