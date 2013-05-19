@@ -2,7 +2,7 @@
 
 *A JavaScript library for positioning elements*
 
-Popo is a cross-browser (Chrome, Opera, Firefox, Safari, IE7+) JavaScript library that makes it easy to position elements relative to other elements in various ways. The library is heavily influenced by **[jQuery UI Position plugin](http://jqueryui.com/position/)**.
+Popo is a cross-browser (Chrome, Opera, Firefox, Safari, IE7+) JavaScript library that attempts to simplify the process of positioning HTML elements relative to other HTML elements regardless of their whereabouts in the DOM tree. The library is heavily influenced by **[jQuery UI Position plugin](http://jqueryui.com/position/)**, but does not require jQuery or any other library to work. It's completely stand-alone.
 
 ##Download
 
@@ -68,10 +68,11 @@ var position = popo(document.getElementById("target"), 'get', {
 
 ##Prequisites
 
-* Target element's CSS position property must be *absolute* or *fixed*. Positioning *relative* elements is not supported yet, but it is planned for 1.0 release.
-* The CSS display property of target element, base element and container element must not be *none*.
-* The target element's margin affects the final position calculated by Popo (this is a feature not a bug).
-* Popo uses the outer width/height (includes scrollbar, borders and padding) of an html element when calculating positions. However, for window object, document object and the root element (documentElement) the scrollbar size is omitted.
+* Target element's CSS position property must be *absolute* or *fixed*.
+* The CSS display property of target/base/container elements must not be *none*.
+* You can use Popo to position elements within other windows (iframes) also, but you have to make sure that target/base/container elements exist within the same window.
+* The target element's margin affects the final position calculated by Popo, so consider the margin as an extra offset. This is a feature not a bug.
+* Popo uses the outer width/height (includes scrollbar, borders and padding) of the HTML element when calculating positions. However, in the case of window, document and documentElement the scrollbar width/height is omitted.
 
 ## License
 
