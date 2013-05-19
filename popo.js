@@ -1,4 +1,4 @@
-/*! Popo JS - v0.9dev - 19/5/2013
+/*! popo.js - v0.9 - 19/5/2013
  * https://github.com/niklasramo/popo
  * Copyright (c) 2012, 2013 Niklas Rämö <inramo@gmail.com>
  * Released under the MIT license */
