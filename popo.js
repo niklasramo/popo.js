@@ -1,4 +1,4 @@
-/*! popo.js - v0.9 - 19/5/2013
+/*! popo.js - v0.9.1 - 21/5/2013
  * https://github.com/niklasramo/popo
  * Copyright (c) 2012, 2013 Niklas Rämö <inramo@gmail.com>
  * Released under the MIT license */
@@ -8,42 +8,26 @@
 
   var libName = 'popo',
 
-    // Cache stuff
+    // Cache some functions
     toFloat = window.parseFloat,
     math = window.Math,
-    mathAbs = math.abs,
-
-    // Cache an object's toString function to later on 
-    // use it for identifying the type of an object
-    getType = ({}).toString,
-
-    // Cache often used strings
-    str_left = 'left',
-    str_right = 'right',
-    str_top = 'top',
-    str_bottom = 'bottom',
-    str_center = 'center',
-    str_width = 'width',
-    str_height = 'height',
-    str_function = 'function',
-    str_string = 'string',
-    str_gbcr = 'getBoundingClientRect',
+    abs = math.abs,
 
     // Placeholders for instance specific elements
     win, doc, docElem, body;
 
-
   /**
-  * @function   fn_isWin
-  * @arg        el {HtmlElement}
-  * @returns    {Boolean}
+  * @function   fn_typeof
+  * @arg        obj {Object}
+  * @type       type {String}
+  * @returns    {String}/{Boolean}
   *
-  * Check if the element is the instance window object. Uses "self" property
-  * to compare the objcts to counter an IE6-IE8 specific problem.
+  * Utility function for checking the type of an object.
   */
-  function fn_isWin(el) {
+  function fn_typeof(obj, type) {
 
-    return el.self === win.self;
+    obj = ({}).toString.call(obj).split(' ')[1].replace(']', '').toLowerCase();
+    return type ? obj === type : obj;
 
   }
 
@@ -58,7 +42,7 @@
   */
   function fn_trim(str) {
 
-    return typeof str === str_string ? (str.trim ? str.trim() : str.replace(/^\s+|\s+$/g, '')) : str;
+    return fn_typeof(str, 'string') ? (str.trim ? str.trim() : str.replace(/^\s+|\s+$/g, '')) : str;
 
   }
 
@@ -78,11 +62,27 @@
 
     for (i = 0; i < len; i++) {
       for (prop in array[i]) {
-        obj[prop] = array[i][prop];
+        if (array[i].hasOwnProperty(prop)) {
+          obj[prop] = array[i][prop];
+        }
       }
     }
 
     return obj;
+
+  }
+
+  /**
+  * @function   fn_isWin
+  * @arg        el {HtmlElement}
+  * @returns    {Boolean}
+  *
+  * Check if the element is the instance window object. Uses "self" property
+  * to compare the objcts to counter an IE6-IE8 specific problem.
+  */
+  function fn_isWin(el) {
+
+    return el.self === win.self;
 
   }
 
@@ -145,14 +145,15 @@
   * width to include the whole shabang (paddings, borders, scrollbar) except
   * for the margins.
   */
-  function fn_getWidth(el) {
+  function fn_getWidth(el, gbcr) {
 
     return fn_isWin(el) ? (
       docElem.clientWidth
     ) : el === doc || el === docElem ? (
       math.max(docElem.scrollWidth, body.scrollWidth)
     ) : (
-      el[str_gbcr] && str_width in el[str_gbcr]() ? el[str_gbcr]()[str_width] : el.offsetWidth
+      gbcr = el.getBoundingClientRect && el.getBoundingClientRect(),
+      gbcr && 'width' in gbcr ? gbcr.width : el.offsetWidth
     );
 
   }
@@ -168,14 +169,15 @@
   * height to include the whole shabang (paddings, borders, scrollbar) except
   * for the margins.
   */
-  function fn_getHeight(el) {
+  function fn_getHeight(el, gbcr) {
 
     return fn_isWin(el) ? (
       docElem.clientHeight
     ) : el === doc || el === docElem ? (
       math.max(docElem.scrollHeight, body.scrollHeight)
     ) : (
-      el[str_gbcr] && str_height in el[str_gbcr]() ? el[str_gbcr]()[str_height] : el.offsetHeight
+      gbcr = el.getBoundingClientRect && el.getBoundingClientRect(),
+      gbcr && 'height' in gbcr ? gbcr.height : el.offsetHeight
     );
 
   }
@@ -211,13 +213,13 @@
 
     } else if (el !== doc && el !== docElem) {
 
-      gbcr = el[str_gbcr] && el[str_gbcr]();
+      gbcr = el.getBoundingClientRect && el.getBoundingClientRect();
 
-      if (gbcr && str_left in gbcr && str_top in gbcr) {
+      if (gbcr && 'left' in gbcr && 'top' in gbcr) {
 
         // gbcr based solution (borrowed from jQuery)
-        offsetLeft += gbcr[str_left] + viewportScrollLeft - /* IE7 Fix*/ (docElem.clientLeft || 0);
-        offsetTop += gbcr[str_top] + viewportScrollTop - /* IE7 Fix*/ (docElem.clientTop || 0);
+        offsetLeft += gbcr.left + viewportScrollLeft - /* IE7 Fix*/ (docElem.clientLeft || 0);
+        offsetTop += gbcr.top + viewportScrollTop - /* IE7 Fix*/ (docElem.clientTop || 0);
 
       } else {
 
@@ -254,16 +256,16 @@
   function fn_getSanitizedOptions(el, options) {
 
     var defaultOptions = window[libName].defaults,
-      prop, i, ret, offset, decimal, item, itemVal1, itemVal2, array, len;
+      prop, ret, array, len;
 
     // Merge options with default options
-    options = getType.call(options) === '[object Object]' ? fn_merge([defaultOptions, options]) : fn_merge([defaultOptions]);
+    options = fn_merge(fn_typeof(options, 'object') ? [defaultOptions, options] : [defaultOptions]);
 
     // Loop through options
     for (prop in options) {
 
       // Handle functions and whitespace in options
-      options[prop] = fn_trim(typeof options[prop] !== str_function ? options[prop] : prop === 'onCollision' ? options[prop] : options[prop](el));
+      options[prop] = fn_trim(fn_typeof(options[prop], 'function') && prop !== 'onCollision' ? options[prop](el) : options[prop]);
 
       // Special handling for position
       if (prop === 'position') {
@@ -272,28 +274,15 @@
 
       // Special handling for offset
       if (prop === 'offset') {
-        ret = {x: 0, y: 0};
-        offset = typeof options[prop] === str_string ? options[prop].split(',') : [];
-        decimal = 1e6;
-        for (i = offset.length; i--;) {
-          item = fn_trim(offset[i]).split(' ');
-          itemVal1 = toFloat(item[0]) || 0;
-          itemVal2 = item.length > 1 ? toFloat(item[1]) || 0 : itemVal1;
-          if (item[0].indexOf('deg') > -1 && item.length > 1 && itemVal2) {
-            ret.x += math.round((math.cos(itemVal1 * (math.PI/180)) * itemVal2) * decimal) / decimal;
-            ret.y += math.round((math.sin(itemVal1 * (math.PI/180)) * itemVal2) * decimal) / decimal;
-          } else {
-            ret.x += itemVal1;
-            ret.y += itemVal2;
-          }
-        }
-        options[prop] = ret;
+        ret = fn_typeof(options[prop], 'string') ? options[prop].split(' ') : [];
+        options.offsetX = toFloat(ret[0]) || 0;
+        options.offsetY = ret.length > 1 ? toFloat(ret[1]) || 0 : options.offsetX;
       }
 
       // Special handling for onCollision
       if (prop === 'onCollision') {
-        ret = typeof options[prop] === str_function ? options[prop] : null;
-        if (typeof options[prop] === str_string && options[prop].length > 0) {
+        ret = fn_typeof(options[prop], 'function') ? options[prop] : null;
+        if (fn_typeof(options[prop], 'string') && options[prop].length > 0) {
           array = options[prop].split(' ');
           len = array.length;
           if (len > 0 && len < 5) {
@@ -327,15 +316,15 @@
   function fn_getBasePosition(pos, startingPointVal, baseElemVal, targetElemVal) {
 
     var positions = {};
-    positions[str_left + str_left] = positions[str_top + str_top] = startingPointVal;
-    positions[str_left + str_center] = positions[str_top + str_center] = startingPointVal + (baseElemVal / 2);
-    positions[str_left + str_right] = positions[str_top + str_bottom] = startingPointVal + baseElemVal;
-    positions[str_center + str_left] = positions[str_center + str_top] = startingPointVal - (targetElemVal / 2);
-    positions[str_center + str_center] = startingPointVal + (baseElemVal / 2) - (targetElemVal / 2);
-    positions[str_center + str_right] = positions[str_center + str_bottom] = startingPointVal + baseElemVal - (targetElemVal / 2);
-    positions[str_right + str_left] = positions[str_bottom + str_top] = startingPointVal - targetElemVal;
-    positions[str_right + str_center] = positions[str_bottom + str_center] = startingPointVal - targetElemVal + (baseElemVal / 2);
-    positions[str_right + str_right] = positions[str_bottom + str_bottom] = startingPointVal - targetElemVal + baseElemVal;
+    positions.leftleft = positions.toptop = startingPointVal;
+    positions.leftcenter = positions.topcenter = startingPointVal + (baseElemVal / 2);
+    positions.leftright = positions.topbottom = startingPointVal + baseElemVal;
+    positions.centerleft = positions.centertop = startingPointVal - (targetElemVal / 2);
+    positions.centercenter = startingPointVal + (baseElemVal / 2) - (targetElemVal / 2);
+    positions.centerright = positions.centerbottom = startingPointVal + baseElemVal - (targetElemVal / 2);
+    positions.rightleft = positions.bottomtop = startingPointVal - targetElemVal;
+    positions.rightcenter = positions.bottomcenter = startingPointVal - targetElemVal + (baseElemVal / 2);
+    positions.rightright = positions.bottombottom = startingPointVal - targetElemVal + baseElemVal;
     return positions[pos];
 
   }
@@ -356,8 +345,8 @@
     var ret = 0,
       push = 'push',
       forcePush = push + '!',
-      side1 = vertical ? str_top : str_left,
-      side2 = vertical ? str_bottom : str_right,
+      side1 = vertical ? 'top' : 'left',
+      side2 = vertical ? 'bottom' : 'right',
       side1_collision = onCollision[side1],
       side2_collision = onCollision[side2],
       side1_overlap = targetOverlap[side1],
@@ -369,10 +358,10 @@
 
       // Do push correction from opposite sides with equal force
       if (side1_overlap < side2_overlap) {
-        ret -= sizeDifference < 0 ? side1_overlap + mathAbs(sizeDifference / 2) : side1_overlap;
+        ret -= sizeDifference < 0 ? side1_overlap + abs(sizeDifference / 2) : side1_overlap;
       }
       if (side2_overlap < side1_overlap) {
-        ret += sizeDifference < 0 ? side2_overlap + mathAbs(sizeDifference / 2) : side2_overlap;
+        ret += sizeDifference < 0 ? side2_overlap + abs(sizeDifference / 2) : side2_overlap;
       }
 
       // Update overlap data
@@ -421,19 +410,10 @@
     body = doc.body;
 
     // Sanitize options
-    options = fn_getSanitizedOptions(el, typeof method === str_string ? options : method);
+    options = fn_getSanitizedOptions(el, fn_typeof(method, 'string') ? options : method);
 
     // Cache onCollision option for better minification
     var onCollision = options.onCollision,
-
-      // Containers for target's final position and overlap data
-      targetPositionNew,
-      targetOverlap,
-
-      // Target's offset will be calculated only if onCollision callback function
-      // is called. It's not required for the calculations, but serves as useful
-      // data for possible additional position calculations.
-      targetOffset,
 
       // Get target's data
       targetWidth = fn_getWidth(el),
@@ -450,15 +430,26 @@
       containerElement = options.container,
       containerWidth,
       containerHeight,
-      containerOffset;
+      containerOffset,
+
+      // Target's current offset and position will be calculated only if 
+      // onCollision callback function is called
+      targetOffset,
+      targetPosition,
+
+      // Placeholder for target's overlap data
+      targetOverlap,
+
+      // Placeholder for target's final position
+      targetPositionNew;
 
     // Calculate base element's dimensions and offset
     // If base is an array we assume it's a coordinate
-    getType.call(baseElement) === '[object Array]' ? (
+    fn_typeof(baseElement, 'array') ? (
       baseWidth = baseHeight = 0,
       baseOffset = fn_getOffset(baseElement[2] || win),
-      baseOffset[str_left] += baseElement[0],
-      baseOffset[str_top] += baseElement[1]
+      baseOffset.left += baseElement[0],
+      baseOffset.top += baseElement[1]
     ) : (
       baseWidth = fn_getWidth(baseElement),
       baseHeight = fn_getHeight(baseElement),
@@ -467,20 +458,20 @@
 
     // Calculate target element's new position
     targetPositionNew = {
-      left: fn_getBasePosition(options.position[0] + options.position[2], baseOffset[str_left] + options.offset.x - targetParentOffset[str_left], baseWidth, targetWidth),
-      top: fn_getBasePosition(options.position[1] + options.position[3], baseOffset[str_top] + options.offset.y - targetParentOffset[str_top], baseHeight, targetHeight)
+      left: fn_getBasePosition(options.position[0] + options.position[2], baseOffset.left + options.offsetX - targetParentOffset.left, baseWidth, targetWidth),
+      top: fn_getBasePosition(options.position[1] + options.position[3], baseOffset.top + options.offsetY - targetParentOffset.top, baseHeight, targetHeight)
     };
 
-    // If container is defined, let's do some extra calculations and possibly collision correction
+    // If container is defined, let's do some extra calculations and possible collision corrections
     if (containerElement) {
 
       // Calculate container element's dimensions and offset
       // If container is an array we assume it's a coordinate
-      getType.call(containerElement) === '[object Array]' ? (
+      fn_typeof(containerElement, 'array') ? (
         containerWidth = containerHeight = 0,
         containerOffset = fn_getOffset(containerElement[2] || win),
-        containerOffset[str_left] += containerElement[0],
-        containerOffset[str_top] += containerElement[1]
+        containerOffset.left += containerElement[0],
+        containerOffset.top += containerElement[1]
       ) : (
         containerWidth = fn_getWidth(containerElement),
         containerHeight = fn_getHeight(containerElement),
@@ -489,29 +480,32 @@
 
       // Calculate how much target element's sides overlap with the container element's sides
       targetOverlap = {
-        left: targetPositionNew[str_left] + targetParentOffset[str_left] - containerOffset[str_left],
-        right: (containerOffset[str_left] + containerWidth) - (targetPositionNew[str_left] + targetParentOffset[str_left] + targetWidth),
-        top: targetPositionNew[str_top] + targetParentOffset[str_top] - containerOffset[str_top],
-        bottom: (containerOffset[str_top] + containerHeight) - (targetPositionNew[str_top] + targetParentOffset[str_top] + targetHeight)
+        left: targetPositionNew.left + targetParentOffset.left - containerOffset.left,
+        right: (containerOffset.left + containerWidth) - (targetPositionNew.left + targetParentOffset.left + targetWidth),
+        top: targetPositionNew.top + targetParentOffset.top - containerOffset.top,
+        bottom: (containerOffset.top + containerHeight) - (targetPositionNew.top + targetParentOffset.top + targetHeight)
       };
 
       // If onCollision is a callback function
-      if (typeof onCollision === str_function) {
+      if (fn_typeof(onCollision, 'function')) {
 
         // Get target's current offset
         targetOffset = fn_getOffset(el);
 
-        // Call onCollision callback function with special arguments
+        // Calculate target's current position
+        targetPosition = {
+          left: targetOffset.left > targetParentOffset.left ? abs(targetOffset.left - targetParentOffset.left) : -abs(targetOffset.left - targetParentOffset.left),
+          top: targetOffset.top > targetParentOffset.top ? abs(targetOffset.top - targetParentOffset.top) : -abs(targetOffset.top - targetParentOffset.top)
+        };
+
+        // Call onCollision callback function
         onCollision(targetPositionNew, targetOverlap, {
           target: {
             element: el,
             width: targetWidth,
             height: targetHeight,
             offset: targetOffset,
-            position: {
-              left: targetOffset[str_left] > targetParentOffset[str_left] ? mathAbs(targetOffset[str_left] - targetParentOffset[str_left]) : -mathAbs(targetOffset[str_left] - targetParentOffset[str_left]),
-              top: targetOffset[str_top] > targetParentOffset[str_top] ? mathAbs(targetOffset[str_top] - targetParentOffset[str_top]) : -mathAbs(targetOffset[str_top] - targetParentOffset[str_top])
-            }
+            position: targetPosition
           },
           base: {
             element: baseElement,
@@ -530,8 +524,8 @@
       // If onCollision uses predefined collision methods
       } else if (onCollision) {
 
-        targetPositionNew[str_left] += fn_pushOnCollision(onCollision, targetOverlap);
-        targetPositionNew[str_top] += fn_pushOnCollision(onCollision, targetOverlap, 1);
+        targetPositionNew.left += fn_pushOnCollision(onCollision, targetOverlap);
+        targetPositionNew.top += fn_pushOnCollision(onCollision, targetOverlap, 1);
 
       }
 
@@ -541,8 +535,8 @@
     if (method === 'get') {
       return targetPositionNew;
     } else {
-      el.style[str_left] = targetPositionNew[str_left] + 'px';
-      el.style[str_top] = targetPositionNew[str_top] + 'px';
+      el.style.left = targetPositionNew.left + 'px';
+      el.style.top = targetPositionNew.top + 'px';
       return el;
     }
 
