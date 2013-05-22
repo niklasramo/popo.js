@@ -2,12 +2,14 @@
 
 *A JavaScript library for positioning HTML elements*
 
-popo.js is a cross-browser (Chrome, Opera, Firefox, Safari, IE7+) JavaScript library that attempts to simplify the process of positioning HTML elements relative to other HTML elements regardless of their whereabouts in the DOM tree. The library is heavily influenced by **[jQuery UI Position plugin](http://jqueryui.com/position/)**, but does not require jQuery or any other library to work. It's completely stand-alone.
+popo.js is a cross-browser JavaScript library that attempts to simplify the process of positioning HTML elements relative to other HTML elements regardless of their whereabouts in the DOM tree. The library is heavily influenced by **[jQuery UI Position plugin](http://jqueryui.com/position/)**, but does not require jQuery or any other library to work. It's completely stand-alone.
+
+popo.js has been tested on most modern browsers (Chrome, Firefox, Opera, Safari, IE7+) and should be working nicely also on most mobile browsers.
 
 ##Download
 
-* **[v0.9.1 - Production](https://raw.github.com/niklasramo/popo/master/popo.min.js)** (4.2kb minified)
-* **[v0.9.1 - Development](https://raw.github.com/niklasramo/popo/master/popo.js)** (18.3kb uncompressed)
+* **[v0.9.1 - Production](https://raw.github.com/niklasramo/popo/master/popo.min.js)** (4.2kb minified, [unit tests](http://htmlpreview.github.io/?https://github.com/niklasramo/popo/blob/master/unit-tests/unit-tests-production.html))
+* **[v0.9.1 - Development](https://raw.github.com/niklasramo/popo/master/popo.js)** (18.3kb uncompressed, [unit tests](http://htmlpreview.github.io/?https://github.com/niklasramo/popo/blob/master/unit-tests/unit-tests-development.html))
 
 ##Usage
 
