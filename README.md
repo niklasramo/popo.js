@@ -8,8 +8,8 @@ popo.js has been tested on most modern browsers (Chrome, Firefox, Opera, Safari,
 
 ##Download
 
-* **[v0.9.1 - Production](https://raw.github.com/niklasramo/popo/master/popo.min.js)** (4.2kb minified, [unit tests](http://htmlpreview.github.io/?https://github.com/niklasramo/popo/blob/master/unit-tests/unit-tests-production.html))
-* **[v0.9.1 - Development](https://raw.github.com/niklasramo/popo/master/popo.js)** (18.3kb uncompressed, [unit tests](http://htmlpreview.github.io/?https://github.com/niklasramo/popo/blob/master/unit-tests/unit-tests-development.html))
+* **[v0.9.1 - Production](https://raw.github.com/niklasramo/popo/master/popo.min.js)** (4.2kb minified, [unit tests](http://htmlpreview.github.io/?https://github.com/niklasramo/popo/blob/master/unit-tests/production.html))
+* **[v0.9.1 - Development](https://raw.github.com/niklasramo/popo/master/popo.js)** (18.3kb uncompressed, [unit tests](http://htmlpreview.github.io/?https://github.com/niklasramo/popo/blob/master/unit-tests/development.html))
 
 ##Usage
 
