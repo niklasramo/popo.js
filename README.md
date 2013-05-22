@@ -16,13 +16,13 @@ popo.js is a cross-browser (Chrome, Opera, Firefox, Safari, IE7+) JavaScript lib
 popo( element [, method ] [, options ] );
 ```
 
-__element__ *(type: element, required)*  
+__element__ *(type: element)* *(required)*   
 Provide the target element that you want to position.
 
-__method__ *(type: string, optional)*  
+__method__ *(type: string)* *(optional)*   
 Provide a method (`set` or `get`). Defaults to `set`, if not specified.
 
-__options__ *(type: object, optional)*  
+__options__ *(type: object)* *(optional)*   
 Provide an object containing options. You can change the default options by modifying `popo.defaults`.
 
 ## Methods
@@ -68,11 +68,11 @@ var position = popo(document.getElementById("target"), 'get', {
 
 ##Good to know
 
-* Target element's CSS position property must be *absolute* or *fixed*.
-* The CSS display property of target/base/container elements must not be *none*.
-* You can use popo.js to position elements within iframes, but you have to make sure that target/base/container elements exist within the same window.
-* The target element's margin affects the final position calculated by popo.js, so consider the margin as an extra offset. This is a feature, not a bug.
-* popo.js uses the outer width/height (includes scrollbar, borders and padding) of the HTML element when calculating positions. However, in the case of window, document and documentElement the scrollbar width/height is omitted.
+* Target element's CSS position property must be `absolute` or `fixed`.
+* The CSS display property of target, base and container elements must not be `none` during positioning.
+* You can position elements within iframes, but you have to make sure that target, base and container elements exist within the same window.
+* The target element's margin affects the final position so consider the margin as an extra offset. This is a feature, not a bug.
+* popo.js uses the outer width/height (includes scrollbar, borders and padding) of the element when calculating positions. However, in the case of window, document and documentElement the scrollbar width/height is omitted.
 
 ## License
 
