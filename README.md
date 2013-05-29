@@ -8,8 +8,8 @@ popo.js has been tested on most modern browsers (Chrome, Firefox, Opera, Safari,
 
 ##Download
 
-* **[v0.9.1 - Production](https://raw.github.com/niklasramo/popo/master/popo.min.js)** (4.2kb minified, [unit tests](http://htmlpreview.github.io/?https://github.com/niklasramo/popo/blob/master/unit-tests/production.html))
-* **[v0.9.1 - Development](https://raw.github.com/niklasramo/popo/master/popo.js)** (18.3kb uncompressed, [unit tests](http://htmlpreview.github.io/?https://github.com/niklasramo/popo/blob/master/unit-tests/development.html))
+* **[v1.0 - Production](https://raw.github.com/niklasramo/popo/master/popo.min.js)** (4.1kb minified, [unit tests](http://htmlpreview.github.io/?https://github.com/niklasramo/popo/blob/master/unit-tests/production.html))
+* **[v1.0 - Development](https://raw.github.com/niklasramo/popo/master/popo.js)** (16.4kb uncompressed, [unit tests](http://htmlpreview.github.io/?https://github.com/niklasramo/popo/blob/master/unit-tests/development.html))
 
 ##Usage
 
@@ -38,11 +38,11 @@ Name | Description
 
 Property | Default | Type | Description
 --- | --- | --- | ---
-**base** | window | *Element, Array* | <p>Defines which element the target element is positioned against. Alternatively you can define a coordinate using an array: [x-coordinate, y-coordinate, element].</p>
+**base** | window | *Element, Array* | <p>Defines which element the target element is positioned against. Alternatively you can define a point within an element using the following format: [x-coordinate, y-coordinate, element].</p>
+**container** | null | *Element, Array* | <p>Defines an optional container element that is used for collision detection. Alternatively you can define a point within an element using the following format: [x-coordinate, y-coordinate, element].</p>
 **position** | "center center center center" | *String* | <p>Defines the target element's position relative to the base element. The format is "targetX targetY baseX baseY". Use `left`, `right` and `center` to describe the horizontal position and `top`, `bottom` and `center` to describe the vertical position.</p>
 **offset** | "0" | *String* | <p>Defines a horizontal and a vertical offset in pixels. The two supported formats are "offsetX offsetY" (e.g. "5 -5") and "offsetX&Y" (e.g. "10").
-**container** | null | *Element, Array* | <p>Defines an optional container element that is used for collision detection. Alternatively you can define a coordinate using an array: [x-coordinate, y-coordinate, element].</p>
-**onCollision** | "none" | *String, Function* | <p>Defines what to do when the target element overflows the container element. The container element must be defined for this option to have any effect. You can either define a built-in collision method for each side with the format "left top right bottom" (e.g. "push none none push") or pass in a function and use this option as a callback function.</p><p>popo.js has two built-in collision methods, <code>push</code> and <code>push!</code>, <code>none</code> will skip collision handling.</p><p><code>push</code> method tries to keep the targeted sides of the target element within the container element's boundaries. If you assign <code>push</code> method to the opposite sides the force of push will be equal on both sides. If you want to force one of the sides to be always pushed fully inside the container element's area, you can assign a forced push to that side with <code>push!</code> method.</p>
+**collision** | "none" | *String, Function* | <p>Defines what to do when the target element overflows the container element. The container element must be defined for this option to have any effect. You can either define a built-in collision method for each side with the format "left top right bottom" (e.g. "push none none push") or pass in a function and use this option as a callback function.</p><p>popo.js has two built-in collision methods, <code>push</code> and <code>push+</code>, <code>none</code> will skip collision handling.</p><p><code>push</code> method tries to keep the targeted sides of the target element within the container element's boundaries. If you assign <code>push</code> method to the opposite sides the force of push will be equal on both sides. If you want to force one of the sides to be always pushed fully inside the container element's area, you can assign a forced push to that side with <code>push+</code> method.</p>
 
 ##Examples
 

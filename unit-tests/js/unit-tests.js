@@ -240,7 +240,7 @@ $(function(){
 
     });
 
-    test('onCollision - Callback', 2, function() {
+    test('collision - Callback', 2, function() {
 
       // Assertion #1
 
@@ -250,14 +250,14 @@ $(function(){
         position: positions.center_center_center_center.name,
         base: $base[0],
         container: $container[0],
-        onCollision: function (targetPosition, targetOverlap, posData) {
+        collision: function (targetPosition, targetOverlap, posData) {
           result = [targetPosition, posData.target.element, posData.base.element, posData.container.element];
         }
       });
 
       expected = [{left: positions.center_center_center_center.left, top: positions.center_center_center_center.top}, $target[0], $base[0], $container[0]];
 
-      deepEqual(result, expected, 'onCollision callback function has correct parameters.');
+      deepEqual(result, expected, 'collision callback function has correct parameters.');
 
       // Assertion #2
 
@@ -274,7 +274,7 @@ $(function(){
         position: positions.center_center_center_center.name,
         base: $base[0],
         container: $container[0],
-        onCollision: function (targetPosition, targetOverlap, posData) {
+        collision: function (targetPosition, targetOverlap, posData) {
           targetPosition.left -= 1000;
           targetPosition.top -= 1000;
         }
@@ -284,7 +284,7 @@ $(function(){
 
     });
 
-    test('onCollision - Push', 7, function() {
+    test('collision - Push', 7, function() {
 
       // Assertion #1
 
@@ -294,7 +294,7 @@ $(function(){
         position: positions.center_center_center_center.name,
         base: $base[0],
         container: $container[0],
-        onCollision: 'none'
+        collision: 'none'
       });
 
       expected = {
@@ -312,7 +312,7 @@ $(function(){
         position: positions.center_center_center_center.name,
         base: $base[0],
         container: $container[0],
-        onCollision: 'push'
+        collision: 'push'
       });
 
       expected = {
@@ -328,7 +328,7 @@ $(function(){
         position: positions.center_center_center_center.name,
         base: $base[0],
         container: $container[0],
-        onCollision: 'push!'
+        collision: 'push+'
       });
 
       expected = {
@@ -336,7 +336,7 @@ $(function(){
         top: positions.center_center_center_center.top + 10 - 3
       };
 
-      deepEqual(result, expected, 'push!');
+      deepEqual(result, expected, 'push+');
 
       // Assertion #4
 
@@ -344,7 +344,7 @@ $(function(){
         position: positions.center_center_center_center.name,
         base: $base[0],
         container: $container[0],
-        onCollision: 'push none'
+        collision: 'push none'
       });
 
       expected = {
@@ -360,7 +360,7 @@ $(function(){
         position: positions.center_center_center_center.name,
         base: $base[0],
         container: $container[0],
-        onCollision: 'push none push'
+        collision: 'push none push'
       });
 
       expected = {
@@ -376,7 +376,7 @@ $(function(){
         position: positions.center_center_center_center.name,
         base: $base[0],
         container: $container[0],
-        onCollision: 'push push none none'
+        collision: 'push push none none'
       });
 
       expected = {
@@ -392,7 +392,7 @@ $(function(){
         position: positions.center_center_center_center.name,
         base: $base[0],
         container: $container[0],
-        onCollision: 'push push push! push!'
+        collision: 'push push push+ push+'
       });
 
       expected = {
@@ -400,7 +400,7 @@ $(function(){
         top: positions.center_center_center_center.top + 4
       };
 
-      deepEqual(result, expected, 'push push push! push!');
+      deepEqual(result, expected, 'push push push+ push+');
 
     });
 
