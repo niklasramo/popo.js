@@ -6,6 +6,8 @@ popo.js is a cross-browser JavaScript library that attempts to simplify the proc
 
 popo.js has been tested on most modern browsers (Chrome, Firefox, Opera, Safari, IE7+) and should be working nicely also on most mobile browsers.
 
+**Check out the [demo](http://jsfiddle.net/7JNuk/4/).**
+
 ##Download
 
 * **[v1.0 rc1 - Production](https://raw.github.com/niklasramo/popo/master/popo.min.js)** (4.1kb minified, [unit tests](http://htmlpreview.github.io/?https://github.com/niklasramo/popo/blob/master/unit-tests/production.html))
