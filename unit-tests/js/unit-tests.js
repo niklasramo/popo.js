@@ -202,7 +202,7 @@ $(function(){
   */
   function generalTests() {
 
-    test('Offsets', 7, function() {
+    test('Offsets', 2, function() {
 
       // Assertion #1
 
@@ -238,94 +238,9 @@ $(function(){
 
       deepEqual(result, expected, '5 -5');
 
-      // Assertion #3
-
-      resetInlineStyles();
-
-      result = popo($target[0], 'get', {
-        position: positions.center_center_center_center.name,
-        base: $base[0],
-        offset: '-19, 90deg 2'
-      });
-
-      expected = {
-        left: positions.center_center_center_center.left - 19,
-        top: positions.center_center_center_center.top - 17
-      };
-
-      deepEqual(result, expected, '-19, 90deg 2');
-
-      // Assertion #4
-
-      resetInlineStyles();
-
-      result = popo($target[0], 'get', {
-        position: positions.center_center_center_center.name,
-        base: $base[0],
-        offset: '-19 97, 0deg 99'
-      });
-
-      expected = {
-        left: positions.center_center_center_center.left + 80,
-        top: positions.center_center_center_center.top + 97
-      };
-
-      deepEqual(result, expected, '-19 97, 0deg 99');
-
-      // Assertion #5
-
-      resetInlineStyles();
-
-      result = popo($target[0], 'get', {
-        position: positions.center_center_center_center.name,
-        base: $base[0],
-        offset: '-19 97, 90deg 99'
-      });
-
-      expected = {
-        left: positions.center_center_center_center.left - 19,
-        top: positions.center_center_center_center.top + 196
-      };
-
-      deepEqual(result, expected, '-19 97, 90deg 99');
-
-      // Assertion #6
-
-      resetInlineStyles();
-
-      result = popo($target[0], 'get', {
-        position: positions.center_center_center_center.name,
-        base: $base[0],
-        offset: '-19 97, 180deg 99'
-      });
-
-      expected = {
-        left: positions.center_center_center_center.left - 118,
-        top: positions.center_center_center_center.top + 97
-      };
-
-      deepEqual(result, expected, '-19 97, 180deg 99');
-
-      // Assertion #7
-
-      resetInlineStyles();
-
-      result = popo($target[0], 'get', {
-        position: positions.center_center_center_center.name,
-        base: $base[0],
-        offset: '-19 97, 270deg 99'
-      });
-
-      expected = {
-        left: positions.center_center_center_center.left - 19,
-        top: positions.center_center_center_center.top - 2
-      };
-
-      deepEqual(result, expected, '-19 97, 270deg 99');
-
     });
 
-    test('onCollision - Callback', 2, function() {
+    test('collision - Callback', 2, function() {
 
       // Assertion #1
 
@@ -335,14 +250,14 @@ $(function(){
         position: positions.center_center_center_center.name,
         base: $base[0],
         container: $container[0],
-        onCollision: function (targetPosition, targetOverlap, posData) {
+        collision: function (targetPosition, targetOverlap, posData) {
           result = [targetPosition, posData.target.element, posData.base.element, posData.container.element];
         }
       });
 
       expected = [{left: positions.center_center_center_center.left, top: positions.center_center_center_center.top}, $target[0], $base[0], $container[0]];
 
-      deepEqual(result, expected, 'onCollision callback function has correct parameters.');
+      deepEqual(result, expected, 'collision callback function has correct parameters.');
 
       // Assertion #2
 
@@ -359,7 +274,7 @@ $(function(){
         position: positions.center_center_center_center.name,
         base: $base[0],
         container: $container[0],
-        onCollision: function (targetPosition, targetOverlap, posData) {
+        collision: function (targetPosition, targetOverlap, posData) {
           targetPosition.left -= 1000;
           targetPosition.top -= 1000;
         }
@@ -369,7 +284,7 @@ $(function(){
 
     });
 
-    test('onCollision - Push', 7, function() {
+    test('collision - Push', 7, function() {
 
       // Assertion #1
 
@@ -379,7 +294,7 @@ $(function(){
         position: positions.center_center_center_center.name,
         base: $base[0],
         container: $container[0],
-        onCollision: 'none'
+        collision: 'none'
       });
 
       expected = {
@@ -397,7 +312,7 @@ $(function(){
         position: positions.center_center_center_center.name,
         base: $base[0],
         container: $container[0],
-        onCollision: 'push'
+        collision: 'push'
       });
 
       expected = {
@@ -413,7 +328,7 @@ $(function(){
         position: positions.center_center_center_center.name,
         base: $base[0],
         container: $container[0],
-        onCollision: 'push!'
+        collision: 'push+'
       });
 
       expected = {
@@ -421,7 +336,7 @@ $(function(){
         top: positions.center_center_center_center.top + 10 - 3
       };
 
-      deepEqual(result, expected, 'push!');
+      deepEqual(result, expected, 'push+');
 
       // Assertion #4
 
@@ -429,7 +344,7 @@ $(function(){
         position: positions.center_center_center_center.name,
         base: $base[0],
         container: $container[0],
-        onCollision: 'push none'
+        collision: 'push none'
       });
 
       expected = {
@@ -445,7 +360,7 @@ $(function(){
         position: positions.center_center_center_center.name,
         base: $base[0],
         container: $container[0],
-        onCollision: 'push none push'
+        collision: 'push none push'
       });
 
       expected = {
@@ -461,7 +376,7 @@ $(function(){
         position: positions.center_center_center_center.name,
         base: $base[0],
         container: $container[0],
-        onCollision: 'push push none none'
+        collision: 'push push none none'
       });
 
       expected = {
@@ -477,7 +392,7 @@ $(function(){
         position: positions.center_center_center_center.name,
         base: $base[0],
         container: $container[0],
-        onCollision: 'push push push! push!'
+        collision: 'push push push+ push+'
       });
 
       expected = {
@@ -485,7 +400,7 @@ $(function(){
         top: positions.center_center_center_center.top + 4
       };
 
-      deepEqual(result, expected, 'push push push! push!');
+      deepEqual(result, expected, 'push push push+ push+');
 
     });
 
