@@ -6,24 +6,22 @@ popo.js is a cross-browser JavaScript library that attempts to simplify the proc
 
 popo.js has been tested on most modern browsers (Chrome, Firefox, Opera, Safari, IE7+) and should be working nicely also on most mobile browsers.
 
-If you're using jQuery or Zepto you might want to grab the [jQuery adapter plugin](https://raw.github.com/niklasramo/popo/master/jquery.popo.js) also.
+If you're using jQuery or Zepto you might want to grab the [jQuery adapter plugin](jquery.popo.js) also.
 
 ##Download
 
-* **[v1.0 - Production](https://raw.github.com/niklasramo/popo/master/popo.min.js)** (4.1kb minified)
-* **[v1.0 - Development](https://raw.github.com/niklasramo/popo/master/popo.js)** (16.4kb uncompressed)
+* **[v1.0 - Production](popo.min.js)** (4.1kb minified)
+* **[v1.0 - Development](popo.js)** (16.4kb uncompressed)
 
 ##Getting started
 
 Include the popo.js script in your site.
-
-```javascript
+```html
 <script src="popo.min.js"></script>
 ```
 
 If you're using jQuery add the jQuery adapter script after popo.js script
-
-```javascript
+```html
 <script src="jquery.popo.js"></script>
 ```
 
@@ -33,7 +31,7 @@ If you're using jQuery add the jQuery adapter script after popo.js script
 // The format
 popo( element [, method ] [, options ] );
 
-// The format with jQuery
+// and with the jQuery adapter
 $( element ).popo( [, method ] [, options ] );
 ```
 
@@ -107,7 +105,7 @@ $('#target').popo({
     // targetOverlap is also an object which tells us how much (in pixels)
     // the target overlaps the container element from each side.
 
-    // positionData is big object which contains all the data 
+    // positionData object contains all the data 
     // (height, width and offsets) that was needed to calculate
     // the stuff in previous objects. Explore and take advantage.
 
@@ -125,4 +123,4 @@ $('#target').popo({
 
 ##License
 
-Copyright &copy; 2012, 2013 Niklas Rämö. Licensed under **[the MIT license](https://github.com/niklasramo/popo/blob/master/LICENSE.md)**.
+Copyright &copy; 2012, 2013 Niklas Rämö. Licensed under **[the MIT license](LICENSE.md)**.
