@@ -6,18 +6,35 @@ popo.js is a cross-browser JavaScript library that attempts to simplify the proc
 
 popo.js has been tested on most modern browsers (Chrome, Firefox, Opera, Safari, IE7+) and should be working nicely also on most mobile browsers.
 
-**Check out the [demo](http://jsfiddle.net/7JNuk/5/).**
+If you're using jQuery or Zepto you might want to grab the [jQuery adapter plugin](https://raw.github.com/niklasramo/popo/master/jquery.popo.js) also.
 
 ##Download
 
-* **[v1.0 rc1 - Production](https://raw.github.com/niklasramo/popo/master/popo.min.js)** (4.1kb minified, [unit tests](http://htmlpreview.github.io/?https://github.com/niklasramo/popo/blob/master/unit-tests/production.html))
-* **[v1.0 rc1 - Development](https://raw.github.com/niklasramo/popo/master/popo.js)** (16.4kb uncompressed, [unit tests](http://htmlpreview.github.io/?https://github.com/niklasramo/popo/blob/master/unit-tests/development.html))
+* **[v1.0 - Production](https://raw.github.com/niklasramo/popo/master/popo.min.js)** (4.1kb minified)
+* **[v1.0 - Development](https://raw.github.com/niklasramo/popo/master/popo.js)** (16.4kb uncompressed)
+
+##Getting started
+
+Include the popo.js script in your site.
+
+```javascript
+<script src="popo.min.js"></script>
+```
+
+If you're using jQuery add the jQuery adapter script after popo.js script
+
+```javascript
+<script src="jquery.popo.js"></script>
+```
 
 ##Usage
 
 ```javascript
 // The format
 popo( element [, method ] [, options ] );
+
+// The format with jQuery
+$( element ).popo( [, method ] [, options ] );
 ```
 
 **element** *(type: element)* *(required)*   
@@ -29,14 +46,14 @@ Provide a method (`set` or `get`). Defaults to `set`, if not specified.
 **options** *(type: object)* *(optional)*   
 Provide an object containing options. You can change the default options by modifying `popo.defaults`.
 
-## Methods
+##Methods
 
 Name | Description
 --- | ---
 **set** | <p>Positions the target element by setting the target element's left and top CSS properties according to the position calculations.</p>
 **get** | <p>Returns an object containing the calculated position of the target element. The returned object has two properties: <code>left</code> and <code>top</code>.</p>
 
-## Options
+##Options
 
 Property | Default | Type | Description
 --- | --- | --- | ---
@@ -70,6 +87,34 @@ var position = popo(document.getElementById("target"), 'get', {
 // position.top => returns the final top position of target element
 ```
 
+__EX-3:__ Using the jQuery adapter
+
+```javascript
+$('#target').popo({
+  position: "left top right top",
+   // Notice that we're providing elements here, not jQuery objects
+  base: $('#base')[0],
+  container: $('#container')[0],
+  // Let's give target some offset (5px to right, 10px to bottom)
+  offset: '5 -10',
+  // Let's define a custom collision function that gives us
+  // access to the positioning data
+  collision: function(targetPosition, targetOverlap, positionData) {
+
+    // targetPosition is an object which contains the left 
+    // and top coordinates of the new position.
+
+    // targetOverlap is also an object which tells us how much (in pixels)
+    // the target overlaps the container element from each side.
+
+    // positionData is big object which contains all the data 
+    // (height, width and offsets) that was needed to calculate
+    // the stuff in previous objects. Explore and take advantage.
+
+  }
+});
+```
+
 ##Good to know
 
 * Target element's CSS position property must be `absolute` or `fixed`.
@@ -78,6 +123,6 @@ var position = popo(document.getElementById("target"), 'get', {
 * The target element's margin affects the final position so consider the margin as an extra offset. This is a feature, not a bug.
 * popo.js uses the outer width/height (includes scrollbar, borders and padding) of the element when calculating positions. However, in the case of window, document and documentElement the scrollbar width/height is omitted.
 
-## License
+##License
 
 Copyright &copy; 2012, 2013 Niklas Rämö. Licensed under **[the MIT license](https://github.com/niklasramo/popo/blob/master/LICENSE.md)**.

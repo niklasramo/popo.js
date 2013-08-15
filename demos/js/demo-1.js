@@ -10,25 +10,13 @@ $(function(){
   // Functions
   //
 
-  function getStyle(el, prop) {
-
-    return el.currentStyle ? (
-      el.currentStyle[prop]
-    ) : document.defaultView && document.defaultView.getComputedStyle ? (
-      document.defaultView.getComputedStyle(el, null).getPropertyValue(prop)
-    ) : (
-      null
-    );
-
-  }
-
   function checkOverlap() {
 
     popo($target[0], 'get', {
       base: $target[0],
       position: 'left top left top',
       container: $container[0],
-      onCollision: function (targetPosition, targetOverlap, positionData) {
+      collision: function (targetPosition, targetOverlap, positionData) {
 
         // Update inner target's position
         $overlap.css({
@@ -41,18 +29,20 @@ $(function(){
         // If box is fully within container
         if (targetOverlap.left >= 0 && targetOverlap.right >= 0 && targetOverlap.top >= 0 && targetOverlap.bottom >= 0) {
           $container.removeClass('partial').addClass('full');
+        }
 
         // If box is fully outside container
-        } else if (
+        else if (
           (targetOverlap.left < 0 && Math.abs(targetOverlap.left) >= positionData.target.width) || 
           (targetOverlap.right < 0 && Math.abs(targetOverlap.right) >= positionData.target.width) || 
           (targetOverlap.top < 0 && Math.abs(targetOverlap.top) >= positionData.target.height) || 
           (targetOverlap.bottom < 0 && Math.abs(targetOverlap.bottom) >= positionData.target.height)
           ) {
           $container.removeClass('full partial');
+        }
 
         // If box is partly within container
-        } else {
+        else {
           $container.removeClass('full').addClass('partial');
         }
 
@@ -85,7 +75,7 @@ $(function(){
       base: $target[0],
       position: 'left top left top',
       container: $target[0],
-      onCollision: function (targetPosition, targetOverlap, data) {
+      collision: function (targetPosition, targetOverlap, data) {
         if (ev.type !== 'touch') {
           targetPosition.left = targetPosition.left + (touch.pageX < dragCoords.x ? -Math.abs(dragCoords.x - touch.pageX) : Math.abs(dragCoords.x - touch.pageX));
           targetPosition.top = targetPosition.top + (touch.pageY < dragCoords.y ? -Math.abs(dragCoords.y - touch.pageY) : Math.abs(dragCoords.y - touch.pageY));

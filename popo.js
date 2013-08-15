@@ -1,11 +1,11 @@
 /*!
- * popo.js v1.0 rc1
+ * popo.js v1.0
  * http://github.com/niklasramo/popo
  *
  * Copyright (c) 2012, 2013 Niklas Rämö
  * Released under the MIT license
  * 
- * Date: 2013-05-29
+ * Date: 2013-08-15
  */
 
 (function (window, undefined) {
@@ -507,4 +507,4 @@
     collision: 'none'
   };
 
-})(window);
+})(self);
