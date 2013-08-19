@@ -64,11 +64,15 @@ Returns an object containing the calculated position of the target element. The 
 
 Defines which element the target element is positioned against. Alternatively you can define a point within an element using the following format: [x-coordinate, y-coordinate, element].
 
+---
+
 ####container
 
 *Type: Element, Array &nbsp;&mdash;&nbsp; Default value: null*
 
 Defines an optional container element that is used for collision detection. Alternatively you can define a point within an element using the following format: [x-coordinate, y-coordinate, element].
+
+---
 
 ####position
 
@@ -76,11 +80,15 @@ Defines an optional container element that is used for collision detection. Alte
 
 Defines the target element's position relative to the base element. The format is "targetX targetY baseX baseY". Use `left`, `right` and `center` to describe the horizontal position and `top`, `bottom` and `center` to describe the vertical position.
 
+---
+
 ####offset
 
 *Type: String &nbsp;&mdash;&nbsp; Default value: '0'*
 
 Defines a horizontal and a vertical offset in pixels. Accepts a single value or a pair for horizontal/vertical, e.g., "5", "10 -5".
+
+---
 
 ####collision
 
