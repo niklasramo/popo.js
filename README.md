@@ -20,8 +20,10 @@ Include the popo.js script in your site.
 <script src="popo.min.js"></script>
 ```
 
-If you're using jQuery add the jQuery adapter script after popo.js script
+If you're using jQuery add the adapter script after jQuery and popo.js.
 ```html
+<script src="popo.min.js"></script>
+<script src="jquery.js"></script>
 <script src="jquery.popo.js"></script>
 ```
 
@@ -46,20 +48,49 @@ Provide an object containing options. You can change the default options by modi
 
 ##Methods
 
-Name | Description
---- | ---
-**set** | <p>Positions the target element by setting the target element's left and top CSS properties according to the position calculations.</p>
-**get** | <p>Returns an object containing the calculated position of the target element. The returned object has two properties: <code>left</code> and <code>top</code>.</p>
+###set
+
+Positions the target element by setting the target element's left and top CSS properties according to the position calculations.
+
+###get
+
+Returns an object containing the calculated position of the target element. The returned object has two properties: <code>left</code> and <code>top</code>.
 
 ##Options
 
-Property | Default | Type | Description
---- | --- | --- | ---
-**base** | window | *Element, Array* | <p>Defines which element the target element is positioned against. Alternatively you can define a point within an element using the following format: [x-coordinate, y-coordinate, element].</p>
-**container** | null | *Element, Array* | <p>Defines an optional container element that is used for collision detection. Alternatively you can define a point within an element using the following format: [x-coordinate, y-coordinate, element].</p>
-**position** | "center center center center" | *String* | <p>Defines the target element's position relative to the base element. The format is "targetX targetY baseX baseY". Use `left`, `right` and `center` to describe the horizontal position and `top`, `bottom` and `center` to describe the vertical position.</p>
-**offset** | "0" | *String* | <p>Defines a horizontal and a vertical offset in pixels. Accepts a single value or a pair for horizontal/vertical, e.g., "5", "10 -5".
-**collision** | "none" | *String, Function* | <p>Defines what to do when one of the target element's sides overflows the container element's matching side. The container element must be defined for this option to have any effect.</p><p>You can use a built-in collision method (`push`, `push+`) or alternatively a callback function which receives almost all of the position data as arguments and create your own collision handling logic.</p><p>Use one of the following formats to define a built-in collision method for each side:<br>"left top right bottom" (e.g. "push push none push+")<br>"left top-bottom right" (e.g. "push none push+")<br>"left-right top-bottom" (e.g. "push none")<br>"left-right-top-bottom". (e.g. "push")</p><p><code>push</code> method tries to keep the targeted sides of the target element within the container element's boundaries. If you assign <code>push</code> method to the opposite sides the force of push will be equal on both sides. If you want to force one of the sides to be always pushed fully inside the container element's area, you can assign a forced push to that side with <code>push+</code> method.</p>
+###base *Element, Array*
+
+<p>Defines which element the target element is positioned against. Alternatively you can define a point within an element using the following format: [x-coordinate, y-coordinate, element].</p>
+
+###container *Element, Array*
+
+<p>Defines an optional container element that is used for collision detection. Alternatively you can define a point within an element using the following format: [x-coordinate, y-coordinate, element].</p>
+
+###position *String*
+
+<p>Defines the target element's position relative to the base element. The format is "targetX targetY baseX baseY". Use `left`, `right` and `center` to describe the horizontal position and `top`, `bottom` and `center` to describe the vertical position.</p>
+
+###offset *String*
+
+<p>Defines a horizontal and a vertical offset in pixels. Accepts a single value or a pair for horizontal/vertical, e.g., "5", "10 -5".</p>
+
+###collision *String, Function*
+
+<p>Defines what to do when one of the target element's sides overflows the container element's matching side. The container element must be defined for this option to have any effect.</p>
+
+<p>You can use one of the built-in collision methods (`push`, `push+`) or alternatively a callback function which allows you to create your own collision handling logic.</p>
+
+<p>**Built-in methods**</p>
+
+<p>Use one of the following formats to define a built-in collision method for each side:<br>
+  "left top right bottom" (e.g. "push push none push+")<br>
+  "left top-bottom right" (e.g. "push none push+")<br>
+  "left-right top-bottom" (e.g. "push none")<br>
+  "left-right-top-bottom". (e.g. "push")</p>
+
+<p><code>push</code> method tries to keep the targeted sides of the target element within the container element's boundaries. If you assign <code>push</code> method to the opposite sides the force of push will be equal on both sides. If you want to force one of the sides to be always pushed fully inside the container element's area, you can assign a forced push to that side with <code>push+</code> method.</p>
+
+<p>**Callback function**</p>
 
 ##Examples
 
@@ -121,7 +152,7 @@ $('#target').popo({
     // (heights, widths and offsets) that was needed to calculate
     // the stuff in previous objects. Useful for creating your own
     // collision methods if you're not happy with the built-in 
-    //'push' and 'push+' methods.
+    // 'push' and 'push+' methods.
 
     // positionData.target => target element's data
     // positionData.base => base element's data
