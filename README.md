@@ -10,8 +10,8 @@ If you're using jQuery or Zepto you might want to grab the [jQuery adapter plugi
 
 ##Download
 
-* **[v1.0 - Production](popo.min.js)** (4.1kb minified)
-* **[v1.0 - Development](popo.js)** (16.4kb uncompressed)
+**[v1.0 - Production](popo.min.js)** (4.1kb minified)  
+**[v1.0 - Development](popo.js)** (16.4kb uncompressed)
 
 ##Getting started
 
@@ -48,78 +48,93 @@ Provide an object containing options. You can change the default options by modi
 
 ##Methods
 
-###set
+####set
 
 Positions the target element by setting the target element's left and top CSS properties according to the position calculations.
 
-###get
+####get
 
-Returns an object containing the calculated position of the target element. The returned object has two properties: <code>left</code> and <code>top</code>.
+Returns an object containing the calculated position of the target element. The returned object has two properties: `left` and `top`.
 
 ##Options
 
-###base *Element, Array*
+####base
 
-<p>Defines which element the target element is positioned against. Alternatively you can define a point within an element using the following format: [x-coordinate, y-coordinate, element].</p>
+*Type: Element, Array &nbsp;&mdash;&nbsp; Default value: window*
 
-###container *Element, Array*
+Defines which element the target element is positioned against. Alternatively you can define a point within an element using the following format: [x-coordinate, y-coordinate, element].
 
-<p>Defines an optional container element that is used for collision detection. Alternatively you can define a point within an element using the following format: [x-coordinate, y-coordinate, element].</p>
+####container
 
-###position *String*
+*Type: Element, Array &nbsp;&mdash;&nbsp; Default value: null*
 
-<p>Defines the target element's position relative to the base element. The format is "targetX targetY baseX baseY". Use `left`, `right` and `center` to describe the horizontal position and `top`, `bottom` and `center` to describe the vertical position.</p>
+Defines an optional container element that is used for collision detection. Alternatively you can define a point within an element using the following format: [x-coordinate, y-coordinate, element].
 
-###offset *String*
+####position
 
-<p>Defines a horizontal and a vertical offset in pixels. Accepts a single value or a pair for horizontal/vertical, e.g., "5", "10 -5".</p>
+*Type: String &nbsp;&mdash;&nbsp; Default value: 'center center center center'*
 
-###collision *String, Function*
+Defines the target element's position relative to the base element. The format is "targetX targetY baseX baseY". Use `left`, `right` and `center` to describe the horizontal position and `top`, `bottom` and `center` to describe the vertical position.
 
-<p>Defines what to do when one of the target element's sides overflows the container element's matching side. The container element must be defined for this option to have any effect.</p>
+####offset
 
-<p>You can use one of the built-in collision methods (`push`, `push+`) or alternatively a callback function which allows you to create your own collision handling logic.</p>
+*Type: String &nbsp;&mdash;&nbsp; Default value: '0'*
 
-<p>**Built-in methods**</p>
+Defines a horizontal and a vertical offset in pixels. Accepts a single value or a pair for horizontal/vertical, e.g., "5", "10 -5".
 
-<p>Use one of the following formats to define a built-in collision method for each side:<br>
-  "left top right bottom" (e.g. "push push none push+")<br>
-  "left top-bottom right" (e.g. "push none push+")<br>
-  "left-right top-bottom" (e.g. "push none")<br>
-  "left-right-top-bottom". (e.g. "push")</p>
+####collision
 
-<p><code>push</code> method tries to keep the targeted sides of the target element within the container element's boundaries. If you assign <code>push</code> method to the opposite sides the force of push will be equal on both sides. If you want to force one of the sides to be always pushed fully inside the container element's area, you can assign a forced push to that side with <code>push+</code> method.</p>
+*Type: String, Function &nbsp;&mdash;&nbsp; Default value: 'none'*
 
-<p>**Callback function**</p>
+Defines what to do when one of the target element's sides overflows the container element's matching side. The container element must be defined for this option to have any effect. You can use one of the built-in collision methods (`push`, `push+`) or alternatively a callback function which allows you to create your own collision handling logic.
+
+**Using the built-in collision methods**
+
+Use one of the following formats to define a built-in collision method for each side:  
+`left top right bottom` *(e.g. "push push none push+")*  
+`left top-bottom right` *(e.g. "push none push+")*  
+`left-right top-bottom` *(e.g. "push none")*  
+`left-right-top-bottom` *(e.g. "push")*
+
+`push` method tries to keep the targeted sides of the target element within the container element's boundaries. If you assign `push` method to the opposite sides the force of push will be equal on both sides. If you want to force one of the sides to be always pushed fully inside the container element's area, you can assign a forced push to that side with `push+` method.
+
+**Using the callback function**
+
+Check out [example 3](#example-3) for an in-depth explanation.
 
 ##Examples
 
-__EX-1:__ Position target on top of base.
+####Example 1
 
 ```javascript
+// Position target element on top of base element.
 popo(document.getElementById("target"), {
   position: "center bottom center top",
   base: document.getElementById("base")
 });
 ```
 
-__EX-2:__ Use `get` method to retrieve target's position without actually positioning the target.
+####Example 2
 
 ```javascript
+// Use get method to retrieve target's position without actually positioning the target.
 var position = popo(document.getElementById("target"), 'get', {
   position: "left top right center",
   base: document.getElementById("base")
 });
 
-// The get method returns an object containing the final left and top values
 // position.left => returns the final left position of target element 
 // position.top => returns the final top position of target element
 ```
 
-__EX-3:__ Using the jQuery adapter
+#### Example 3
 
 ```javascript
+// Using the jQuery adapter
 $('#target').popo({
+  // First let's define where we want target to be moved.
+  // In this case we are aligning target element's left top corner
+  // with base element's right top corner.
   position: "left top right top",
   // Let's give target some offset (5px to right, 10px to bottom).
   offset: '5 -10',
