@@ -6,7 +6,7 @@ popo.js is a cross-browser JavaScript library that attempts to simplify the proc
 
 popo.js has been tested on most modern browsers (Chrome, Firefox, Opera, Safari, IE7+) and should be working nicely also on most mobile browsers.
 
-If you're using jQuery or Zepto you might want to grab the [jQuery adapter plugin](jquery.popo.js) also.
+If you're using jQuery or Zepto you might want to grab the [jQuery adapter plugin](jquery.popo.min.js) also.
 
 ##Download
 
@@ -24,7 +24,7 @@ If you're using jQuery add the adapter script after jQuery and popo.js.
 ```html
 <script src="popo.min.js"></script>
 <script src="jquery.js"></script>
-<script src="jquery.popo.js"></script>
+<script src="jquery.popo.min.js"></script>
 ```
 
 ##Usage
@@ -104,7 +104,7 @@ Use one of the following formats to define a built-in collision method for each 
 `left-right top-bottom` *(e.g. "push none")*  
 `left-right-top-bottom` *(e.g. "push")*
 
-`push` method tries to keep the targeted sides of the target element within the container element's boundaries. If you assign `push` method to the opposite sides the force of push will be equal on both sides. If you want to force one of the sides to be always pushed fully inside the container element's area, you can assign a forced push to that side with `push+` method.
+`push` method tries to keep the targeted sides of the target element within the container element's boundaries. If you assign `push` method to the opposite sides the force of push will be equal on both sides. However, if the container element is smaller than the target element and you want to make sure that a specific side will always be pushed fully inside the container element's area you can use the `push+` (forced push) method to make it happen.
 
 **Using the callback function**
 
@@ -151,7 +151,7 @@ $('#target').popo({
   base: $('#base')[0],
   container: $('#container')[0],
   // Let's define a custom collision function that gives us
-  // access to the positioning data and let's us manipulate the
+  // access to the positioning data and allows us to manipulate the
   // outcome of the positioning process.
   collision: function(targetPosition, targetOverlap, positionData) {
 
