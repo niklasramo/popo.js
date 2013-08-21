@@ -78,7 +78,7 @@ Defines an optional container element that is used for collision detection. Alte
 
 *Type: String &nbsp;&mdash;&nbsp; Default value: 'center center center center'*
 
-Defines the target element's position relative to the base element. The format is "targetX targetY baseX baseY". Use "left", "right" and "center" to set the horizontal position and "top", "bottom" and "center" to set the vertical position.
+Defines the target element's position relative to the base element. The format is "targetX targetY baseX baseY". Use "left", "right" and "center" to set the horizontal positions (targetX and baseX) and "top", "bottom" and "center" to set the vertical positions (targetY and baseY).
 
 ---
 
@@ -86,7 +86,7 @@ Defines the target element's position relative to the base element. The format i
 
 *Type: String &nbsp;&mdash;&nbsp; Default value: '0'*
 
-Defines a horizontal and a vertical offset in pixels. Accepts a single value or a pair for horizontal/vertical, e.g., "5", "10 -5".
+Defines a horizontal and a vertical offset in pixels. Accepts a single value or a pair for horizontal/vertical (e.g. "5" or "10 -5").
 
 ---
 
