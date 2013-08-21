@@ -1,10 +1,8 @@
 /*!
  * jQuery adapter for popo.js v0.1
  * http://github.com/niklasramo/popo
- *
  * Copyright (c) 2012, 2013 Niklas Rämö
  * Released under the MIT license
- * 
  * Date: 2013-08-14
  */
 
