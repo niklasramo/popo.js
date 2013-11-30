@@ -1,11 +1,9 @@
 /*!
  * popo.js v1.0
+ * A JavaScript library for positioning elements
  * http://github.com/niklasramo/popo
- *
  * Copyright (c) 2012, 2013 Niklas Rämö
  * Released under the MIT license
- * 
- * Date: 2013-08-15
  */
 
 (function (window, undefined) {
@@ -206,6 +204,46 @@
   }
 
   /**
+  * Returns the element's left and top offset in a neutral state (where left/right/top/bottom
+  * CSS properties are not affecting the element's position).
+  * @param {element} el
+  */
+  function fn_getNeutralOffset(el) {
+
+    var offset = fn_getOffset(el, 1),
+        dir = [[fn_getStyle(el, 'left'), fn_getStyle(el, 'right')], [fn_getStyle(el, 'top'), fn_getStyle(el, 'bottom')]],
+        fix = [0, 0],
+        prop, val1, val2, i;
+
+    for (i = 0; i < 2; i++) {
+
+      val1 = dir[i][0];
+      val2 = dir[i][1];
+
+      // Jump to the next pair if both values are auto.
+      if (val1 === 'auto' && val2 === 'auto') {
+        continue;
+      }
+
+      // If left/top is "auto", let's check how much right/bottom values are affecting the position.
+      // Otherwise we only need to check how much left/top values are affecting the position.
+      if (val1 === 'auto') {
+        fix[i] = -parseFloat(val2.indexOf('px') > -1 ? val2 : el.style[i === 0 ? 'pixelRight' : 'pixelBottom']);
+      } else {
+        fix[i] = parseFloat(val1.indexOf('px') > -1 ? val1 : el.style[i === 0 ? 'pixelLeft' : 'pixelTop']);
+      }
+
+    }
+
+    // Adjust offset.
+    offset.left -= fix[0];
+    offset.top -= fix[1];
+
+    return offset;
+
+  }
+
+  /**
   * Merges default options with the instance options and also sanitizes the new options.
   * @param {element} el
   * @param {object} options
@@ -220,7 +258,7 @@
 
     for (prop in options) {
 
-      // Handle functions and whitespace in options.
+      // Handle functions and whitespace.
       options[prop] = fn_trim(fn_typeof(options[prop], 'function') && prop !== 'collision' ? options[prop](el) : options[prop]);
 
       // Special handling for position.
@@ -368,7 +406,7 @@
       // Get target's data.
       targetWidth = fn_getWidth(el),
       targetHeight = fn_getHeight(el),
-      targetParentOffset = fn_getOffset(fn_getOffsetParent(el), 1),
+      targetParentOffset = fn_getStyle(el, 'position') === 'relative' ? fn_getNeutralOffset(el) : fn_getOffset(fn_getOffsetParent(el), 1),
 
       // Get base element and predefine base data variables.
       baseElement = options.base,
@@ -497,9 +535,8 @@
   // Make the library public and define default options.
   window[lib] = fn_position;
   window[lib].defaults = {
-    base: function (el, elDoc) {
-      elDoc = el.ownerDocument;
-      return elDoc.defaultView || elDoc.parentWindow;
+    base: function (el) {
+      return el.ownerDocument.defaultView || el.ownerDocument.parentWindow;
     },
     container: null,
     position: 'center center center center',

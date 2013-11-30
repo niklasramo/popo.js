@@ -10,7 +10,7 @@ $(function(){
       ltIE8 = $('html').hasClass('lt-ie8'),
 
       // Define allowed CSS position properties
-      positionStyles = ltIE8 ? ['absolute'] : ['absolute', 'fixed'],
+      positionStyles = ltIE8 ? ['absolute', 'relative'] : ['absolute', 'relative', 'fixed'],
 
       // Get test elements
       $wrapper = $('#test-wrapper'),
