@@ -187,11 +187,10 @@ $('#target').popo({
 
 ##Good to know
 
-* Target element's CSS position property must be *absolute* or *fixed*.
 * The CSS display property of target, base and container elements must not be *none* during positioning.
-* You can position elements within iframes, but you have to make sure that target, base and container elements exist within the same window.
 * The target element's margin affects the final position so consider the margin as an extra offset. This is a feature, not a bug.
-* popo.js uses the outer width/height (includes scrollbar, borders and padding) of the element when calculating positions. However, in the case of window, document and documentElement the scrollbar width/height is omitted.
+* You can use popo to position elements within iframes, but you have to make sure that the target, base and container elements exist within the same window.
+* popo.js uses the outer width/height (includes scrollbar, borders and padding) of the element when calculating positions. However, in the case of documentElement the scrollbar width/height is omitted.
 
 ##License
 
