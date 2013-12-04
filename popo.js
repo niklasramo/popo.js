@@ -1,5 +1,5 @@
 /*!
- * popo.js v1.0
+ * popo.js v1.0.1 nightly
  * A JavaScript library for positioning elements
  * http://github.com/niklasramo/popo
  * Copyright (c) 2012, 2013 Niklas Rämö
@@ -16,11 +16,28 @@
     win, doc, docElem, body;
 
   /**
+  * Cache target element's window, document, documentElement and body. If these elements
+  * were cached during the initiation of this library there would always be the risk that
+  * the script file is placed within the head tag of the page which would result the body
+  * variable referencing to undefined. Also, this way we can provide support for elements
+  * within iframes.
+  * @param {element} el
+  */
+  function fn_cacheBaseElems(el) {
+
+    doc = el.ownerDocument;
+    win = doc.defaultView || doc.parentWindow;
+    docElem = doc.documentElement;
+    body = doc.body;
+
+  }
+
+  /**
   * Check the type of an object.
   * @param {object} obj
   * @param {string} type
   */
-  function fn_typeof(obj, type) {
+  function fn_typeOf(obj, type) {
 
     obj = ({}).toString.call(obj).split(' ')[1].replace(']', '').toLowerCase();
     return type ? obj === type : obj;
@@ -33,7 +50,7 @@
   */
   function fn_trim(str) {
 
-    return fn_typeof(str, 'string') ? (str.trim ? str.trim() : str.replace(/^\s+|\s+$/g, '')) : str;
+    return fn_typeOf(str, 'string') ? (str.trim ? str.trim() : str.replace(/^\s+|\s+$/g, '')) : str;
 
   }
 
@@ -205,12 +222,13 @@
 
   /**
   * Returns the element's left and top offset in a neutral state (where left/right/top/bottom
-  * CSS properties are not affecting the element's position).
+  * CSS properties are not affecting the element's position). Used solely for relatively
+  * positioned elements.
   * @param {element} el
   */
-  function fn_getNeutralOffset(el) {
+  function fn_getNeutralOffset(el, includeBorders) {
 
-    var offset = fn_getOffset(el, 1),
+    var offset = fn_getOffset(el, includeBorders),
         dir = [[fn_getStyle(el, 'left'), fn_getStyle(el, 'right')], [fn_getStyle(el, 'top'), fn_getStyle(el, 'bottom')]],
         fix = [0, 0],
         prop, val1, val2, i;
@@ -254,12 +272,12 @@
       prop, ret, array, len;
 
     // Merge options with default options.
-    options = fn_merge(fn_typeof(options, 'object') ? [defaultOptions, options] : [defaultOptions]);
+    options = fn_merge(fn_typeOf(options, 'object') ? [defaultOptions, options] : [defaultOptions]);
 
     for (prop in options) {
 
       // Handle functions and whitespace.
-      options[prop] = fn_trim(fn_typeof(options[prop], 'function') && prop !== 'collision' ? options[prop](el) : options[prop]);
+      options[prop] = fn_trim(fn_typeOf(options[prop], 'function') && prop !== 'collision' ? options[prop](el) : options[prop]);
 
       // Special handling for position.
       if (prop === 'position') {
@@ -268,15 +286,15 @@
 
       // Special handling for offset.
       if (prop === 'offset') {
-        ret = fn_typeof(options[prop], 'string') ? options[prop].split(' ') : [];
+        ret = fn_typeOf(options[prop], 'string') ? options[prop].split(' ') : [];
         options.offsetX = toFloat(ret[0]) || 0;
         options.offsetY = ret.length > 1 ? toFloat(ret[1]) || 0 : options.offsetX;
       }
 
       // Special handling for collision.
       if (prop === 'collision') {
-        ret = fn_typeof(options[prop], 'function') ? options[prop] : null;
-        if (fn_typeof(options[prop], 'string') && options[prop].length > 0) {
+        ret = fn_typeOf(options[prop], 'function') ? options[prop] : null;
+        if (fn_typeOf(options[prop], 'string') && options[prop].length > 0) {
           array = options[prop].split(' ');
           len = array.length;
           if (len > 0 && len < 5) {
@@ -391,14 +409,11 @@
   */
   function fn_position(el, method, options) {
 
-    // Cache target element's window, document, documentElement and body.
-    doc = el.ownerDocument;
-    win = doc.defaultView || doc.parentWindow;
-    docElem = doc.documentElement;
-    body = doc.body;
+    // Cache base elements
+    fn_cacheBaseElems(el);
 
     // Sanitize options.
-    options = fn_getSanitizedOptions(el, fn_typeof(method, 'string') ? options : method);
+    options = fn_getSanitizedOptions(el, fn_typeOf(method, 'string') ? options : method);
 
     // Cache collision option for better minification.
     var collision = options.collision,
@@ -406,7 +421,7 @@
       // Get target's data.
       targetWidth = fn_getWidth(el),
       targetHeight = fn_getHeight(el),
-      targetParentOffset = fn_getStyle(el, 'position') === 'relative' ? fn_getNeutralOffset(el) : fn_getOffset(fn_getOffsetParent(el), 1),
+      targetParentOffset = fn_getStyle(el, 'position') === 'relative' ? fn_getNeutralOffset(el, 1) : fn_getOffset(fn_getOffsetParent(el), 1),
 
       // Get base element and predefine base data variables.
       baseElement = options.base,
@@ -433,7 +448,7 @@
 
     // Calculate base element's dimensions and offset.
     // If base is an array we assume it's a coordinate.
-    fn_typeof(baseElement, 'array') ? (
+    fn_typeOf(baseElement, 'array') ? (
       baseWidth = baseHeight = 0,
       baseOffset = fn_getOffset(baseElement[2] || win),
       baseOffset.left += baseElement[0],
@@ -456,7 +471,7 @@
 
       // Calculate container element's dimensions and offset.
       // If container is an array we assume it's a coordinate.
-      fn_typeof(containerElement, 'array') ? (
+      fn_typeOf(containerElement, 'array') ? (
         containerWidth = containerHeight = 0,
         containerOffset = fn_getOffset(containerElement[2] || win),
         containerOffset.left += containerElement[0],
@@ -477,7 +492,7 @@
       };
 
       // If collision is a callback function.
-      if (fn_typeof(collision, 'function')) {
+      if (fn_typeOf(collision, 'function')) {
 
         // Get target's current offset.
         targetOffset = fn_getOffset(el);
@@ -532,8 +547,20 @@
 
   }
 
-  // Make the library public and define default options.
+  // Init.
   window[lib] = fn_position;
+  window[lib].width = function(el) {
+    fn_cacheBaseElems(el);
+    fn_getWidth(el);
+  };
+  window[lib].height = function(el) {
+    fn_cacheBaseElems(el);
+    fn_getHeight(el);
+  };
+  window[lib].offset = function(el, includeBorders, neutralState) {
+    fn_cacheBaseElems(el);
+    neutralState ? fn_getNeutralOffset(el, includeBorders) : fn_getOffset(el, includeBorders);
+  };
   window[lib].defaults = {
     base: function (el) {
       return el.ownerDocument.defaultView || el.ownerDocument.parentWindow;
