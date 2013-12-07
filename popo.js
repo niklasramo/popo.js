@@ -1,7 +1,7 @@
 /*!
- * popo.js v1.0.1 nightly
+ * popo.js v1.0.1
  * A JavaScript library for positioning elements
- * http://github.com/niklasramo/popo
+ * http://github.com/niklasramo/popo.js
  * Copyright (c) 2012, 2013 Niklas Rämö
  * Released under the MIT license
  */
@@ -17,7 +17,7 @@
 
   /**
   * Cache target element's window, document, documentElement and body. If these elements
-  * were cached during the initiation of this library there would always be the risk that
+  * are cached during the initiation of this library there would always be the risk that
   * the script file is placed within the head tag of the page which would result the body
   * variable referencing to undefined. Also, this way we can provide support for elements
   * within iframes.
@@ -549,18 +549,6 @@
 
   // Init.
   window[lib] = fn_position;
-  window[lib].width = function(el) {
-    fn_cacheBaseElems(el);
-    fn_getWidth(el);
-  };
-  window[lib].height = function(el) {
-    fn_cacheBaseElems(el);
-    fn_getHeight(el);
-  };
-  window[lib].offset = function(el, includeBorders, neutralState) {
-    fn_cacheBaseElems(el);
-    neutralState ? fn_getNeutralOffset(el, includeBorders) : fn_getOffset(el, includeBorders);
-  };
   window[lib].defaults = {
     base: function (el) {
       return el.ownerDocument.defaultView || el.ownerDocument.parentWindow;
