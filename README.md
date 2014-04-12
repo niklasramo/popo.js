@@ -196,4 +196,4 @@ $('#target').popo({
 
 ##License
 
-Copyright &copy; 2012, 2013 Niklas Rämö. Licensed under **[the MIT license](LICENSE.md)**.
+Copyright &copy; 2012 Niklas Rämö. Licensed under **[the MIT license](LICENSE.md)**.
