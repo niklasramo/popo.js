@@ -1,0 +1,25 @@
+{
+  "name": "popo.js",
+  "description": "A JavaScript library for positioning elements",
+  "version": "1.0.0",
+  "main": "popo.js",
+  "license": "MIT",
+  "ignore": [
+    "jquery.popo.js",
+    "jquery.popo.min.js",
+    "popo.min.js"
+  ],
+  "keywords": [
+    "ui",
+    "position",
+    "positioning",
+    "element"
+  ],
+  "authors": [
+    { "name": "Niklas Rämö", "email": "inramo@gmail.com" }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/niklasramo/popo.js.git"
+  }
+}
