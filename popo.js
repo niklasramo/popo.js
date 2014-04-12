@@ -1,8 +1,8 @@
 /*!
- * popo.js v1.0
+ * popo.js v1.0.0
  * A JavaScript library for positioning elements
  * http://github.com/niklasramo/popo.js
- * Copyright (c) 2012, 2013 Niklas Rämö
+ * Copyright (c) 2012, 2014 Niklas Rämö
  * Released under the MIT license
  */
 
