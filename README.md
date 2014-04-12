@@ -8,6 +8,8 @@ popo.js has been tested on most modern browsers (Chrome, Firefox, Opera, Safari,
 
 If you're using jQuery or Zepto you might want to grab the [jQuery adapter plugin](jquery.popo.min.js) also.
 
+You can also play around with the **[popo.js demo](http://codepen.io/niklasramo/pen/rBwbj)** to test how the positioning works in practice.
+
 ##Download
 
 **[v1.0 - Production](popo.min.js)** (4.1kb minified)  
