@@ -2,13 +2,13 @@
 
 *A JavaScript library for positioning HTML elements*
 
-popo.js is a cross-browser JavaScript library that attempts to simplify the process of positioning HTML elements relative to other HTML elements regardless of their whereabouts in the DOM tree. The library is heavily influenced by **[jQuery UI Position plugin](http://jqueryui.com/position/)**, but does not require jQuery or any other library to work. It's completely stand-alone.
+Popo.js is a cross-browser JavaScript library that attempts to simplify the process of positioning HTML elements relative to other HTML elements regardless of their whereabouts in the DOM tree. The library is heavily influenced by **[jQuery UI Position plugin](http://jqueryui.com/position/)**, but does not require jQuery or any other library to work. It's completely stand-alone.
 
-popo.js has been tested on most modern browsers (Chrome, Firefox, Opera, Safari, IE7+) and should be working nicely also on most mobile browsers.
+Popo.js has been tested on most modern browsers (Chrome, Firefox, Opera, Safari, IE7+) and should be working nicely also on most mobile browsers.
 
 If you're using jQuery or Zepto you might want to grab the [jQuery adapter plugin](jquery.popo.min.js) also.
 
-You can also play around with the **[popo.js demo](http://codepen.io/niklasramo/pen/rBwbj)** to test how the positioning works in practice.
+You can also play around with the **[popo.js demo](http://cdpn.io/rBwbj)** to test how the positioning works in practice.
 
 ##Download
 
@@ -192,7 +192,7 @@ $('#target').popo({
 * The CSS display property of target, base and container elements must not be *none* during positioning.
 * The target element's margin affects the final position so consider the margin as an extra offset. This is a feature, not a bug.
 * You can use popo to position elements within iframes, but you have to make sure that the target, base and container elements exist within the same window.
-* popo.js uses the outer width/height (includes scrollbar, borders and padding) of the element when calculating positions. However, in the case of documentElement the scrollbar width/height is omitted.
+* Popo.js uses the outer width/height (includes scrollbar, borders and padding) of the element when calculating positions. However, in the case of documentElement the scrollbar width/height is omitted.
 
 ##License
 
