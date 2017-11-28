@@ -1,4 +1,6 @@
-#popo.js
+# popo.js
+
+**THIS LIBRARY IS NO LONGER MAINTAINED. PLEASE CHECK OUT [MEZR](https://github.com/niklasramo/mezr) LIBRARY FOR SIMILAR FUNCTIONALITY.**
 
 *A JavaScript library for positioning HTML elements*
 
@@ -10,12 +12,12 @@ If you're using jQuery or Zepto you might want to grab the [jQuery adapter plugi
 
 You can also play around with the **[popo.js demo](http://cdpn.io/rBwbj)** to test how the positioning works in practice.
 
-##Download
+## Download
 
 **[v1.0 - Production](popo.min.js)** (4.1kb minified)  
 **[v1.0 - Development](popo.js)** (16.4kb uncompressed)
 
-##Getting started
+## Getting started
 
 Include the popo.js script in your site.
 ```html
@@ -29,7 +31,7 @@ If you're using jQuery add the adapter script after jQuery and popo.js.
 <script src="jquery.popo.min.js"></script>
 ```
 
-##Usage
+## Usage
 
 ```javascript
 // The format
@@ -48,19 +50,19 @@ Provide a method &mdash; "set" or "get". Defaults to "set", if not specified.
 **options** *(type: object)* *(optional)*   
 Provide an options object. The default options are stored in `window.popo.defaults` object.
 
-##Methods
+## Methods
 
-####set
+#### set
 
 Positions the target element by setting the target element's left and top CSS properties according to the position calculations.
 
-####get
+#### get
 
 Returns an object containing the calculated position of the target element. The returned object has two properties: *left* and *top*.
 
-##Options
+## Options
 
-####base
+#### base
 
 *Type: Element, Array &nbsp;&mdash;&nbsp; Default value: window*
 
@@ -68,7 +70,7 @@ Defines which element the target element is positioned against. Alternatively yo
 
 ---
 
-####container
+#### container
 
 *Type: Element, Array &nbsp;&mdash;&nbsp; Default value: null*
 
@@ -76,7 +78,7 @@ Defines an optional container element that is used for collision detection. Alte
 
 ---
 
-####position
+#### position
 
 *Type: String &nbsp;&mdash;&nbsp; Default value: 'center center center center'*
 
@@ -84,7 +86,7 @@ Defines the target element's position relative to the base element. The format i
 
 ---
 
-####offset
+#### offset
 
 *Type: String &nbsp;&mdash;&nbsp; Default value: '0'*
 
@@ -92,7 +94,7 @@ Defines a horizontal and a vertical offset in pixels. Accepts a single value or 
 
 ---
 
-####collision
+#### collision
 
 *Type: String, Function &nbsp;&mdash;&nbsp; Default value: 'none'*
 
@@ -112,9 +114,9 @@ Use one of the following formats to define a built-in collision method for each 
 
 Check out [example 3](#example-3) for an in-depth explanation.
 
-##Examples
+## Examples
 
-####Example 1
+#### Example 1
 
 ```javascript
 // Position target element on top of base element.
@@ -124,7 +126,7 @@ popo(document.getElementById("target"), {
 });
 ```
 
-####Example 2
+#### Example 2
 
 ```javascript
 // Use get method to retrieve target's position without actually positioning the target.
@@ -187,13 +189,13 @@ $('#target').popo({
 });
 ```
 
-##Good to know
+## Good to know
 
 * The CSS display property of target, base and container elements must not be *none* during positioning.
 * The target element's margin affects the final position so consider the margin as an extra offset. This is a feature, not a bug.
 * You can use popo to position elements within iframes, but you have to make sure that the target, base and container elements exist within the same window.
 * Popo.js uses the outer width/height (includes scrollbar, borders and padding) of the element when calculating positions. However, in the case of documentElement the scrollbar width/height is omitted.
 
-##License
+## License
 
 Copyright &copy; 2012 Niklas Rämö. Licensed under **[the MIT license](LICENSE.md)**.
